@@ -50,7 +50,8 @@ function get_courses_by_veranstids($veranstids) {
     
     $q = pg_query($pgDB->connection, 
         "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst
-                FROM suchmaschine_veranst where veranstid in (".$veranstids_string.") and semester > 20122 order by semester,titel;");
+                FROM public.learnweb_veranstaltung as veranst where veranstid in (".$veranstids_string.") AND ".
+                "(CURRENT_DATE - CAST(veranst.zeitstempel AS date)) < ".get_config('local_lsf_unification', 'max_import_age'). "order by semester,titel;");
     $result_list = array();
     while ($course = pg_fetch_object($q)) {
 		$result = new stdClass();
@@ -72,7 +73,7 @@ function get_course_by_veranstid($veranstid) {
 function get_veranstids_by_teacher($pid) {
     global $pgDB;
     $q = pg_query($pgDB->connection,
-        "SELECT veranstid FROM public.learnweb_personalveranst WHERE pid = $pid and veranstid is not null group by veranstid order by veranstid;");
+        "SELECT veranstid FROM public.learnweb_personal_veranst WHERE pid = $pid and veranstid is not null group by veranstid order by veranstid;");
     $return = array();
     while ($veranstid = pg_fetch_object($q)) {
         array_push($return, $veranstid->veranstid);
@@ -152,8 +153,12 @@ function find_origin_category($quellid) {
 function get_default_fullname($veranstid) {
 	global $pgDB;
 	$lsf_course = get_course_by_veranstid($veranstid);
-
-	$q2 = pg_query($pgDB->connection, "SELECT public.learnweb_personalveranst.vorname, public.learnweb_personalveranst.nachname FROM public.learnweb_personalveranst WHERE public.learnweb_personalveranst.veranstid=".$veranstid." ORDER BY public.learnweb_personalveranst.sort ASC");
+    //@TODO Diese Abfrage kann noch mal herausgelöst werden, siehe auch "function enrole_teachers($veranstid, $courseid) {
+	$q2 = pg_query($pgDB->connection, 
+    "SELECT personal.vorname, personal.nachname FROM public.learnweb_personal_veranst as veranst".
+                " LEFT JOIN public.learnweb_personal as personal on (personal.pid = veranst.pid)".
+                " WHERE veranst.veranstid = ".$veranstid.
+                " ORDER BY veranst.sort ASC");
 	$personen = "";
 	while ($person = pg_fetch_object($q2)) {
 		$personen .= ", ".trim($person->vorname)." ".trim($person->nachname);
@@ -265,7 +270,10 @@ function shortname_hint($veranstid) {
 function enrole_teachers($veranstid, $courseid) {
 	global $pgDB, $DB, $CFG;
 	$warnings = "";
-	$q = pg_query($pgDB->connection, "SELECT public.learnweb_personal.* FROM public.learnweb_personal INNER JOIN public.learnweb_personalveranst ON public.learnweb_personalveranst.pid = public.learnweb_personal.pid WHERE public.learnweb_personalveranst.veranstid=".$veranstid);
+	$q = pg_query($pgDB->connection, "SELECT personal.* FROM public.learnweb_personal_veranst as veranst ".
+                   " INNER JOIN public.learnweb_personal as personal on personal.pid = veranst.pid".
+                   " WHERE veranst.veranstid = ".$veranstid.
+                   " ORDER BY veranst.sort ASC");
 	while ($lsf_user = pg_fetch_object($q)) {
 		unset($teacher);
 		if (!empty($lsf_user->zivk)) {
