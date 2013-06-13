@@ -15,7 +15,7 @@ $returnurl = $CFG->wwwroot . '/course/index.php';
 /// Check permissions.
 require_login();
 if (isguestuser()) {
-	print_error('guestsarenotallowed', '', $returnurl);
+    print_error('guestsarenotallowed', '', $returnurl);
 }
 $context = get_context_instance(CONTEXT_SYSTEM);
 $PAGE->set_context($context);
@@ -27,29 +27,48 @@ $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 echo $OUTPUT->header();
 
-$files      = get_backup_files();
 $courseid   = required_param('courseid', PARAM_INT);
+$acceptorid = get_course_acceptor($courseid);
+$files_backups = get_backup_files($acceptorid);
+$files_templates = get_template_files();
+$filetype  	= optional_param('filetype', null, PARAM_RAW);
 $fileid  	= optional_param('fileid', null, PARAM_RAW);
-if (!in_array($courseid,get_my_courses_as_teacher())) die("context not found");
-if (empty($fileid)) {
-	echo "<b>".get_string('course_duplication_selection','local_lsf_unification')."</b><br>";
-	foreach ($files as $id => $fileinfo) {
-		echo "<a href='?courseid=".$courseid."&fileid=".$id."'>".$fileinfo->course->fullname." (".$fileinfo->datetime.")</a><br>";
-	}
-	echo "<a href='request.php?courseid=".$courseid."&answer=7'>".get_string('skip','local_lsf_unification')."</a><br>";
+$fileinfo	= null;
+if (!in_array($courseid,get_my_courses_as_teacher()) && !is_course_imported_by($courseid, $USER)) die("context not found");
+$course = $DB->get_record('course', array("id"=>$courseid));
+if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification', 'duplication_timeframe')) {
+    echo "<b>".get_string('duplication_timeframe_error','local_lsf_unification',get_config('local_lsf_unification', 'duplication_timeframe'))."</b><br>";
 } else {
-	if (empty($files[$fileid])) die("error #0");
-	$fileinfo = $files[$fileid];
-	$tmpdir = $CFG->tempdir . '/backup';
-	$foldername = restore_controller::get_tempdir_name($fileinfo->course->id, $USER->id);
-	$pathname = $tmpdir.'/'.$foldername;
-	if (is_dir($pathname)) die("error #1");
-	if (!mkdir($pathname)) die("error #2");
-	if (!copy($fileinfo->path."/".$fileinfo->name, $pathname."/".$fileinfo->name)) die("error #3");
-	if (!unzip($pathname."/".$fileinfo->name)) die("error #4");
-	restore_dbops::delete_course_content($courseid, array("keep_roles_and_enrolments" => true));
-	duplicate_course($courseid, $foldername);
-	echo "<a href='request.php?courseid=".$courseid."&answer=7'>".get_string('continue')."</a><br>";
+    if (!empty($fileid)) {
+        // get rights
+        $creatorroleid = $DB->get_record('role', array('shortname' => 'lsfunificationcourseimporter'))->id;
+        $context = context_course::instance($courseid, MUST_EXIST);
+        if (!enrol_try_internal_enrol($course->id, $USER->id, $creatorroleid, time() - 1, time() + 60 * 60 * get_config('local_lsf_unification', 'duplication_timeframe'))){
+            die("error ##");
+        }
+        // do backup
+        if ($filetype == "t" && get_config('local_lsf_unification', 'restore_templates')) {
+            if (empty($files_templates[$fileid])) die("error #0");
+            $fileinfo = $files_templates[$fileid];
+        } elseif ($filetype == "b" && get_config('local_lsf_unification', 'restore_old_courses')) {
+            if (empty($files_backups[$fileid])) die("error #0");
+            $fileinfo = $files_backups[$fileid];
+        } else {
+            die("error #x");
+        }
+        $tmpdir = $CFG->tempdir . '/backup';
+        $foldername = restore_controller::get_tempdir_name(empty($fileinfo->course)?42:$fileinfo->course->id, $USER->id);
+        $pathname = $tmpdir.'/'.$foldername;
+        if (is_dir($pathname)) die("error #1");
+        if (!mkdir($pathname)) die("error #2: ".$pathname);
+        if (!copy($fileinfo->path."/".$fileinfo->name, $pathname."/".$fileinfo->name)) die("error #3");
+        if (!unzip($pathname."/".$fileinfo->name)) die("error #4");
+        restore_dbops::delete_course_content($courseid, array("keep_roles_and_enrolments" => true));
+        duplicate_course($courseid, $foldername);
+        // dump rights
+        role_unassign($creatorroleid, $USER->id, $context->id);
+    }
 }
+echo "<a href='request.php?courseid=".$courseid."&answer=7'>".get_string('continue')."</a><br>";
 
 echo $OUTPUT->footer();

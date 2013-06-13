@@ -69,21 +69,21 @@ $string['subcategories_description'] = 'Enable choosing not mapped subcategories
 
 $string['notice'] = 'Usually Learnweb copies course information from the HIS database and provides these information below. This requires that you are assigned to the course in HIS-LSF as a teacher or assistant. Furthermore your ZIV account has to be assigned to your HIS-LSF profile. If your course is not listed, please choose from the other provided options.';
 $string['question'] = "Please select the first accurate statement:";
-$string['answer_course_already_created1'] = "The course exists on the HIS-LSF platform, but is not listed above.";
-
 $string['answer_course_found'] = "The following list contains the course I'm looking for:";
-$string['answer_goto_old_requestform'] = "The course exists on the HIS-LSF platform, but you are not registered for that course. Nevertheless you are authorized to create this course in the Learnweb.";
+$string['answer_course_already_created1'] = "The course exists on the HIS-LSF platform and you are registered as a teacher for that course.";
+$string['answer_proxy_creation'] = "The course exists on the HIS-LSF platform and you are authorized to create this course on behalf of a registered teacher.";
+$string['answer_goto_old_requestform'] = "None of the above apply and you are authorized to create this course in the Learnweb.";
 
 $string['info_course_already_created1'] = 'There are two potential reasons, why your course is not listed:<ol><li>Your course is published in HIS-LSF less than 24 hours ago. Data is only transferred once a day. If no further problem occurs, course data will be transferred tomorrow and then Learnweb course creation will be possible.</li><li>The username you use right now ({$a}) is not registered on the HIS-LSF. To access the courses you have registered on the HIS-LSF platform you have to include your username in your HIS-LSF-profile. After doing so, please wait at least one day for our database to update.<p style="text-align: center;"><img alt="Datenbearbeiten" src="/LearnWeb/diverse/HIS-Person_bearbeiten.png" /></p></li></ol>';
 
 $string['info_goto_old_requestform'] = "Please use the standard form to apply for course creation. (<a href='../../course/request.php'>Link</a>)";
 
 $string['config_auto_update'] = "Auto-Update from His-Lsf";
-$string['config_auto_update_duration'] = "Keep assigned user up to date for (from now on)";
-$string['config_auto_update_duration182'] = "1 semester";
-$string['config_auto_update_duration31'] = "1 month";
-$string['config_auto_update_duration365'] = "1 year";
-$string['config_auto_update_duration7'] = "1 week";
+$string['config_auto_update_duration'] = "Keep newly assigned users up to date for";
+$string['config_auto_update_duration182'] = "1 semester since startdate";
+$string['config_auto_update_duration31'] = "1 month since startdate";
+$string['config_auto_update_duration7'] = "1 week since startdate";
+$string['config_auto_update_duration-1'] = "never";
 $string['config_category'] = "Category";
 $string['config_category_wish'] = "Category Relocation Wish";
 $string['config_category_wish_help'] = "If you have a wish to get your course moved into a more specific category, please leave a comment here containing your wish-category and path.";
@@ -113,14 +113,43 @@ $string['linktext_course'] = "... or go directly to your new couse.";
 $string['email'] = 'SENDER:
 {$a->a} ('.$CFG->wwwroot.'/user/view.php?id={$a->b})
 
-COURSE:
-{$a->c} ('.$CFG->wwwroot.'/course/view.php?id={$a->d})
+    COURSE:
+    {$a->c} ('.$CFG->wwwroot.'/course/view.php?id={$a->d})
 
-MESSAGE:
-{$a->e}';
+        MESSAGE:
+        {$a->e}';
 
-$string['course_duplication_question'] = 'Do you want to copy the course contents of an old Learnweb course to your just created course? (This is the only chance to do this)';
-$string['yes'] = 'Yes';
-$string['no'] = 'No';
-$string['skip'] = 'Skip';
-$string['course_duplication_selection'] = 'Please select a backup-file to restore from:';
+
+$string['choose_teacher'] = 'Please enter the username of the authorizing teacher:';
+$string['his_info'] = 'Please inform your teacher to follow <a href="request.php?answer=3">this guide</a>, for the HIS-LSF courses to be matched to the username.';
+$string['answer_course_already_created2'] = 'The course is not listed above, but exists on the HIS-LSF platform and {$a} is registered as a teacher for that course.';
+$string['already_requested'] = 'Sorry, this course was already requested and the teacher has to reply to this request before a new request can be issued';
+$string['request_sent'] = 'Request sent, please wait for an answer, that you will recieve via email.';
+$string['answer_sent'] = 'Thank you for processing this request, your decision is sent to the requester.';
+
+$string['email_from'] = "HIS LSF Import";
+$string['email2_title'] = "Course Creation Request";
+$string['email2'] = 'The user "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) requested to create the Learnweb-course "{$a->c}" in your name. Please confirm or refuse the request on this website: {$a->d}';
+$string['email3_title'] = "Course Creation Request accepted";
+$string['email3'] = 'The user "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) accepted your request to create the Learnweb-course "{$a->c}". Please continue the course-creation on this website: {$a->d}';
+$string['email4_title'] = "Course Creation Request declined";
+$string['email4'] = 'The user "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) declined your request to create the Learnweb-course "{$a->c}".';
+$string['remote_request_select_alternative'] = 'Please select the action you want to perform:';
+$string['remote_request_accept'] = 'Accept request by "{$a->a}" to create the course "{$a->b}"';
+$string['remote_request_decline'] = 'Decline request and send the regarding information to "{$a->a}"';
+
+$string['no_template'] = 'Alternative 1: Continue with a blank course';
+$string['pre_template'] = 'Alternative 2: Continue with a course template ...';
+$string['template_from_course'] = 'Alternative 3: Include contents from an existing course ...';
+$string['continue'] = 'Continue';
+
+$string['duplication_timeframe_error'] = 'Sorry but for safety reasons it is not allowed import course data from templates or backups more than {$a} hour(s) after course creation';
+
+$string['remote_creation'] = 'Remote Course Creation';
+$string['remote_creation_description'] = 'Allow everyone to request courses in the name of a teacher, who than has to confirm';
+$string['restore_old_courses'] = 'Duplicating Courses';
+$string['restore_old_courses_description'] = 'Allow a course creator to duplicate course contents by restoring from a course backup of his courses';
+$string['restore_templates'] = 'Course from Template';
+$string['restore_templates_description'] = 'Allow a course creator to add standard course contents by restoring from a course backup functioning as template';
+$string['duplication_timeframe'] = 'Course Duplication Timeframe';
+$string['duplication_timeframe_description'] = 'The number of hours after course creation where restore-actions are allowed';

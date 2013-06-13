@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/lsf_unification/db" VERSION="20120824" COMMENT="XMLDB file for Moodle local/lsf_unification"
+<XMLDB PATH="local/lsf_unification/db" VERSION="20130611" COMMENT="XMLDB file for Moodle local/lsf_unification"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
     <TABLE NAME="local_lsf_category" COMMENT="table containing his categories and info about their learnweb equivalent" NEXT="local_lsf_categoryparenthood">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="moodle dumbness" NEXT="ueid"/>
-        <FIELD NAME="ueid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="id from his" PREVIOUS="id" NEXT="parent"/>
-        <FIELD NAME="parent" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="parent category ueid from his" PREVIOUS="ueid" NEXT="origin"/>
-        <FIELD NAME="origin" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="origin id from his (oldest transitively chained quellid)" PREVIOUS="parent" NEXT="mdlid"/>
-        <FIELD NAME="mdlid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="id of equivalent moodle category" PREVIOUS="origin" NEXT="txt"/>
-        <FIELD NAME="txt" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" COMMENT="category's title from his" PREVIOUS="mdlid" NEXT="txt2"/>
-        <FIELD NAME="txt2" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" COMMENT="fullname (path of txts)" PREVIOUS="txt" NEXT="timestamp"/>
-        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="zeitstempel" PREVIOUS="txt2"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="moodle dumbness" NEXT="ueid"/>
+        <FIELD NAME="ueid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id from his" PREVIOUS="id" NEXT="parent"/>
+        <FIELD NAME="parent" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="parent category ueid from his" PREVIOUS="ueid" NEXT="origin"/>
+        <FIELD NAME="origin" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="origin id from his (oldest transitively chained quellid)" PREVIOUS="parent" NEXT="mdlid"/>
+        <FIELD NAME="mdlid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of equivalent moodle category" PREVIOUS="origin" NEXT="txt"/>
+        <FIELD NAME="txt" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="category's title from his" PREVIOUS="mdlid" NEXT="txt2"/>
+        <FIELD NAME="txt2" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="fullname (path of txts)" PREVIOUS="txt" NEXT="timestamp"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="zeitstempel" PREVIOUS="txt2"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="realkey"/>
@@ -22,10 +22,10 @@
     </TABLE>
     <TABLE NAME="local_lsf_categoryparenthood" COMMENT="relations between his-categories" PREVIOUS="local_lsf_category" NEXT="local_lsf_course">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="moodle dumbness" NEXT="child"/>
-        <FIELD NAME="child" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="parent"/>
-        <FIELD NAME="parent" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="child" NEXT="distance"/>
-        <FIELD NAME="distance" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="ueid-&amp;gt;parentid = 1 ueid-&amp;gt;parentid-&amp;gt;parentid = 2 ..." PREVIOUS="parent"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="moodle dumbness" NEXT="child"/>
+        <FIELD NAME="child" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="parent"/>
+        <FIELD NAME="parent" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="child" NEXT="distance"/>
+        <FIELD NAME="distance" TYPE="int" LENGTH="5" NOTNULL="true" SEQUENCE="false" COMMENT="ueid-&amp;gt;parentid = 1 ueid-&amp;gt;parentid-&amp;gt;parentid = 2 ..." PREVIOUS="parent"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="realkey"/>
@@ -34,16 +34,18 @@
     </TABLE>
     <TABLE NAME="local_lsf_course" COMMENT="course matching table" PREVIOUS="local_lsf_categoryparenthood">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="veranstid"/>
-        <FIELD NAME="veranstid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="mdlid"/>
-        <FIELD NAME="mdlid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="coresponding moodle id" PREVIOUS="veranstid" NEXT="timestamp"/>
-        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="last import of course" PREVIOUS="mdlid" NEXT="ueid"/>
-        <FIELD NAME="ueid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="selected ueid" PREVIOUS="timestamp"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="veranstid"/>
+        <FIELD NAME="veranstid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="mdlid"/>
+        <FIELD NAME="mdlid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="coresponding moodle id" PREVIOUS="veranstid" NEXT="timestamp"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="last import of course" PREVIOUS="mdlid" NEXT="ueid"/>
+        <FIELD NAME="ueid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="user-id upon request" PREVIOUS="timestamp" NEXT="requeststate"/>
+        <FIELD NAME="requeststate" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0=declined or not requested,1=requested,2=granted" PREVIOUS="ueid" NEXT="requesterid"/>
+        <FIELD NAME="requesterid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="requeststate" NEXT="acceptorid"/>
+        <FIELD NAME="acceptorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="requesterid"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="uni1"/>
-        <KEY NAME="uni1" TYPE="unique" FIELDS="veranstid" PREVIOUS="primary" NEXT="uni2"/>
-        <KEY NAME="uni2" TYPE="unique" FIELDS="mdlid" PREVIOUS="uni1"/>
+        <KEY NAME="uni1" TYPE="unique" FIELDS="veranstid" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
   </TABLES>

@@ -66,21 +66,25 @@ $string['roleid_teacher_description'] = 'Rolle f&uuml;r automatisch angemeldete 
 $string['subcategories'] = 'Unterkategorien freischalten';
 $string['subcategories_description'] = 'Erlaubt das einordnen nicht zugeordneter Unterkategorien zu Oberkategorien';
 
-$string['notice'] = 'Im Normalfall &uuml;bernimmt Learnweb die Kursinformationen aus der HIS-Datenbank und schl&auml;gt diese unten als Auswahl bereit. Voraussetzung ist, dass Sie als Lehrender bzw. Begleitperson der Veranstaltung zugeordnet sind und Ihre Kennung im HIS-LSF hinterlegt ist. Sollte kein Kurs von Ihnen erscheinen, w&auml;hlen Sie bitte eine der anderen zutreffenden Alternativen.';
+$string['notice'] = 'Im Normalfall &uuml;bernimmt Learnweb die Kursinformationen aus der HIS-Datenbank und schl&auml;gt diese unten als Auswahl vor. Voraussetzung ist, dass Sie als Lehrende(r) bzw. Begleitperson der Veranstaltung zugeordnet sind und Ihre Kennung im HIS-LSF hinterlegt ist. Sollte kein Kurs von Ihnen erscheinen, w&auml;hlen Sie bitte eine der anderen zutreffenden Alternativen.';
 $string['question'] = "Bitte w&auml;hlen Sie die erste zutreffende Aussage:";
-$string['answer_course_already_created1'] = "Der zu beantragende Kurs befindet sich im HIS-LSF, wird jedoch nicht angezeigt.";
 $string['answer_course_found'] = "Der zu beantragende Kurs befindet sich in der nachfolgenden Liste:";
-$string['answer_goto_old_requestform'] = "Ich m&ouml;chte eine Kursbeantragung ohne &Uuml;bernahme der Daten aus dem HIS-LSF vornehmen.";
+$string['answer_course_already_created1'] = "Der zu beantragende Kurs befindet sich im HIS-LSF und Sie sind dort als Lehrende(r) eingetragen.";
+$string['answer_proxy_creation'] = "Der Kurs existiert im HIS-LSF und Sie m&ouml;chten im Auftrag eines dort eingetragenen Lehrenden diesen Kurs erstellen.";
+$string['answer_goto_old_requestform'] = "Sie m&ouml;chten eine Kursbeantragung ohne &Uuml;bernahme der Daten aus dem HIS-LSF vornehmen.";
 
-$string['info_course_already_created1'] = '<p>Das der gew&uuml;nschte Kurs nicht aufgelistet wird, kann folgende Ursachen haben:</p><ol><li>Es ist weniger als 24 Stunden her, dass die Veranstaltung in das HIS-LSF eingetragen wurde. Die Daten werden nur einmal t&auml;glich aus dem System &uuml;bernommen. Wenn kein weiterer Fehler vorliegt, warten Sie bitte bis morgen, dann sollte eine &Uuml;bernahme in das Learnweb funktionieren.</li><li>Die Kennung, mit der Sie im Learnweb angemeldet sind (Kennung: {$a}), ist keiner Person im HIS-LSF zugeordnet.<br /> Wenden Sie sich bitte an eine Person Ihres Fachbereichs, die Bearbeitungsrechte im HIS-LSF besitzt. Im Normalfall haben Sekretariate bzw. das Dekanat Bearbeitungsrechte im HIS-LSF. Ihr Profil im HIS-LSF muss bearbeitet werden (<strong>Person bearbeiten</strong>). In Registerkarte <strong>2</strong> muss der Bereich <strong>Login</strong> gew&auml;hlt werden, und im Feld <strong>Login</strong> Ihre ZIV-Nutzerkennung eingetragen werden (vgl. Abb.). Die &Auml;nderung wird erst am n&auml;chsten Tag wirksam.<p style="text-align: center;"><img alt="Datenbearbeiten" src="/LearnWeb/diverse/HIS-Person_bearbeiten.png" /></p></li></ol>';
+
+
+
+$string['info_course_already_created1'] = '<p>Dass der gew&uuml;nschte Kurs nicht aufgelistet wird, kann folgende Ursachen haben:</p><ol><li>Es ist weniger als 24 Stunden her, dass die Veranstaltung in das HIS-LSF eingetragen wurde. Die Daten werden nur einmal t&auml;glich aus dem System &uuml;bernommen. Wenn kein weiterer Fehler vorliegt, warten Sie bitte bis morgen, dann sollte eine &Uuml;bernahme in das Learnweb funktionieren.</li><li>Die Kennung, mit der Sie im Learnweb angemeldet sind (Kennung: {$a}), ist keiner Person im HIS-LSF zugeordnet.<br /> Wenden Sie sich bitte an eine Person Ihres Fachbereichs, die Bearbeitungsrechte im HIS-LSF besitzt. Im Normalfall haben Sekretariate bzw. das Dekanat Bearbeitungsrechte im HIS-LSF. Ihr Profil im HIS-LSF muss bearbeitet werden (<strong>Person bearbeiten</strong>). In Registerkarte <strong>2</strong> muss der Bereich <strong>Login</strong> gew&auml;hlt werden, und im Feld <strong>Login</strong> Ihre ZIV-Nutzerkennung eingetragen werden (vgl. Abb.). Die &Auml;nderung wird erst am n&auml;chsten Tag wirksam.<p style="text-align: center;"><img alt="Datenbearbeiten" src="/LearnWeb/diverse/HIS-Person_bearbeiten.png" /></p></li></ol>';
 $string['info_goto_old_requestform'] = "Bitte nutzen Sie die manuelle Kursbeantragung um Ihren Kurs zu beantragen. (<a href='../../course/request.php'>Link</a>) Geben Sie bitte unbedingt einen Verweis auf den Kurs im HIS-LSF an (einen Link bzw. genaue Kursbezeichnung).<br/> Ihr Antrag wird vom Learnweb-Support schnellst m&ouml;glichst bearbeitet.";
 
 $string['config_auto_update'] = "Automatische Aktualisierung";
-$string['config_auto_update_duration'] = "Neuanmeldungen zum Kurs (im HIS-LSF) ins Learnweb &uuml;bernehmen f&uuml;r (ab jetzt)";
-$string['config_auto_update_duration182'] = "Ein Semester";
-$string['config_auto_update_duration31'] = "Einen Monat";
-$string['config_auto_update_duration365'] = "Ein Jahr";
-$string['config_auto_update_duration7'] = "Eine Woche";
+$string['config_auto_update_duration'] = "Neuanmeldungen&Abmeldungen zum Kurs (im HIS-LSF) ins Learnweb &uuml;bernehmen f&uuml;r";
+$string['config_auto_update_duration182'] = "sechs Monate ab Startdatum";
+$string['config_auto_update_duration31'] = "einen Monat ab Startdatum";
+$string['config_auto_update_duration7'] = "eine Woche ab Startdatum";
+$string['config_auto_update_duration-1'] = "Nie";
 $string['config_category'] = "Kategorie";
 $string['config_category_wish'] = "Kategorie-Umzugs-Wunsch";
 $string['config_category_wish_help'] = "Falls Sie den Kurs gerne in einer anderen st&auml;rker spezifizierten Kategorie eingeordnet haben m&ouml;chten, hinterlassen Sie bitte hier einen Kommentar  mit der entsprechenden Wunschkategorie und -pfad.";
@@ -115,8 +119,33 @@ $string['course_duplication_selection'] = 'Bitte w&auml;hlen Sie ein Kursbackup 
 $string['email'] = 'ABSENDER:
 {$a->a} ('.$CFG->wwwroot.'/user/view.php?id={$a->b})
 
-KURS:
-{$a->c} ('.$CFG->wwwroot.'/course/view.php?id={$a->d})
+    KURS:
+    {$a->c} ('.$CFG->wwwroot.'/course/view.php?id={$a->d})
 
-NACHRICHT:
-{$a->e}';
+        NACHRICHT:
+        {$a->e}';
+
+$string['choose_teacher'] = 'Bitte geben Sie die Nutzerkennung des autorisierenden Lehrenden an:';
+$string['his_info'] = 'Bitte weisen Sie den Lehrenden an, <a href="request.php?answer=3">diesen Hinweisen zu folgen</a>, sodass seine HIS-LSF-Kurse mit seiner Nutzerkennung verkn&uuml;pft werden k&ouml;nnen.';
+$string['answer_course_already_created2'] = 'Der zu beantragende Kurs befindet sich im HIS-LSF und der Kurs wird oben nicht angezeigt, obwohl der Nutzer mit der Kennung {$a} als Lehrender f&uuml;r den Kurs eingetragen ist.';
+$string['already_requested'] = 'Diesr Kurs wurde bereits angefragt. Der Lehrende muss erst die bestehende Anfrage beantworten, bevor Neue Anfragen get&auml;tigt werden k&ouml;nnen.';
+$string['request_sent'] = 'Die Anfrage wurde per Mail an den Lehrenden gesendet. Sie werden per Mail eine R&uuml;ckmeldung erhalten, sobald der Lehrende die Anfrage bearbeitet hat.';
+$string['answer_sent'] = 'Vielen Dank f&uuml;r das Verarbeiten dieser Anfrage. Ihre Entscheidung wird dem Anfragenden automatisch per Email mitgeteilt.';
+
+$string['email_from'] = "HIS LSF Import";
+$string['email2_title'] = "Kurs Erstellungs Anfrage";
+$string['email2'] = 'Der Benutzer "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) versucht den Kurs "{$a->c}" in Ihrem Namen zu erstellen. Bitte akzeptieren oder verweigern sie die Anfrage auf dieser Webseite: {$a->d}';
+$string['email3_title'] = "Kurs Erstellungs Anfrage akzeptiert";
+$string['email3'] = 'Der Benutzer "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) akzeptierte Ihre Kursanfrage "{$a->c}". Bitte fahren Sie mit der Erstellung hier fort: {$a->d}';
+$string['email4_title'] = "Kurs Erstellungs Anfrage verweigert";
+$string['email4'] = 'Der Benutzer "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) verweigerte Ihre Kursanfrage "{$a->c}".';
+$string['remote_request_select_alternative'] = 'Bitte w&auml;hlen Sie eine Aktion aus:';
+$string['remote_request_accept'] = 'Akzeptiere die Anfrage von "{$a->a}" den Kurs "{$a->b}" zu erstellen';
+$string['remote_request_decline'] = 'Verweigere die Anfrage von "{$a->a}"';
+
+$string['no_template'] = 'Alternative 1: Fortfahren mit einem leeren Kurs';
+$string['pre_template'] = 'Alternative 2: Fortfahren mit den Inhalten eines Musterkurses ...';
+$string['template_from_course'] = 'Alternative 3: Fortfahren mit den Inhalten eines existierenden Kurses ...';
+$string['continue'] = 'Fortfahren';
+
+$string['duplication_timeframe_error'] = 'Aus Sicherheitsgr&uuml;nden ist es nicht erlaubt Kursdaten aus Musterkursen oder Kursbackups wiederherzustellen, falls die Kurserstellung mehr als {$a} Stunden zur&uuml;ckliegt.';

@@ -18,10 +18,11 @@
  * Version details.
  *
  * @package    local
- * @subpackage lsf_webservices
+ * @subpackage lsf_unification
  * @copyright  2011 Olaf Koehler WWU
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2012042418;
+$plugin->version  = 2013061100;
+$plugin->component = 'local_lsf_unification'; 

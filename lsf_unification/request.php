@@ -35,75 +35,199 @@ $answer = optional_param('answer', null, PARAM_INT);
 $veranstid = optional_param('veranstid', null, PARAM_INT);
 $questionsanswered = optional_param('questionsanswered', null, PARAM_INT);
 $courseid = optional_param('courseid', 1, PARAM_INT);
+$teachername = optional_param('teachername', "", PARAM_ALPHANUMEXT);
+$requestid = optional_param('requestid', null, PARAM_INT);
+$accept = optional_param('accept', null, PARAM_INT);
+
+if (!empty($requestid)) {
+    if (($request = $DB->get_record("local_lsf_course", array("id" => $requestid))) && ($request->requeststate == 1)) {
+        $veranstid = $request->veranstid;
+    }
+}
+
+function print_first_overview() {
+    global $USER;
+    $courselist = "<ul>";
+    foreach (get_teachers_course_list($USER->username, true) as $course) {
+        if (!course_exists($course->veranstid)) {
+            $courselist .= "<li>".$course->info."</li>";
+        }
+    }
+    $courselist .= "</ul>";
+    echo "<p>".get_string('notice','local_lsf_unification')."</p>";
+    echo "<form name='input' action='request.php' method='post'><table><tr><td colspan='2'><b>".get_string('question','local_lsf_unification')."</b>";
+    echo "</td></tr>";
+    echo ($courselist != "<ul></ul>")?("<tr><td style='vertical-align:top;'><input type='radio' name='answer' id='answer1' value='1'></td><td><label for='answer1'>".get_string('answer_course_found','local_lsf_unification')."".$courselist."</label></td></tr>"):"";
+
+    echo "<tr><td><input type='radio' name='answer' id='answer3' value='3'></td><td><label for='answer3'>".get_string('answer_course_already_created1','local_lsf_unification')."</label></td></tr>";
+    if (get_config('local_lsf_unification', 'remote_creation')) {
+        echo "<tr><td><input type='radio' name='answer' id='answer11' value='11'></td><td><label for='answer11'>".get_string('answer_proxy_creation','local_lsf_unification')."</label></td></tr>";
+    }
+    echo "<tr><td><input type='radio' name='answer' id='answer6' value='6'></td><td><label for='answer6'>".get_string('answer_goto_old_requestform','local_lsf_unification')."</label></td></tr>";
+    echo "<tr><td>&nbsp;</td><td><input type='submit' value='".get_string('select','local_lsf_unification')."'/></td></tr></table></form>";
+}
+
+function print_helptext($t, $s=null) {
+    echo "<u>".get_string('answer_'.$t,'local_lsf_unification')."</u><br>".get_string('info_'.$t,'local_lsf_unification', $s, true);
+    echo "<br><a href='request.php'>".get_string('back','local_lsf_unification')."</a>";
+}
+
+function print_courseselection() {
+    global $USER, $answer;
+    echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='".$answer."'>";
+    print_coursetable($USER->username);
+    echo "<input type='submit' value='".get_string('select','local_lsf_unification')."'/></form>";
+    echo "<br><a href='request.php'>".get_string('back','local_lsf_unification')."</a>";
+}
+
+function print_coursetable($teacher, $appendix = "") {
+    echo "<table><tr><td colspan='2'><b>".get_string('choose_course','local_lsf_unification')."</b></td></tr>";
+    foreach (get_teachers_course_list($teacher,true) as $course) {
+        if (!course_exists($course->veranstid)) {
+            echo "<tr><td><input type='radio' name='veranstid' id='veranstid_".($course->veranstid)."' value='".($course->veranstid)."'></td><td><label for='veranstid_".($course->veranstid)."'>".($course->info)."</label></td></tr>";
+        }
+    }
+    echo $appendix."</table>";
+}
+
+function print_final() {
+    global $OUTPUT, $CFG, $courseid;
+    echo $OUTPUT->box("<b>".get_string('next_steps','local_lsf_unification').":</b><br><a href='".$CFG->wwwroot."/enrol/users.php?id=".($courseid)."'>".get_string('linktext_users','local_lsf_unification')."</a><br><a href='".$CFG->wwwroot."/course/view.php?id=".($courseid)."'>".get_string('linktext_course','local_lsf_unification')."</a><br>&nbsp;<br><a href='request.php'>".get_string('new_request','local_lsf_unification')."</a>");
+}
+
+function print_res_selection() {
+    global $CFG, $OUTPUT, $courseid;
+	$acceptorid = get_course_acceptor($courseid);
+    $backupfiles = get_backup_files($acceptorid);
+    $templatefiles = get_template_files();
+    if ((!get_config('local_lsf_unification', 'restore_old_courses') && !get_config('local_lsf_unification', 'restore_templates')) || (empty($backupfiles) && empty($templatefiles))) {
+        print_final();
+    } else {
+        // "Continue with a blank course"
+        echo "<b>".get_string('no_template','local_lsf_unification')."</b><ul><li><a href='request.php?courseid=".$courseid."&answer=7'>".get_string('continue','local_lsf_unification')."</a></li></ul>";
+        // "Continue with the course template ..."
+        if (get_config('local_lsf_unification', 'restore_templates') && !empty($templatefiles)) {
+            echo "<b>".get_string('pre_template','local_lsf_unification')."</b><ul>";
+            foreach ($templatefiles as $id => $fileinfo) {
+                echo "<li><a href='duplicate_course.php?courseid=".$courseid."&filetype=t&fileid=".$id."'>".$fileinfo->info."</a></li>";
+            }
+            echo "</ul>";
+        }
+        // "Duplicate course from the course ..."
+        if (get_config('local_lsf_unification', 'restore_old_courses') && !empty($backupfiles)) {
+            echo "<b>".get_string('template_from_course','local_lsf_unification')."</b><ul>";
+            foreach ($backupfiles as $id => $fileinfo) {
+                echo "<li><a href='duplicate_course.php?courseid=".$courseid."&filetype=b&fileid=".$id."'>".$fileinfo->course->fullname." (".$fileinfo->datetime.")</a></li>";
+            }
+            echo "</ul>";
+        }
+    }
+}
+
+function print_remote_creation() {
+    global $USER, $answer, $teachername, $veranstid;
+    if (!get_config('local_lsf_unification', 'remote_creation')) {
+        return;
+    }
+    if (empty($veranstid)) {
+        echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='".$answer."'>";
+        if (empty($teachername)) {
+            echo "<b>".get_string('choose_teacher','local_lsf_unification')."</b><input type='text' name='teachername' size='20' value='".$teachername."'>";
+        } else {
+            echo "<input type='hidden' name='teachername' value='".$teachername."'>";
+            print_coursetable($teachername, "<tr><td><input type='radio' name='veranstid' id='veranstid_' value='".(-1)."'></td><td><label for='veranstid_'>".get_string('answer_course_already_created2','local_lsf_unification',$teachername)."</label></td></tr>");
+        }
+        echo "<input type='submit' value='".get_string('select','local_lsf_unification')."'/></form><br><a href='request.php'>".get_string('back','local_lsf_unification')."</a>";
+    } else {
+        if ($veranstid < 0) {
+            echo get_string('his_info','local_lsf_unification');
+        } else {
+            $requestid = set_course_requested($veranstid);
+            if (!empty($requestid)) {
+                if (send_course_request_mail($teachername, get_course_by_veranstid($veranstid), $requestid)) {
+                    echo get_string('request_sent','local_lsf_unification');
+                } else {
+                    echo "unkown error";
+                }
+            } else {
+                echo get_string('already_requested','local_lsf_unification');
+            }
+        }
+    }
+}
+
+function print_coursecreation() {
+    global $USER, $OUTPUT, $answer, $teachername, $veranstid, $courseid;
+    $editform = new lsf_course_request_form(NULL, array('veranstid'=>$veranstid));
+    if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
+        $result = create_lsf_course($veranstid,$data->fullname,$data->shortname,$data->summary,$data->startdate,-1/*$data->update_duration*/,$data->enrolment_key,$data->category);
+        $courseid = $result['course']->id;
+        if (!empty($data->category_wish)) $result['warnings'] .= (send_support_mail($result['course'], $data->category_wish)?("\n".get_string('email_success','local_lsf_unification')):("\n".get_string('email_error','local_lsf_unification')));
+        echo (!empty($result["warnings"]))?("<p>".$OUTPUT->box("<b>".get_string('warnings','local_lsf_unification')."</b><br>"."<pre>".$result["warnings"]."<pre>")."</p>"):"";
+        print_res_selection($result["course"]->id);
+    } else {
+        $editform->display();
+    }
+}
+
+function print_request_handler() {
+    global $CFG, $DB, $answer, $request, $veranstid, $accept;
+    $course = get_course_by_veranstid($veranstid);
+    $requester = $DB->get_record("user", array("id" => $request->requesterid));
+    if (empty($accept)) {
+        echo get_string('remote_request_select_alternative','local_lsf_unification');
+        $params = new stdClass();
+        $params->a = $requester->firstname." ".$requester->lastname;
+        $params->b = utf8_encode($course->titel);
+        echo '<p>'.
+            '<a href="'.$CFG->wwwroot.'/local/lsf_unification/request.php?answer='.$answer.'&requestid='.$request->id.'&accept=1">'.get_string('remote_request_accept','local_lsf_unification',$params).'</a>'.
+            '<br>';
+        echo    '<a href="'.$CFG->wwwroot.'/local/lsf_unification/request.php?answer='.$answer.'&requestid='.$request->id.'&accept=2">'.get_string('remote_request_decline','local_lsf_unification',$params).'</a>'.
+            '</p>';
+    } else {
+        if ($accept == 1) {
+            set_course_accepted($veranstid);
+            send_course_creation_mail($requester,$course);
+        } else {
+            set_course_declined($veranstid);
+            send_sorry_mail($requester,$course);
+        }
+        echo get_string('answer_sent','local_lsf_unification');
+    }
+}
+
+
+// Handle Course-Request
 
 if (establish_secondary_DB_connection()===true) {
-	$username = $USER->username;
-	if (empty($answer)) {
-		// Ask user if he finds the course he wants to create
-		$courselist = "<ul>";
-		foreach (get_teachers_course_list($username,true) as $course) {
-			if (!course_exists($course->veranstid)) {
-				$courselist .= "<li>".$course->info."</li>";
-			}
-		}
-		$courselist .= "</ul>";
-		echo "<p>".get_string('notice','local_lsf_unification')."</p>";
-		echo "<form name='input' action='request.php' method='post'><table><tr><td colspan='2'><b>".get_string('question','local_lsf_unification')."</b>";
-		echo "</td></tr>";
-		echo ($courselist != "<ul></ul>")?("<tr><td style='vertical-align:top;'><input type='radio' name='answer' id='answer1' value='1'></td><td><label for='answer1'>".get_string('answer_course_found','local_lsf_unification')."".$courselist."</label></td></tr>"):"";
-		
-		echo "<tr><td><input type='radio' name='answer' id='answer3' value='3'></td><td><label for='answer3'>".get_string('answer_course_already_created1','local_lsf_unification')."</label></td></tr>";
-		echo "<tr><td><input type='radio' name='answer' id='answer6' value='6'></td><td><label for='answer6'>".get_string('answer_goto_old_requestform','local_lsf_unification')."</label></td></tr>";
-		echo "<tr><td>&nbsp;</td><td><input type='submit' value='".get_string('select','local_lsf_unification')."'/></td></tr></table></form>";
-	} elseif ($answer == 2) {
-		// Help Text 1
-		echo "<u>".get_string('answer_course_not_created_yet','local_lsf_unification')."</u><br>".get_string('info_course_not_created_yet','local_lsf_unification');
-		echo "<br><a href='request.php'>".get_string('back','local_lsf_unification')."</a>";
-	} elseif ($answer == 3) {
-		// Help Text 2
-		echo "<u>".get_string('answer_course_already_created1','local_lsf_unification')."</u><br>".get_string('info_course_already_created1','local_lsf_unification', $username, true);
-		echo "<br><a href='request.php'>".get_string('back','local_lsf_unification')."</a>";
-	} elseif ($answer == 6) {
-		// Help Text 5
-		echo "<u>".get_string('answer_goto_old_requestform','local_lsf_unification')."</u><br>".get_string('info_goto_old_requestform','local_lsf_unification');
-		echo "<br><a href='request.php'>".get_string('back','local_lsf_unification')."</a>";
-	} elseif ($answer == 1) {
-		// Course existing in LSF-System -> proceed in process
-		if (empty($veranstid)) {
-			// Let the user select a specific course
-			echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='".$answer."'><table><tr><td colspan='2'><b>".get_string('choose_course','local_lsf_unification')."</b></td></tr>";
-			foreach (get_teachers_course_list($username,true) as $course) {
-				if (!course_exists($course->veranstid)) {
-					echo "<tr><td><input type='radio' name='veranstid' id='veranstid_".($course->veranstid)."' value='".($course->veranstid)."'></td><td><label for='veranstid_".($course->veranstid)."'>".($course->info)."</label></td></tr>";
-				}
-			}
-			echo "<tr><td>&nbsp;</td><td><input type='submit' value='".get_string('select','local_lsf_unification')."'/></td></tr></table></form>";
-			echo "<br><a href='request.php'>".get_string('back','local_lsf_unification')."</a>";
-		} else {
-			// Check veranstid
-			if (!is_veranstid_valid($veranstid, $username)) die("Course cannot be requested.");
-			$editform = new lsf_course_request_form(NULL, array('veranstid'=>$veranstid));
-			if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
-				$answer = create_lsf_course($veranstid,$data->fullname,$data->shortname,$data->summary,$data->startdate,$data->enrolment_key,$data->category);
-				if (!empty($data->category_wish)) $answer['warnings'] .= (send_support_mail($answer['course'], $data->category_wish)?("\n".get_string('email_success','local_lsf_unification')):("\n".get_string('email_error','local_lsf_unification')));
-				echo (!empty($answer["warnings"]))?("<p>".$OUTPUT->box("<b>".get_string('warnings','local_lsf_unification')."</b><br>"."<pre>".$answer["warnings"]."<pre>")."</p>"):"";
-				$x = get_backup_files();
-				if (empty($x)) {
-					$courseid = $answer["course"]->id;
-					$answer = 7;
-				} else {
-					echo $OUTPUT->box("<b>".get_string('course_duplication_question','local_lsf_unification')."</b><br><a href='".$CFG->wwwroot."/local/lsf_unification/duplicate_course.php?courseid=".($answer["course"]->id)."'>[".get_string('yes','local_lsf_unification')."]</a><br><a href='".$CFG->wwwroot."/local/lsf_unification/request.php?answer=7&courseid=".($answer["course"]->id)."'>[".get_string('no','local_lsf_unification')."]</a>");
-				}
-			} else {
-				$editform->display();
-			}
-		}
-	}
-	if ($answer == 7) {
-		echo $OUTPUT->box("<b>".get_string('next_steps','local_lsf_unification').":</b><br><a href='".$CFG->wwwroot."/enrol/users.php?id=".($courseid)."'>".get_string('linktext_users','local_lsf_unification')."</a><br><a href='".$CFG->wwwroot."/course/view.php?id=".($courseid)."'>".get_string('linktext_course','local_lsf_unification')."</a><br>&nbsp;<br><a href='request.php'>".get_string('new_request','local_lsf_unification')."</a>");
-	}
-	close_secondary_DB_connection();
+    if (empty($answer)) {
+        print_first_overview(); // Task Selection
+    } elseif ($answer == 1) {
+        if (empty($veranstid)) {
+            print_courseselection(); // Extern Course Selection
+        } else {
+            if (has_course_import_rights($veranstid, $USER)) { // Validate veranstid, user
+                print_coursecreation(); // Request neccessary details and create course
+            }
+        }
+    } elseif ($answer == 2) {
+        print_helptext('course_not_created_yet');
+    } elseif ($answer == 3) {
+        print_helptext('course_already_created1', $USER->username);
+    } elseif ($answer == 6) {
+        print_helptext('goto_old_requestform');
+    } elseif ($answer == 7) {
+        print_final(); // Goto Course
+    } elseif ($answer == 11) {
+        print_remote_creation(); // Remote Course Creation Starter
+    } elseif ($answer == 12) {
+        if (!is_course_of_teacher($veranstid, $USER->username)) { // Validate veranstid, user
+            die("Course request not existing, already handled or none of your business"); // The user isn't a teacher of this course, so he shouldn't get here
+        }
+        print_request_handler(); // Remote Course Creation Request Handler
+    }
+    close_secondary_DB_connection();
 } else {
-	echo get_string('db_not_available','local_lsf_unification');
+    echo get_string('db_not_available','local_lsf_unification');
 }
 echo $OUTPUT->footer();
