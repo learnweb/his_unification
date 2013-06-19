@@ -5,6 +5,10 @@
 defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot . '/local/lsf_unification/class_pg_lite.php');
 
+define("HIS_PERSONAL",         "public.learnweb_personal");
+define("HIS_VERANSTALTUNG",    "public.learnweb_veranstaltung");
+define("HIS_PERSONAL_VERANST", "public.learnweb_personal_veranst");
+define("HIS_UEBERSCHRIFT",     "public.learnweb_ueberschrift");
 /**
  * establish_secondary_DB_connection is a required function for the lsf_unification plugin
 */
@@ -34,7 +38,7 @@ function close_secondary_DB_connection() {
 function get_teachers_pid($username, $checkhis=false) {
     global $pgDB;
     $emailcheck = $checkhis?(" OR (login = '".$username."')"):"";
-    $q = pg_query($pgDB->connection, "SELECT pid FROM public.learnweb_personal WHERE (zivk = '".$username."')".$emailcheck);
+    $q = pg_query($pgDB->connection, "SELECT pid FROM ". HIS_PERSONAL ." WHERE (zivk = '".$username."')".$emailcheck);
     if ($hislsf_teacher = pg_fetch_object($q)) {
         return $hislsf_teacher->pid;
     }
@@ -50,7 +54,7 @@ function get_courses_by_veranstids($veranstids) {
 
     $q = pg_query($pgDB->connection,
         "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst
-        FROM public.learnweb_veranstaltung as veranst where veranstid in (".$veranstids_string.") AND ".
+        FROM ". HIS_VERANSTALTUNG ." as veranst where veranstid in (".$veranstids_string.") AND ".
         "(CURRENT_DATE - CAST(veranst.zeitstempel AS date)) < ".get_config('local_lsf_unification', 'max_import_age'). "order by semester,titel;");
     $result_list = array();
     while ($course = pg_fetch_object($q)) {
@@ -75,7 +79,7 @@ function get_course_by_veranstid($veranstid) {
 function get_veranstids_by_teacher($pid) {
     global $pgDB;
     $q = pg_query($pgDB->connection,
-        "SELECT veranstid FROM public.learnweb_personal_veranst WHERE pid = $pid and veranstid is not null group by veranstid order by veranstid;");
+        "SELECT veranstid FROM ". HIS_PERSONAL_VERANST ." WHERE pid = $pid and veranstid is not null group by veranstid order by veranstid;");
     $return = array();
     while ($veranstid = pg_fetch_object($q)) {
         array_push($return, $veranstid->veranstid);
@@ -138,9 +142,9 @@ function find_origin_category($quellid) {
     $origin = $quellid;
     do {
         $quellid = $origin;
-        $q = pg_query($pgDB->connection, "SELECT quellid FROM public.learnweb_ueberschrift WHERE ueid = '".$quellid."'");
+        $q = pg_query($pgDB->connection, "SELECT quellid FROM ". HIS_UEBERSCHRIFT ." WHERE ueid = '".$quellid."'");
         if ($hislsf_title = pg_fetch_object($q)) {
-            $q2 = pg_query($pgDB->connection, "SELECT quellid FROM public.learnweb_ueberschrift WHERE ueid = '".($hislsf_title->quellid)."'");
+            $q2 = pg_query($pgDB->connection, "SELECT quellid FROM ". HIS_UEBERSCHRIFT ." WHERE ueid = '".($hislsf_title->quellid)."'");
             if ($hislsf_title2 = pg_fetch_object($q2)) {
                 $origin = $hislsf_title->quellid;
             }
@@ -152,8 +156,8 @@ function find_origin_category($quellid) {
 function get_teachers_of_course($veranstid) {
     global $pgDB;
     $q2 = pg_query($pgDB->connection,
-        "SELECT personal.vorname, personal.nachname, personal.zivk, personal.login FROM public.learnweb_personal_veranst as veranst".
-        " LEFT JOIN public.learnweb_personal as personal on (personal.pid = veranst.pid)".
+        "SELECT personal.vorname, personal.nachname, personal.zivk, personal.login FROM ". HIS_PERSONAL_VERANST ." as veranst".
+        " LEFT JOIN ". HIS_PERSONAL ." as personal on (personal.pid = veranst.pid)".
         " WHERE veranst.veranstid = ".$veranstid.
         " ORDER BY veranst.sort ASC");
     $result = array();
@@ -372,7 +376,7 @@ function get_courses_categories($veranstid, $update_helptables_if_necessary=true
     $helpfuntion3 = function($array_el) {
         return $array_el->mdlid;
     };
-    $q = pg_query($pgDB->connection, "SELECT ueid FROM public.learnweb_ueberschrift WHERE veranstid=".$veranstid."");
+    $q = pg_query($pgDB->connection, "SELECT ueid FROM ". HIS_UEBERSCHRIFT ." WHERE veranstid=".$veranstid."");
     $choices = array();
     while ($hislsf_title = pg_fetch_object($q)) $ueids = (empty($ueids)?"":($ueids.", ")).("".$hislsf_title->ueid."");
     $other_ueids_sql = "SELECT parent FROM ".$CFG->prefix."local_lsf_categoryparenthood WHERE child in (".$ueids.")";
@@ -417,7 +421,7 @@ function insert_missing_helptable_entries($debugoutput=false) {
     foreach ($records1 as $record1) $records1_unique[$record1->ueid]=true;
     foreach ($records2 as $record2) $records2_unique[$record2->child][$record2->parent]=true;
 
-    $q_main = pg_query($pgDB->connection, "SELECT ueid, uebergeord, uebergeord, quellid, txt, zeitstempel FROM public.learnweb_ueberschrift");
+    $q_main = pg_query($pgDB->connection, "SELECT ueid, uebergeord, uebergeord, quellid, txt, zeitstempel FROM ". HIS_UEBERSCHRIFT ." ");
     while ($hislsf_title = pg_fetch_object($q_main)) {
         if (!isset($records1_unique[$hislsf_title->ueid])) {
             // create match-table-entry if not existing
@@ -457,7 +461,7 @@ function insert_missing_helptable_entries($debugoutput=false) {
             do {
                 $ueid = $parent;
                 $distance++;
-                $q2 = pg_query($pgDB->connection, "SELECT ueid, uebergeord, txt FROM public.learnweb_ueberschrift WHERE ueid = '".$ueid."'");
+                $q2 = pg_query($pgDB->connection, "SELECT ueid, uebergeord, txt FROM ". HIS_UEBERSCHRIFT ." WHERE ueid = '".$ueid."'");
                 if (($hislsf_title2 = pg_fetch_object($q2)) && ($hislsf_title2->uebergeord != $ueid)) {
                     $parent = $hislsf_title2->uebergeord;
                     $fullname = ($hislsf_title2->txt).(empty($fullname)?"":("/".$fullname));
