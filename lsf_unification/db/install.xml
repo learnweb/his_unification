@@ -37,9 +37,8 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="veranstid"/>
         <FIELD NAME="veranstid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="mdlid"/>
         <FIELD NAME="mdlid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="coresponding moodle id" PREVIOUS="veranstid" NEXT="timestamp"/>
-        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="last import of course" PREVIOUS="mdlid" NEXT="ueid"/>
-        <FIELD NAME="ueid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="user-id upon request" PREVIOUS="timestamp" NEXT="requeststate"/>
-        <FIELD NAME="requeststate" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0=declined or not requested,1=requested,2=granted" PREVIOUS="ueid" NEXT="requesterid"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="last import of course" PREVIOUS="mdlid" NEXT="requeststate"/>
+        <FIELD NAME="requeststate" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0=declined or not requested,1=requested,2=granted" PREVIOUS="timestamp" NEXT="requesterid"/>
         <FIELD NAME="requesterid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="requeststate" NEXT="acceptorid"/>
         <FIELD NAME="acceptorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="requesterid"/>
       </FIELDS>
