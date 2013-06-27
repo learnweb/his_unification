@@ -65,6 +65,9 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
 
     // create course in helptable
     set_course_created($veranstid, $course->id);
+    
+    // create deeplink
+    $warnings .= setHisLink($veranstid,$course->id)? "" : ( (empty($warnings) ? "" : "\n")."Deeplink-Error");
 
     $transaction->allow_commit();
     return array("course"=>$course,"warnings"=>$warnings);

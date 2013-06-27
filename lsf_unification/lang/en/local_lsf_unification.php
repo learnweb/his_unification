@@ -145,6 +145,9 @@ $string['continue'] = 'Continue';
 
 $string['duplication_timeframe_error'] = 'Sorry but for safety reasons it is not allowed import course data from templates or backups more than {$a} hour(s) after course creation';
 
+$string['add_features'] = 'Additional Features';
+$string['add_features_information'] = 'configure additional features here';
+
 $string['remote_creation'] = 'Remote Course Creation';
 $string['remote_creation_description'] = 'Allow everyone to request courses in the name of a teacher, who than has to confirm';
 $string['restore_old_courses'] = 'Duplicating Courses';
@@ -153,3 +156,16 @@ $string['restore_templates'] = 'Course from Template';
 $string['restore_templates_description'] = 'Allow a course creator to add standard course contents by restoring from a course backup functioning as template';
 $string['duplication_timeframe'] = 'Course Duplication Timeframe';
 $string['duplication_timeframe_description'] = 'The number of hours after course creation where restore-actions are allowed';
+
+$string['his_deeplink_heading'] = 'HIS Deeplink Web Service settings';
+$string['his_deeplink_information'] = 'HIS Deeplink Web Service calls a HIS web service that adds a link to the his course pointing to the moodle course';
+$string['soappass_description'] = 'Password for the HIS Deeplink service';
+$string['soappass'] = 'Password';
+$string['soapuser_description'] = 'Username for the HIS Deeplink service';
+$string['soapuser'] = 'soapuser';
+$string['soapwsdl_description'] = 'Wdsl link for the HIS Deeplink service';
+$string['soapwsdl'] = 'soapwsdl';
+$string['his_deeplink_via_soap_description'] = 'Enable the HIS Deeplink web service';
+$string['his_deeplink_via_soap'] = 'Enable HIS Deeplink';
+$string['moodle_url'] = 'Moodle www root';
+$string['moodle_url_description'] = 'URL to Moodle www root, which is used to create the link for the his course';

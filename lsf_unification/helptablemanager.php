@@ -8,13 +8,13 @@ require_login();
 admin_externalpage_setup('local_lsf_unification_helptable');
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading('HISLSF Webservice Logs');
+echo $OUTPUT->heading('HISLSF Helptable Management');
 
-$originid         = optional_param('originid', -1, PARAM_INT);       // course id
-$mainid        	  = optional_param('mainid', -1, PARAM_INT);       // course id
-$mdlid         	  = optional_param('mdlid', -1, PARAM_INT);       // course id
-$maxorigin        = optional_param('maxorigin', 0, PARAM_INT);       // course id
-$delete           = optional_param('delete', 0, PARAM_INT);       // course id
+$originid         = optional_param('originid', -1, PARAM_INT);       // his category origin id
+$mainid        	  = optional_param('mainid', -1, PARAM_INT);         // his catecory id
+$mdlid         	  = optional_param('mdlid', -1, PARAM_INT);          // moodle category id
+$maxorigin        = optional_param('maxorigin', 0, PARAM_INT);       // max (his origin ids)
+$delete           = optional_param('delete', 0, PARAM_INT);          // category id where to remove a matching
 
 if ($originid == -1) {
 	echo "<p>".$OUTPUT->box('<a href="./update_helptable.php">'.get_string('update_helptable','local_lsf_unification').'</a>')."</p>";

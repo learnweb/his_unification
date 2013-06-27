@@ -30,6 +30,38 @@ function close_secondary_DB_connection() {
     $pgDB->dispose();
 }
 
+function setupHisSoap() {
+	global $CFG, $hislsf_soapclient;
+	if (!get_config('local_lsf_unification', 'his_deeplink_via_soap')) return true;
+	if (empty($hislsf_soapclient)) {
+		try {
+			$hislsf_soapclient = new SoapClient(get_config('local_lsf_unification', 'soapwsdl'));
+			$result = $hislsf_soapclient->auth(get_config('local_lsf_unification', 'soapuser'), get_config('local_lsf_unification', 'soappass'));
+			$his_moodle_url = get_config('local_lsf_unification', 'moodle_url');
+            $result = $result && $hislsf_soapclient->configureMoodleWKZ($his_moodle_url."/course/view.php?id=MOODLEID");
+			return $result;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+	return true;
+}
+
+function setHisLink($veranstid, $mdlid) {
+	global $hislsf_soapclient;
+	if (!setupHisSoap()) return false;
+	$hislsf_soapclient->removeMoodleLink($veranstid); // to override the old value (if a link already is etablished) you have to remove the existing Link first
+	$hislsf_soapclient->setMoodleLink($veranstid, $mdlid);
+	return true;
+}
+
+function removeHisLink($veranstid) {
+	global $hislsf_soapclient;
+	if (!setupHisSoap()) return false;
+	$hislsf_soapclient->removeMoodleLink($veranstid);
+	return true;
+}
+
 /**
  * get_teachers_pid returns the pid (personen-id) connected to a specific username
  * @param $username the teachers username

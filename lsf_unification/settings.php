@@ -8,6 +8,9 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
 
     $settings2 = new admin_externalpage('local_lsf_unification_helptable', 'LSF Unification Matchings', $CFG->wwwroot.'/local/lsf_unification/helptablemanager.php');
     $ADMIN->add('localplugins', $settings2);
+    
+    $settings3 = new admin_externalpage('local_lsf_unification_deeplink_remove', 'LSF Deeplink Removal', $CFG->wwwroot.'/local/lsf_unification/deeplink_remove.php');
+    $ADMIN->add('localplugins', $settings3);
 
     /*
      $settings->add(new admin_setting_configcheckbox('local_lsf_unification/send_errors',
@@ -51,6 +54,7 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
         get_string('defaultcategory', 'local_lsf_unification'), get_string('defaultcategory_description', 'local_lsf_unification'),
         1, $displaylist));
 
+     $settings->add(new admin_setting_heading('heading_add_features', get_string('add_features', 'local_lsf_unification'), get_string('add_features_information', 'local_lsf_unification')));
     $settings->add(new admin_setting_configcheckbox('local_lsf_unification/remote_creation',
         get_string('remote_creation', 'local_lsf_unification'), get_string('remote_creation_description', 'local_lsf_unification'), 1));
     $settings->add(new admin_setting_configcheckbox('local_lsf_unification/restore_old_courses',
@@ -60,6 +64,23 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     $settings->add(new admin_setting_configtext('local_lsf_unification/duplication_timeframe',
         get_string('duplication_timeframe', 'local_lsf_unification'), get_string('duplication_timeframe_description', 'local_lsf_unification'),
         5, PARAM_INT));
+
+    $settings->add(new admin_setting_heading('heading_his_deeplink_via_soap', get_string('his_deeplink_heading', 'local_lsf_unification'), get_string('his_deeplink_information', 'local_lsf_unification')));
+    $settings->add(new admin_setting_configcheckbox('local_lsf_unification/his_deeplink_via_soap',
+    		get_string('his_deeplink_via_soap', 'local_lsf_unification'), get_string('his_deeplink_via_soap_description', 'local_lsf_unification'), false));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/soapwsdl',
+    		get_string('soapwsdl', 'local_lsf_unification'), get_string('soapwsdl_description', 'local_lsf_unification'),
+    		'', PARAM_RAW));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/soapuser',
+    		get_string('soapuser', 'local_lsf_unification'), get_string('soapuser_description', 'local_lsf_unification'),
+    		'', PARAM_RAW));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/soappass',
+    		get_string('soappass', 'local_lsf_unification'), get_string('soappass_description', 'local_lsf_unification'),
+    		'', PARAM_RAW));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/moodle_url',
+    		get_string('moodle_url', 'local_lsf_unification'), get_string('moodle_url_description', 'local_lsf_unification'),
+    		$CFG->wwwroot, PARAM_RAW));
+
     /*
      $settings->add(new admin_setting_configselect('local_lsf_unification/enter_groupmode',
          get_string('enter_groupmode', 'local_lsf_unification'), get_string('enter_groupmode_description', 'local_lsf_unification'),
