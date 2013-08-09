@@ -67,7 +67,8 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
     set_course_created($veranstid, $course->id);
     
     // create deeplink
-    $warnings .= setHisLink($veranstid,$course->id)? "" : ( (empty($warnings) ? "" : "\n")."Deeplink-Error");
+    if (get_config('local_lsf_unification', 'his_deeplink_via_soap'))
+        $warnings .= setHisLink($veranstid,$course->id)? "" : ( (empty($warnings) ? "" : "\n")."Deeplink-Error");
 
     $transaction->allow_commit();
     return array("course"=>$course,"warnings"=>$warnings);
@@ -174,7 +175,9 @@ function get_template_files() {
     //disable restore feature temporarily
     $backuppath = get_config('backup','backup_auto_destination').'/templates';
     $result = array();
+    $files = array();
     if (!($handle = opendir($backuppath))) return $result;
+    //read files
     while (false !== ($entry = readdir($handle))) {
         $matches = array();
         if (preg_match('/^template(\d{1,})\.mbz$/mi',$entry,$matches)) {
@@ -186,10 +189,15 @@ function get_template_files() {
             if (file_exists($txt_file)) {
                 $file->info = file_get_contents($txt_file);
             }
-            $result[md5($entry."_".$USER->id)] = $file;
+            $files[$entry] = $file;
         }
     }
     closedir($handle);
+    //sort files and prepare output
+    ksort($files);
+    foreach ($files as $file) {
+        $result[md5($file->name."_".$USER->id)] = $file;
+    }
     return $result;
 }
 

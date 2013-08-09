@@ -47,9 +47,7 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     $settings->add(new admin_setting_configcheckbox('local_lsf_unification/subcategories',
         get_string('subcategories', 'local_lsf_unification'), get_string('subcategories_description', 'local_lsf_unification'),
         0));
-    $displaylist = array();
-    $parentlist = array();
-    make_categories_list($displaylist, $parentlist, 'moodle/course:create');
+    $displaylist = coursecat::make_categories_list();
     $settings->add(new admin_setting_configselect('local_lsf_unification/defaultcategory',
         get_string('defaultcategory', 'local_lsf_unification'), get_string('defaultcategory_description', 'local_lsf_unification'),
         1, $displaylist));

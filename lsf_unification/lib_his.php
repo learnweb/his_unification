@@ -32,7 +32,7 @@ function close_secondary_DB_connection() {
 
 function setupHisSoap() {
 	global $CFG, $hislsf_soapclient;
-	if (!get_config('local_lsf_unification', 'his_deeplink_via_soap')) return true;
+	if (!get_config('local_lsf_unification', 'his_deeplink_via_soap')) return false;
 	if (empty($hislsf_soapclient)) {
 		try {
 			$hislsf_soapclient = new SoapClient(get_config('local_lsf_unification', 'soapwsdl'));

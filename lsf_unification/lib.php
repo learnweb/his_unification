@@ -102,7 +102,7 @@ function enable_manual_enrolment($id)
 	$plugin = enrol_get_plugin('manual');
 	$fields = array('status'=>ENROL_INSTANCE_ENABLED, 'enrolperiod'=>null, 'roleid'=>get_config('local_lsf_webservices', 'role_student'));
 	$plugin->add_instance($course, $fields);
-	$plugin->sync($course->id);
+	//$plugin->sync($course->id);
 }
 
 /**

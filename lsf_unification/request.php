@@ -109,7 +109,11 @@ function print_res_selection() {
         if (get_config('local_lsf_unification', 'restore_templates') && !empty($templatefiles)) {
             echo "<b>".get_string('pre_template','local_lsf_unification')."</b><ul>";
             foreach ($templatefiles as $id => $fileinfo) {
-                echo "<li><a href='duplicate_course.php?courseid=".$courseid."&filetype=t&fileid=".$id."'>".$fileinfo->info."</a></li>";
+                $lines = explode("\n", trim($fileinfo->info, " \t\r\n"),  2 );
+                echo "<li><a href='duplicate_course.php?courseid=".$courseid."&filetype=t&fileid=".$id."'>".utf8_encode($lines[0])."</a>";
+                if(count($lines) == 2)
+                    echo "<br/>".utf8_encode($lines[1]);
+                echo "</li>";
             }
             echo "</ul>";
         }
