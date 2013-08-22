@@ -19,10 +19,10 @@
  *
  * @package    local
  * @subpackage lsf_unification
- * @copyright  2011 Westfaelische Wilhelms-Universitaet Muenster - Deutschland
+ * @copyright  2011 Olaf Koehler WWU
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2013080800;
+$plugin->version  = 2013062700;
 $plugin->component = 'local_lsf_unification'; 

@@ -43,7 +43,7 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
         // get rights
         $creatorroleid = $DB->get_record('role', array('shortname' => 'lsfunificationcourseimporter'))->id;
         $context = context_course::instance($courseid, MUST_EXIST);
-        if (!enrol_try_internal_enrol($course->id, $USER->id, $creatorroleid, time() - 1, time() + 60 * 60 * get_config('local_lsf_unification', 'duplication_timeframe'))){
+        if (!enrol_try_internal_enrol($course->id, $USER->id, $creatorroleid)){
             die("error ##");
         }
         // do backup

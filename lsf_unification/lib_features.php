@@ -50,7 +50,8 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
     enable_manual_enrolment($course->id);
 
     // enrole creator
-    enrol_try_internal_enrol($course->id, $USER->id, get_config('local_lsf_unification', 'roleid_teacher'), time() - 1, time() + 60 * 60 * get_config('local_lsf_unification', 'duplication_timeframe'));
+    enrol_try_internal_enrol($course->id, $USER->id, get_config('local_lsf_unification', 'roleid_teacher'));
+    //enrol_try_internal_enrol($course->id, $USER->id, get_config('local_lsf_unification', 'roleid_teacher'), time() - 1, time() + 60 * 60 * get_config('local_lsf_unification', 'duplication_timeframe'));
 
     // enrole teachers
     $warnings .= enrole_teachers($veranstid, $course->id);
