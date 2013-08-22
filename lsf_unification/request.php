@@ -97,10 +97,14 @@ function print_final() {
 
 function print_res_selection() {
     global $CFG, $OUTPUT, $courseid;
-	$acceptorid = get_course_acceptor($courseid);
-    $backupfiles = get_backup_files($acceptorid);
-    $templatefiles = get_template_files();
-    if ((!get_config('local_lsf_unification', 'restore_old_courses') && !get_config('local_lsf_unification', 'restore_templates')) || (empty($backupfiles) && empty($templatefiles))) {
+    $acceptorid = get_course_acceptor($courseid);
+    if (get_config('local_lsf_unification', 'restore_old_courses')) {
+        $backupfiles = get_backup_files($acceptorid);
+    }
+    if (get_config('local_lsf_unification', 'restore_templates')) {
+        $templatefiles = get_template_files();
+    }
+    if (empty($backupfiles) && empty($templatefiles)) {
         print_final();
     } else {
         // "Continue with a blank course"
