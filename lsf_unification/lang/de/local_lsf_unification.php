@@ -144,8 +144,8 @@ $string['remote_request_accept'] = 'Akzeptiere die Anfrage von "{$a->a}" den Kur
 $string['remote_request_decline'] = 'Verweigere die Anfrage von "{$a->a}"';
 
 $string['no_template'] = 'Alternative 1: Fortfahren mit einem leeren Kurs';
-$string['pre_template'] = 'Alternative 2: Fortfahren mit einer vorstrukturierten Kursvorlage ...';
-$string['template_from_course'] = 'Alternative 3: Fortfahren mit der Übertragung von Inhalten aus einem Ihrer bereits bestehenden Online-Kurse ...';
+$string['pre_template'] = 'Alternative 2: Fortfahren mit den Inhalten eines Musterkurses ...';
+$string['template_from_course'] = 'Alternative 3: Fortfahren mit den Inhalten eines existierenden Kurses ...';
 $string['continue'] = 'Fortfahren';
 
 $string['duplication_timeframe_error'] = 'Aus Sicherheitsgr&uuml;nden ist es nicht erlaubt Kursdaten aus Musterkursen oder Kursbackups wiederherzustellen, falls die Kurserstellung mehr als {$a} Stunden zur&uuml;ckliegt.';
