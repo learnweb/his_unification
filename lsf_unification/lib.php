@@ -140,6 +140,21 @@ function enable_self_enrolment($course,$password) {
 	$DB->update_record('enrol', $instance);
 }
 
+function create_guest_enrolment($course,$password = "", $enable = FALSE) {
+    global $DB;
+    
+    $plugin = enrol_get_plugin("guest");
+    $instanceid = $plugin -> add_default_instance($course);
+    $instance = $DB->get_record('enrol', array('courseid'=>$course->id, 'enrol'=>'guest', 'id'=>$instanceid), '*', MUST_EXIST);
+    $instance -> status = ( $enable ? ENROL_INSTANCE_ENABLED : ENROL_INSTANCE_DISABLED);
+    if (! empty($password)) {
+        $instance -> password = $password;
+    }
+    $DB->update_record('enrol', $instance);
+
+}
+
+
 /**
  * self_enrolment_status returns the password for a course if possible, otherwise ""
  *

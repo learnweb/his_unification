@@ -56,6 +56,9 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
     // enrole teachers
     $warnings .= enrole_teachers($veranstid, $course->id);
 
+    // create guest-enrolment
+    create_guest_enrolment($course, $enable = FALSE);
+    
     // enable self-enrolment
     enable_self_enrolment($course, $password);
 
