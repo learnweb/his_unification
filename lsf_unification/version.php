@@ -24,5 +24,5 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2013062700;
+$plugin->version  = 2013090300;
 $plugin->component = 'local_lsf_unification'; 

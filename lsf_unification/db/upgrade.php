@@ -105,6 +105,14 @@ function xmldb_local_lsf_unification_upgrade($oldversion) {
     	// lsf_unification savepoint reached
     	upgrade_plugin_savepoint(true, 2013061100, 'local', 'lsf_unification');
     }
+    if ($oldversion < 2013090300) {
+        if(get_config('enrol_self','version') > 2012120600) {
+            //lsf courses did not set customerint6 for self enrolments. This is the fix for already created self enrolments
+            $DB->execute("UPDATE {enrol} SET customint6 = 1 WHERE enrol = 'self' and customint6 is null");
+        }
+        // lsf_unification savepoint reached
+        upgrade_plugin_savepoint(true, 2013090300, 'local', 'lsf_unification');
+    }
     
 
     return true;

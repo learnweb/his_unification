@@ -47,7 +47,7 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
     $DB->insert_record('course_sections', $section);
 
     // enable enrollment
-    enable_manual_enrolment($course->id);
+    enable_manual_enrolment($course);
 
     // enrole creator
     enrol_try_internal_enrol($course->id, $USER->id, get_config('local_lsf_unification', 'roleid_teacher'));
@@ -57,7 +57,7 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
     $warnings .= enrole_teachers($veranstid, $course->id);
 
     // enable self-enrolment
-    update_self_enrolment($course, $password);
+    enable_self_enrolment($course, $password);
 
     // enrole students
     if ($update_duration > 0) {

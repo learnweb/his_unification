@@ -82,6 +82,7 @@ function is_course_imported_by($mdlid, $user) {
 
 function get_course_acceptor($mdlid) {
 	global $DB;
+	
 	if ($courseentry = $DB->get_record("local_lsf_course", array("mdlid" => $mdlid, "requeststate" => 2))) {
 		return $courseentry->acceptorid;
 	}
@@ -95,14 +96,14 @@ function get_course_acceptor($mdlid) {
  * @param $id
  * @return null
  */
-function enable_manual_enrolment($id)
-{
+function enable_manual_enrolment($course) {
 	global $DB;
-	$course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
+	
 	$plugin = enrol_get_plugin('manual');
-	$fields = array('status'=>ENROL_INSTANCE_ENABLED, 'enrolperiod'=>null, 'roleid'=>get_config('local_lsf_webservices', 'role_student'));
-	$plugin->add_instance($course, $fields);
-	//$plugin->sync($course->id);
+	$instanceid = $plugin -> add_default_instance($course);
+	$instance = $DB->get_record('enrol', array('courseid'=>$course->id, 'enrol'=>'manual', 'id'=>$instanceid), '*', MUST_EXIST);
+	$instance -> roleid = get_config('local_lsf_unification', 'roleid_student');
+	$DB->update_record('enrol', $instance);
 }
 
 /**
@@ -111,9 +112,9 @@ function enable_manual_enrolment($id)
  * @param $id
  * @return null
  */
-function enable_lsf_enrolment($id, $enrolment_start, $enrolment_end)
-{
+function enable_lsf_enrolment($id, $enrolment_start, $enrolment_end) {
 	global $DB;
+	
 	$course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
 	$plugin = enrol_get_plugin('lsf');
 	$fields = array('status'=>ENROL_INSTANCE_ENABLED, 'enrolperiod'=>null, 'roleid'=>get_config('local_lsf_webservices', 'role_student'), 'customint1' => $enrolment_start, 'customint2' => $enrolment_end);
@@ -127,15 +128,16 @@ function enable_lsf_enrolment($id, $enrolment_start, $enrolment_end)
  * @param $password
  * @return null
  */
-function update_self_enrolment($course,$password,$delete_old_self_enrolment_plugins=false) {
+function enable_self_enrolment($course,$password) {
 	global $DB;
-	if ($delete_old_self_enrolment_plugins) $DB->delete_records('enrol', array("courseid"=>$course->id,"enrol"=>'self'));
-	//if ($password == "") return;
+	
 	$plugin = enrol_get_plugin('self');
-	$fields = array('status'=>ENROL_INSTANCE_ENABLED, 'name'=>"", 'password'=>$password, 'customint1'=>$plugin->get_config('groupkey'), 'customint2'=>$plugin->get_config('longtimenosee'),
-			'customint3'=>$plugin->get_config('maxenrolled'), 'customint4'=>$plugin->get_config('sendcoursewelcomemessage'), 'customtext1'=>"",
-			'roleid'=>$plugin->get_config('roleid'), 'enrolperiod'=>$plugin->get_config('enrolperiod'), 'enrolstartdate'=>0, 'enrolenddate'=>0);
-	$plugin->add_instance($course, $fields);
+	$instanceid = $plugin -> add_default_instance($course);
+	$instance = $DB->get_record('enrol', array('courseid'=>$course->id, 'enrol'=>'self', 'id'=>$instanceid), '*', MUST_EXIST);
+	$instance -> password = $password;
+	$instance -> roleid = get_config('local_lsf_unification', 'roleid_student');
+	$instance -> expirythreshold = 0;
+	$DB->update_record('enrol', $instance);
 }
 
 /**
@@ -171,7 +173,7 @@ function get_default_course($fullname, $idnumber, $summary, $shortname)
 	$course->summary = $summary;
 	$course->shortname = $shortname;
 	$course->startdate = time();
-	$course->category = get_config('local_lsf_webservices', 'default_category');
+	$course->category = get_config('local_lsf_unification', 'default_category');
 	$course->expirythreshold = '864000';
 	$course->timecreated = time();
 	$course->format = get_config('moodlecourse', 'format');
@@ -183,8 +185,8 @@ function get_default_course($fullname, $idnumber, $summary, $shortname)
 	$course->showreports = get_config('moodlecourse', 'showreports');
 	$course->maxbytes = get_config('moodlecourse', 'maxbytes');
 	$course->coursedisplay = get_config('moodlecourse', 'coursedisplay');
-	$course->groupmode = get_config('local_lsf_webservices', 'enter_groupmode');
-	$course->groupmodeforce = get_config('local_lsf_webservices', 'enter_groupmodeforce');
+	$course->groupmode = get_config('moodlecourse', 'enter_groupmode');
+	$course->groupmodeforce = get_config('moodlecourse', 'enter_groupmodeforce');
 	$course->visible = get_config('moodlecourse', 'visible');
 	$course->lang = get_config('moodlecourse', 'lang');
 	$course->enablecompletion = get_config('moodlecourse', 'enablecompletion');
