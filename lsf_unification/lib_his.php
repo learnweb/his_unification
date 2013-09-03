@@ -82,8 +82,12 @@ function get_teachers_pid($username, $checkhis=false) {
 
 function get_courses_by_veranstids($veranstids) {
     global $pgDB;
+    
+    //if veranstids is empty, no need to make a db request. return empty list
+    if(empty($veranstids))
+        return array();
+        
     $veranstids_string = implode(',',$veranstids);
-
     $q = pg_query($pgDB->connection,
         "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst
         FROM ". HIS_VERANSTALTUNG ." as veranst where veranstid in (".$veranstids_string.") AND ".
