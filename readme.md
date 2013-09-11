@@ -29,6 +29,9 @@ Ein Beispiel für die Kursvorlage-Dateien ist in course_templates.zip zu finden.
 Bei entsprechender Einstellung des Plugins können Dozenten die Inhalte aus alten Kursen in den neuen Kurs wiederherstellen.
 Hierzu müssen die Kurssicherungen in dem entsprechenden Pfad für Kurssicherungen hinterlegt sein.
 
+##HIS Deeplink Web Service
+Die Universität Dortmund hat eine Erweiterung für HIS-LSF geschrieben, die es ermöglicht, einer LSF-Veranstaltung einen Link zum Moodle-Kurs hinzuzufügen. Nachdem ein Kurs im Moodle über dieses Moodle-Plugin erstellt wurde, wird der 'HIS Deeplink Web Service' aufgerufen. So wird dem LSF mitgeteilt, dass nun ein Moodle-Kurs zu der LSF-Veranstaltung existiert. Die Veranstaltungsbeschreibung im LSF wird somit um einen Link zu der Moodle-Veranstaltung ergänzt.
+
 ##Notwendige Tabellen/Sichten auf Tabellen
 
 ###Sicht der Dozenten
