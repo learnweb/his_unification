@@ -70,11 +70,11 @@ $string['subcategories_description'] = 'Enable choosing not mapped subcategories
 $string['notice'] = 'Usually Learnweb copies course information from the HIS database and provides these information below. This requires that you are assigned to the course in HIS-LSF as a teacher or assistant. Furthermore your ZIV account has to be assigned to your HIS-LSF profile. If your course is not listed, please choose from the other provided options.';
 $string['question'] = "Please select the first accurate statement:";
 $string['answer_course_found'] = "The following list contains the course I'm looking for:";
-$string['answer_course_already_created1'] = "The course exists on the HIS-LSF platform and you are registered as a teacher for that course.";
+$string['answer_course_in_lsf_and_visible'] = "The course exists on the HIS-LSF platform and you are registered as a teacher for that course.";
 $string['answer_proxy_creation'] = "The course exists on the HIS-LSF platform and you are authorized to create this course on behalf of a registered teacher.";
 $string['answer_goto_old_requestform'] = "None of the above apply and you are authorized to create this course in the Learnweb.";
 
-$string['info_course_already_created1'] = 'There are two potential reasons, why your course is not listed:<ol><li>Your course is published in HIS-LSF less than 24 hours ago. Data is only transferred once a day. If no further problem occurs, course data will be transferred tomorrow and then Learnweb course creation will be possible.</li><li>The username you use right now ({$a}) is not registered on the HIS-LSF. To access the courses you have registered on the HIS-LSF platform you have to include your username in your HIS-LSF-profile. After doing so, please wait at least one day for our database to update.<p style="text-align: center;"><img alt="Datenbearbeiten" src="http://www.uni-muenster.de/LearnWeb/diverse/HIS-Person_bearbeiten.png" /></p></li></ol>';
+$string['info_course_in_lsf_and_visible'] = 'There are two potential reasons, why your course is not listed:<ol><li>Your course is published in HIS-LSF less than 24 hours ago. Data is only transferred once a day. If no further problem occurs, course data will be transferred tomorrow and then Learnweb course creation will be possible.</li><li>The username you use right now ({$a}) is not registered on the HIS-LSF. To access the courses you have registered on the HIS-LSF platform you have to include your username in your HIS-LSF-profile. After doing so, please wait at least one day for our database to update.<p style="text-align: center;"><img alt="Datenbearbeiten" src="http://www.uni-muenster.de/LearnWeb/diverse/HIS-Person_bearbeiten.png" /></p></li></ol>';
 
 $string['info_goto_old_requestform'] = "Please use the standard form to apply for course creation. (<a href='../../course/request.php'>Link</a>)";
 
@@ -122,7 +122,7 @@ $string['email'] = 'SENDER:
 
 $string['choose_teacher'] = 'Please enter the username of the authorizing teacher:';
 $string['his_info'] = 'Please inform your teacher to follow <a href="request.php?answer=3">this guide</a>, for the HIS-LSF courses to be matched to the username.';
-$string['answer_course_already_created2'] = 'The course is not listed above, but exists on the HIS-LSF platform and {$a} is registered as a teacher for that course.';
+$string['answer_course_in_lsf_but_invisible'] = 'The course is not listed above, but exists on the HIS-LSF platform and {$a} is registered as a teacher for that course.';
 $string['already_requested'] = 'Sorry, this course was already requested and the teacher has to reply to this request before a new request can be issued';
 $string['request_sent'] = 'Request sent, please wait for an answer, that you will recieve via email.';
 $string['answer_sent'] = 'Thank you for processing this request, your decision is sent to the requester.';

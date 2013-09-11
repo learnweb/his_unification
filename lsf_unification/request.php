@@ -59,7 +59,7 @@ function print_first_overview() {
     echo "</td></tr>";
     echo ($courselist != "<ul></ul>")?("<tr><td style='vertical-align:top;'><input type='radio' name='answer' id='answer1' value='1'></td><td><label for='answer1'>".get_string('answer_course_found','local_lsf_unification')."".$courselist."</label></td></tr>"):"";
 
-    echo "<tr><td><input type='radio' name='answer' id='answer3' value='3'></td><td><label for='answer3'>".get_string('answer_course_already_created1','local_lsf_unification')."</label></td></tr>";
+    echo "<tr><td><input type='radio' name='answer' id='answer3' value='3'></td><td><label for='answer3'>".get_string('answer_course_in_lsf_and_visible','local_lsf_unification')."</label></td></tr>";
     if (get_config('local_lsf_unification', 'remote_creation')) {
         echo "<tr><td><input type='radio' name='answer' id='answer11' value='11'></td><td><label for='answer11'>".get_string('answer_proxy_creation','local_lsf_unification')."</label></td></tr>";
     }
@@ -143,7 +143,7 @@ function print_remote_creation() {
             echo "<b>".get_string('choose_teacher','local_lsf_unification')."</b><input type='text' name='teachername' size='20' value='".$teachername."'>";
         } else {
             echo "<input type='hidden' name='teachername' value='".$teachername."'>";
-            print_coursetable($teachername, "<tr><td><input type='radio' name='veranstid' id='veranstid_' value='".(-1)."'></td><td><label for='veranstid_'>".get_string('answer_course_already_created2','local_lsf_unification',$teachername)."</label></td></tr>");
+            print_coursetable($teachername, "<tr><td><input type='radio' name='veranstid' id='veranstid_' value='".(-1)."'></td><td><label for='veranstid_'>".get_string('answer_course_in_lsf_but_invisible','local_lsf_unification',$teachername)."</label></td></tr>");
         }
         echo "<input type='submit' value='".get_string('select','local_lsf_unification')."'/></form><br><a href='request.php'>".get_string('back','local_lsf_unification')."</a>";
     } else {
@@ -221,7 +221,7 @@ if (establish_secondary_DB_connection()===true) {
     } elseif ($answer == 2) {
         print_helptext('course_not_created_yet');
     } elseif ($answer == 3) {
-        print_helptext('course_already_created1', $USER->username);
+        print_helptext('course_in_lsf_and_visible', $USER->username);
     } elseif ($answer == 6) {
         print_helptext('goto_old_requestform');
     } elseif ($answer == 7) {
