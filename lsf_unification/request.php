@@ -108,7 +108,7 @@ function print_res_selection() {
         print_final();
     } else {
         // "Continue with a blank course"
-        echo "<b>".get_string('no_template','local_lsf_unification')."</b><ul><li><a href='request.php?courseid=".$courseid."&answer=7'>".get_string('continue','local_lsf_unification')."</a></li></ul>";
+        echo "<b>".get_string('no_template','local_lsf_unification')."</b><ul><li><a href='request.php?courseid=".$courseid."&answer=7'>".get_string('continue_with_empty_course','local_lsf_unification')."</a></li></ul>";
         // "Continue with the course template ..."
         if (get_config('local_lsf_unification', 'restore_templates') && !empty($templatefiles)) {
             echo "<b>".get_string('pre_template','local_lsf_unification')."</b><ul>";

@@ -138,10 +138,11 @@ $string['remote_request_select_alternative'] = 'Please select the action you wan
 $string['remote_request_accept'] = 'Accept request by "{$a->a}" to create the course "{$a->b}"';
 $string['remote_request_decline'] = 'Decline request and send the regarding information to "{$a->a}"';
 
-$string['no_template'] = 'Alternative 1: Continue with a blank course';
-$string['pre_template'] = 'Alternative 2: Continue with a course template ...';
+$string['no_template'] = 'Alternative 1: Leave the course blank course and continue';
+$string['pre_template'] = 'Alternative 2: Continue with content from a course template ...';
 $string['template_from_course'] = 'Alternative 3: Include contents from an existing course ...';
 $string['continue'] = 'Continue';
+$string['continue_with_empty_course'] = 'Leave the course blank and continue';
 
 $string['duplication_timeframe_error'] = 'Sorry but for safety reasons it is not allowed import course data from templates or backups more than {$a} hour(s) after course creation';
 
