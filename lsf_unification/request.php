@@ -92,7 +92,7 @@ function print_coursetable($teacher, $appendix = "") {
 
 function print_final() {
     global $OUTPUT, $CFG, $courseid;
-    echo $OUTPUT->box("<b>".get_string('next_steps','local_lsf_unification').":</b><br><a href='".$CFG->wwwroot."/enrol/users.php?id=".($courseid)."'>".get_string('linktext_users','local_lsf_unification')."</a><br><a href='".$CFG->wwwroot."/course/view.php?id=".($courseid)."'>".get_string('linktext_course','local_lsf_unification')."</a><br>&nbsp;<br><a href='request.php'>".get_string('new_request','local_lsf_unification')."</a>");
+    echo $OUTPUT->box("<b>".get_string('next_steps','local_lsf_unification').":</b><br><a href='".$CFG->wwwroot."/enrol/users.php?id=".($courseid)."'>".get_string('linktext_users','local_lsf_unification')."</a><br><a href='".$CFG->wwwroot."/course/view.php?id=".($courseid)."'>".get_string('linktext_course','local_lsf_unification')."</a><br>&nbsp;");
 }
 
 function print_res_selection() {
