@@ -92,7 +92,8 @@ function print_coursetable($teacher, $appendix = "") {
 
 function print_final() {
     global $OUTPUT, $CFG, $courseid;
-    echo $OUTPUT->box("<b>".get_string('next_steps','local_lsf_unification').":</b><br><a href='".$CFG->wwwroot."/enrol/users.php?id=".($courseid)."'>".get_string('linktext_users','local_lsf_unification')."</a><br><a href='".$CFG->wwwroot."/course/view.php?id=".($courseid)."'>".get_string('linktext_course','local_lsf_unification')."</a><br>&nbsp;");
+    echo $OUTPUT->box("<b>".get_string('next_steps','local_lsf_unification').":</b><br><a href='".$CFG->wwwroot."/enrol/users.php?id=".($courseid)."'>".get_string('linktext_users','local_lsf_unification')."</a><br>
+    <a href='".$CFG->wwwroot."/course/view.php?id=".($courseid)."'>".get_string('linktext_course','local_lsf_unification')."</a><br>&nbsp;");
 }
 
 function print_res_selection() {
@@ -107,11 +108,11 @@ function print_res_selection() {
     if (empty($backupfiles) && empty($templatefiles)) {
         print_final();
     } else {
-        // "Continue with a blank course"
-        echo "<b>".get_string('no_template','local_lsf_unification')."</b><ul><li><a href='request.php?courseid=".$courseid."&answer=7'>".get_string('continue_with_empty_course','local_lsf_unification')."</a></li></ul>";
+        $alternative_counter = 1;
+        
         // "Continue with the course template ..."
         if (get_config('local_lsf_unification', 'restore_templates') && !empty($templatefiles)) {
-            echo "<b>".get_string('pre_template','local_lsf_unification')."</b><ul>";
+            echo "<b>".get_string('pre_template','local_lsf_unification',$alternative_counter++)."</b><ul>";
             foreach ($templatefiles as $id => $fileinfo) {
                 $lines = explode("\n", trim($fileinfo->info, " \t\r\n"),  2 );
                 echo "<li><a href='duplicate_course.php?courseid=".$courseid."&filetype=t&fileid=".$id."'>".utf8_encode($lines[0])."</a>";
@@ -121,9 +122,13 @@ function print_res_selection() {
             }
             echo "</ul>";
         }
+        
+        // "Continue with a blank course"
+        echo "<b>".get_string('no_template','local_lsf_unification',$alternative_counter++)."</b><ul><li><a href='request.php?courseid=".$courseid."&answer=7'>".get_string('continue_with_empty_course','local_lsf_unification')."</a></li></ul>";
+        
         // "Duplicate course from the course ..."
         if (get_config('local_lsf_unification', 'restore_old_courses') && !empty($backupfiles)) {
-            echo "<b>".get_string('template_from_course','local_lsf_unification')."</b><ul>";
+            echo "<b>".get_string('template_from_course','local_lsf_unification',$alternative_counter++)."</b><ul>";
             foreach ($backupfiles as $id => $fileinfo) {
                 echo "<li><a href='duplicate_course.php?courseid=".$courseid."&filetype=b&fileid=".$id."'>".$fileinfo->course->fullname." (".$fileinfo->datetime.")</a></li>";
             }
