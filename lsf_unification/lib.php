@@ -241,6 +241,8 @@ function get_or_create_user($username, $email) {
 		$user['email'] = $email;
 		$user['confirmed'] = false;
 		$user['mnethostid'] = $CFG->mnet_localhost_id;
+        $user['auth'] = 'ldap';
+        $user['lang'] = $CFG->lang;
 		$user['id'] = user_create_user($user);
 		return $DB->get_record('user', array('id'=>$user['id']));
 	}
