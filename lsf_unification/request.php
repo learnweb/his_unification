@@ -6,7 +6,19 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
 
-$PAGE->set_url('/local/lsf_unification/request.php');
+$veranstid = optional_param('veranstid', null, PARAM_INT);
+$questionsanswered = optional_param('questionsanswered', null, PARAM_INT);
+$courseid = optional_param('courseid', 1, PARAM_INT);
+$teachername = optional_param('teachername', "", PARAM_ALPHANUMEXT);
+$accept = optional_param('accept', null, PARAM_INT);
+$answer = optional_param('answer', null, PARAM_INT);
+$requestid = optional_param('requestid', null, PARAM_INT);
+
+if (!empty($answer) && !empty($requestid)) {
+    $PAGE->set_url('/local/lsf_unification/request.php', array("answer" => $answer, "requestid" => $requestid));
+} else {
+    $PAGE->set_url('/local/lsf_unification/request.php');
+}
 
 /// Where we came from. Used in a number of redirects.
 $returnurl = $CFG->wwwroot . '/course/index.php';
@@ -30,14 +42,6 @@ $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 echo $OUTPUT->header();
 
-
-$answer = optional_param('answer', null, PARAM_INT);
-$veranstid = optional_param('veranstid', null, PARAM_INT);
-$questionsanswered = optional_param('questionsanswered', null, PARAM_INT);
-$courseid = optional_param('courseid', 1, PARAM_INT);
-$teachername = optional_param('teachername', "", PARAM_ALPHANUMEXT);
-$requestid = optional_param('requestid', null, PARAM_INT);
-$accept = optional_param('accept', null, PARAM_INT);
 
 if (!empty($requestid)) {
     if (($request = $DB->get_record("local_lsf_course", array("id" => $requestid))) && ($request->requeststate == 1)) {
