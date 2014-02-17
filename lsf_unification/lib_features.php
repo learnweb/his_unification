@@ -37,7 +37,7 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
         throw new moodle_exception('course not created: '.$DB->get_last_error());
     $course = $DB->get_record("course", array("id" => $course->id));
     // create context
-    $context = get_context_instance(CONTEXT_COURSE, $course->id);
+    $context = context_course::instance($course->id);
     // setup default blocks
     blocks_add_default_course_blocks($course);
     $section = new stdClass();

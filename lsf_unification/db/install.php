@@ -18,7 +18,7 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_local_lsf_unification_install_course_creator_role() {
     global $DB;
     $result = true;
-    $sysctx  = get_context_instance(CONTEXT_SYSTEM);
+    $sysctx  = context_system::instance();
     $levels = array(CONTEXT_COURSECAT, CONTEXT_COURSE, CONTEXT_MODULE);
 
     /// Fully setup the restore role.

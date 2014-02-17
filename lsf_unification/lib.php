@@ -44,7 +44,7 @@ function find_or_create_category($title,$parent_title) {
 	$newcategory->description = "";
 	$newcategory->sortorder = 999;
 	$newcategory->id = $DB->insert_record('course_categories', $newcategory);
-	$newcategory->context = get_context_instance(CONTEXT_COURSECAT, $newcategory->id);
+	$newcategory->context = context_coursecat::instance($newcategory->id);
 	$categorycontext = $newcategory->context;
 	mark_context_dirty($newcategory->context->path);
 	$DB->update_record('course_categories', $newcategory);

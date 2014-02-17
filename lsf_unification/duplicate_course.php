@@ -17,7 +17,7 @@ require_login();
 if (isguestuser()) {
     print_error('guestsarenotallowed', '', $returnurl);
 }
-$context = get_context_instance(CONTEXT_SYSTEM);
+$context = context_system::instance();
 $PAGE->set_context($context);
 require_capability('moodle/course:request', $context);
 
