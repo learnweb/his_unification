@@ -287,38 +287,10 @@ function duplicate_course($courseid, $foldername) {
 
 
 function unzip($zipfile, $destination = '', $showstatus_ignored = true) {
-    global $CFG;
-    //Extract everything from zipfile
-    $path_parts = pathinfo(cleardoubleslashes($zipfile));
-    $zippath = $path_parts["dirname"];       //The path of the zip file
-    $zipfilename = $path_parts["basename"];  //The name of the zip file
-    $extension = $path_parts["extension"];    //The extension of the file
-    //If no file, error
-    if (empty($zipfilename))
-        return false;
-    //If no extension, error
-    if (empty($extension))
-        return false;
-    //Clear $zipfile
-    $zipfile = cleardoubleslashes($zipfile);
-    //Check zipfile exists
-    if (!file_exists($zipfile))
-        return false;
-    //If no destination, passed let's go with the same directory
-    if (empty($destination))
-        $destination = $zippath;
-    //Clear $destination
-    $destpath = rtrim(cleardoubleslashes($destination), "/");
-    //Check destination path exists
-    if (!is_dir($destpath))
-        return false;
-    $packer = get_file_packer('application/zip');
-    $result = $packer->extract_to_pathname($zipfile, $destpath);
-    if ($result === false)
-        return false;
-    foreach ($result as $status) {
-        if ($status !== true)
-            return false;
-    }
+    global $CFG, $USER;
+    $fb = get_file_packer('application/vnd.moodle.backup');
+    $result = $fb->extract_to_pathname($zipfile,
+            $destination, null, null);
+    return $result != false;
     return true;
 }
