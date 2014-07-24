@@ -189,18 +189,40 @@ function find_origin_category($quellid) {
     return $origin;
 }
 
+/**
+ * get_teachers_of_course returns the teacher objects of a course sorted by their relevance
+ *
+ * @param $veranstid idnumber/veranstid
+ * @return $sortedresult sorted array of teacher objects
+ */
 function get_teachers_of_course($veranstid) {
     global $pgDB;
-    $q2 = pg_query($pgDB->connection,
-        "SELECT personal.vorname, personal.nachname, personal.zivk, personal.login FROM ". HIS_PERSONAL_VERANST ." as veranst".
-        " LEFT JOIN ". HIS_PERSONAL ." as personal on (personal.pid = veranst.pid)".
-        " WHERE veranst.veranstid = ".$veranstid.
-        " ORDER BY veranst.sort ASC");
-    $result = array();
-    while ($person = pg_fetch_object($q2)) {
-        $result[] = $person;
+    // get sorted (by relevance) pids of teachers
+    $pidstring = "";
+    $pids = array();
+    $q1 = pg_query($pgDB->connection,
+        "SELECT DISTINCT pid, sort FROM ". HIS_PERSONAL_VERANST .
+        " WHERE veranstid = ".$veranstid.
+        " ORDER BY sort ASC");
+    while ($person = pg_fetch_object($q1)) {
+        $pidstring .= (empty($pidstring)?"":",").$person->pid;
+        $pids[] = $person->pid;
     }
-    return $result;
+    if (empty($pids)) return array();
+    // get personal info
+    $result = array();
+    $q2 = pg_query($pgDB->connection,
+        "SELECT vorname, nachname, zivk, login, pid FROM " . HIS_PERSONAL 
+            . " WHERE pid IN (" . $pidstring . ")");
+    while ($person = pg_fetch_object($q2)) {
+        $result[$person->pid] = $person;
+    }
+    // sort by relevance
+    $sortedresult = array();
+    foreach ($pids as $pid) {
+        $sortedresult[] = $result[$pid];
+    }
+    return $sortedresult;
 }
 
 /**
