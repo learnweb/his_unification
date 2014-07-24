@@ -414,19 +414,22 @@ function get_courses_categories($veranstid, $update_helptables_if_necessary=true
     };
     $q = pg_query($pgDB->connection, "SELECT ueid FROM ". HIS_UEBERSCHRIFT ." WHERE veranstid=".$veranstid."");
     $choices = array();
+    $courses = array();
     while ($hislsf_title = pg_fetch_object($q)) $ueids = (empty($ueids)?"":($ueids.", ")).("".$hislsf_title->ueid."");
     $other_ueids_sql = "SELECT parent FROM ".$CFG->prefix."local_lsf_categoryparenthood WHERE child in (".$ueids.")";
     $origins_sql = "SELECT origin FROM ".$CFG->prefix."local_lsf_category WHERE ueid in (".$other_ueids_sql.") OR ueid in (".$ueids.")";
     $origins = implode(", ", array_map($helpfuntion1, $DB->get_records_sql($origins_sql)));
-    if (!get_config('local_lsf_unification', 'subcategories')) {
-        $courses_sql = "SELECT mdlid, name FROM (".$CFG->prefix."local_lsf_category JOIN ".$CFG->prefix."course_categories ON ".$CFG->prefix."local_lsf_category.mdlid = ".$CFG->prefix."course_categories.id) WHERE ueid in (".$origins.") ORDER BY sortorder";
-        $courses = array_map($helpfuntion2, $DB->get_records_sql($courses_sql));
-    } else {
-        $courses_sql = "SELECT mdlid, name FROM (".$CFG->prefix."local_lsf_category JOIN ".$CFG->prefix."course_categories ON ".$CFG->prefix."local_lsf_category.mdlid = ".$CFG->prefix."course_categories.id) WHERE ueid in (".$origins.") ORDER BY sortorder";
-        $maincourses = implode(", ", array_map($helpfuntion3, $DB->get_records_sql($courses_sql)));
-        if (empty($maincourses)) return array(get_config('local_lsf_unification', 'defaultcategory') => get_config('local_lsf_unification', 'max_import_age'));
-        $courses_and_subcourses_sql = "SELECT id, name FROM ".$CFG->prefix."course_categories WHERE id in (".$maincourses.") OR parent in (".$maincourses.") ORDER BY sortorder";
-        $courses = array_map($helpfuntion2, $DB->get_records_sql($courses_and_subcourses_sql));
+    if (!empty($origins)) {
+        if (!get_config('local_lsf_unification', 'subcategories')) {
+            $courses_sql = "SELECT mdlid, name FROM (".$CFG->prefix."local_lsf_category JOIN ".$CFG->prefix."course_categories ON ".$CFG->prefix."local_lsf_category.mdlid = ".$CFG->prefix."course_categories.id) WHERE ueid in (".$origins.") ORDER BY sortorder";
+            $courses = array_map($helpfuntion2, $DB->get_records_sql($courses_sql));
+        } else {
+            $courses_sql = "SELECT mdlid, name FROM (".$CFG->prefix."local_lsf_category JOIN ".$CFG->prefix."course_categories ON ".$CFG->prefix."local_lsf_category.mdlid = ".$CFG->prefix."course_categories.id) WHERE ueid in (".$origins.") ORDER BY sortorder";
+            $maincourses = implode(", ", array_map($helpfuntion3, $DB->get_records_sql($courses_sql)));
+            if (empty($maincourses)) return array(get_config('local_lsf_unification', 'defaultcategory') => get_config('local_lsf_unification', 'max_import_age'));
+            $courses_and_subcourses_sql = "SELECT id, name FROM ".$CFG->prefix."course_categories WHERE id in (".$maincourses.") OR parent in (".$maincourses.") ORDER BY sortorder";
+            $courses = array_map($helpfuntion2, $DB->get_records_sql($courses_and_subcourses_sql));
+        }
     }
     if ($update_helptables_if_necessary && (count($courses) == 0)) {
         insert_missing_helptable_entries(false);

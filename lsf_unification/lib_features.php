@@ -7,6 +7,7 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot . '/local/lsf_unification/lib.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_his.php');
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+require_once($CFG->dirroot . '/course/format/lib.php');
 
 /**
  * creates a course
@@ -264,6 +265,14 @@ function duplicate_course($courseid, $foldername) {
 
         // Delete temporary assignment and force capability cache to reload
         $USER->access = NULL;
+
+        // Update SectionCount
+        $format = $DB->get_record("course",array("id" => $courseid),"id, format")->format;
+        if ($format == "topics" || $format == "weeks") {
+            $sectioncount = $DB->count_records("course_sections", array("course" => $courseid));
+            $format = course_get_format($courseid);
+            $format->update_course_format_options(array("numsections" => ($sectioncount-1)));
+        }
 
         // Commit
         $transaction->allow_commit();
