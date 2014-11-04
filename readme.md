@@ -43,7 +43,8 @@ Die Universität Dortmund hat eine Erweiterung für HIS-LSF geschrieben, die es er
 ##Notwendige Tabellen/Sichten auf Tabellen
 Die Namen der Sichten können in den Definitionen zu Beginn der lib_his.php Datei manipuliert werden.
 
-###Sicht der Dozenten (HIS_PERSONAL)
+###Sicht der Dozenten
+(HIS_PERSONAL)
 Anmerkung: zivk ist die Nutzerkennung des Dozenten, der sich bei uns einloggt, hierüber werden die Dozenten gematcht
 ```sql
 SELECT DISTINCT personal.pid, nutzer."login", "replace"(lower("replace"("replace"(peremail.email::text, ' '::text, ''::text), '@uni-muenster.de'::text, ''::text)), 'atuni-muensterdotde'::text, ''::text) AS zivk, personal.akadgrad, personal.vorname, personal.nachname
@@ -57,7 +58,8 @@ SELECT DISTINCT personal.pid, nutzer."login", "replace"(lower("replace"("replace
   ORDER BY personal.pid, nutzer."login", "replace"(lower("replace"("replace"(peremail.email::text, ' '::text, ''::text), '@uni-muenster.de'::text, ''::text)), 'atuni-muensterdotde'::text, ''::text), personal.akadgrad, personal.vorname, personal.nachname;
 ```
 
-### Sicht der Veranstaltungen (HIS_VERANSTALTUNG)
+### Sicht der Veranstaltungen
+(HIS_VERANSTALTUNG)
 ```sql
 SELECT veranstaltung.veranstid, veranstaltung.veranstnr, veranstaltung.semester, veranstaltung.kommentar, veranstaltung.zeitstempel, k_semester.ktxt AS semestertxt, k_verart.dtxt AS veranstaltungsart, veranstaltung.dtxt AS titel, 'http://uvlsf.uni-muenster.de/qisserver/rds?state=verpublish&status=init&vmfile=no&moduleCall=webInfo&publishConfFile=webInfo&publishSubDir=veranstaltung&publishid='::text || veranstaltung.veranstid::text AS urlveranst
    FROM veranstaltung
@@ -69,7 +71,8 @@ SELECT veranstaltung.veranstid, veranstaltung.veranstnr, veranstaltung.semester,
    FROM r_vvzzuord)) AND (veranstaltung.aikz = 'A'::bpchar OR veranstaltung.aikz IS NULL);
 ```
    
-### Sicht Zuordnung Veranstaltung zu Personal (HIS_PERSONAL_VERANST)
+### Sicht Zuordnung Veranstaltung zu Personal
+(HIS_PERSONAL_VERANST)
 ```sql
  SELECT r_verpers.veranstid, personal.pid, r_verpers.sort, k_verkenn.dtxt AS zustaendigkeit
    FROM personal
@@ -77,7 +80,8 @@ SELECT veranstaltung.veranstid, veranstaltung.veranstnr, veranstaltung.semester,
    LEFT JOIN k_verkenn ON k_verkenn.verkennid = r_verpers.verkennid;
 ```
    
-###Sicht zur Pflege der Überschriften (HIS_UEBERSCHRIFT)
+###Sicht zur Pflege der Überschriften
+(HIS_UEBERSCHRIFT)
 ```sql
  SELECT r_hierarchie.uebergeord, r_hierarchie.untergeord, r_hierarchie.semester, ueberschrift.zeitstempel, ueberschrift.ueid, ueberschrift.eid, ueberschrift.txt, ueberschrift.quellid, veranstaltung.veranstid
    FROM r_hierarchie
@@ -88,7 +92,8 @@ SELECT veranstaltung.veranstid, veranstaltung.veranstnr, veranstaltung.semester,
   ORDER BY r_hierarchie.sortierung, ueberschrift.txt;
 ```
    
-###Sicht zum Auslesen der Veranstaltungsbeschreibung (HIS_VERANST_KOMMENTAR)
+###Sicht zum Auslesen der Veranstaltungsbeschreibung
+(HIS_VERANST_KOMMENTAR)
 ```sql
  SELECT veranstaltung.veranstid, blobs.txt AS kommentar, r_blob.sprache
    FROM veranstaltung
@@ -100,7 +105,8 @@ SELECT veranstaltung.veranstid, veranstaltung.veranstnr, veranstaltung.semester,
   WHERE k_semester.semstatus = 1));
 ```
    
-###Sicht zum Import des Stundenplans (HIS_STDP)
+###Sicht zum Import des Stundenplans
+(HIS_STDP)
 ```sql
  SELECT DISTINCT veransttermin.vtid AS terminid, veranstaltung.veranstid, r_beleg.tabpk AS mtknr, r_beleg.status
    FROM veransttermin, veranstaltung, r_beleg
