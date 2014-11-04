@@ -16,7 +16,7 @@ Einstellungen unter admin/enrol/database: (falls nicht anders spezifiziert)
 - enrol_database | unenrolaction= 'Keep user enrolled'
 
 ##Anbindung an das HISLSF
-Die Anbindung kann, sofern die nötigen Informationen zur Verfügung stehen, durch eine Anpassung der Pluginkonfiguration (enrol_database | remoteenroltable) geschaffen werden. (Anmerkung: In Münster gilt <SichtName> = "public"."learnweb_eingeschrieben")
+Sofern die nötigen Informationen in einem (im Vergleich zur Sicht unten) anderen Format  zur Verfügung stehen, kann die Anbindung durch eine Anpassung der Pluginkonfiguration (enrol_database | remoteenroltable) geschaffen werden. (Anmerkung: In Münster gilt <SichtName> = "public"."learnweb_eingeschrieben")
 
 In der vorliegenden Version geschieht das Mapping der Studenten über deren Matrikelnummer, die beim SSO-Verfahren dem Learnweb übergeben wird. Sofern das HisLsf die Nutzerkennung übergeben würde, wäre auch ein mapping über die Nutzerkennung denkbar. Dementsprechend müsste die Sicht und Konfiguration angepasst werden.
 
@@ -27,26 +27,28 @@ SELECT r_beleg.veranstid, r_beleg.status, r_beleg.tabpk AS mtknr, r_beleg.zeitst
 ```
 
 ### Abkürzungen von Status in Eingeschrieben
+In der Tabelle r_beleg findet sich ein Status, in dem diverse Abkürzungen zu finden sind. Hier eine Auflistung soriert nach der Häufigkeit im Testsystem.
+
 STATUS, BEDEUTUNG
-AN Angemeldet
-ZU Zugelassen
-AB Abgemeldet
-SP Stundenplan (Ist im Stundenplan veröffentlicht)
-WL Warteliste
-ST storniert
-SA Selbstablehnung
-TE Teilgenommen - erfolgreich
-CA canceled (Veranstaltung fällt aus)
-NE Nicht erfolgreich Teilgenommen
-YY nachbelegt
-WH Wiederholung
-zu Dies hier ist wohl ein Fehler. Sollte "ZU" sein.
+* AN Angemeldet
+* ZU Zugelassen
+* AB Abgemeldet
+* SP Stundenplan (Ist im Stundenplan veröffentlicht)
+* WL Warteliste
+* ST storniert
+* SA Selbstablehnung
+* TE Teilgenommen - erfolgreich
+* CA canceled (Veranstaltung fällt aus)
+* NE Nicht erfolgreich Teilgenommen
+* YY nachbelegt
+* WH Wiederholung
+* zu Dies hier ist wohl ein Fehler. Sollte "ZU" sein.
 
 Weitere mögliche Kennzeichen wären.
-NP Niedrige Priorität
-MP Niedrige Modulpriorität
-HP Hohe Priorität
-TU Terminüberschneidung
-XX zum Nachbelegen vorgemerkt
-BB Inaktives Modul
-VF Malus (Verlust der Fachsemesterpriorität)
+* NP Niedrige Priorität
+* MP Niedrige Modulpriorität
+* HP Hohe Priorität
+* TU Terminüberschneidung
+* XX zum Nachbelegen vorgemerkt
+* BB Inaktives Modul
+* VF Malus (Verlust der Fachsemesterpriorität)
