@@ -27,8 +27,8 @@ Die dafür notwendigen Rechte sind insbesondere "moodle/restore:restorecourse", "
 
 ##Kurs Templates
 Dozenten können (sofern dies durch die Einstellungen erlaubt wird) bei der Kurserstellung auf Kurs-Templates (spezielle Kurssicherungen) zurückgreifen.
-Diese Templates müssen dafür im Ordner <backup_auto_destination>/templates abgelegt werden. Die Templates können in Kategorien eingeteilt werden, dazu können Ordner <backup_auto_destination>/<KategorieName> angelegt werden, in die dann die Kurs-Templates abgelegt werden.
-Dabei ist <backup_auto_destination> der in den Moodle-Einstellungen festgelegte entsprechende Pfad.
+Diese Templates müssen dafür im Ordner [backup_auto_destination]/templates abgelegt werden. Die Templates können in Kategorien eingeteilt werden, dazu können Ordner [backup_auto_destination]/[KategorieName] angelegt werden, in die dann die Kurs-Templates abgelegt werden.
+Dabei ist [backup_auto_destination] der in den Moodle-Einstellungen festgelegte entsprechende Pfad.
 Die hinterlegten Dateien müssen das Format template[0-9]+.(mbz|txt) haben (z.B. template2.mbz und template2.txt). 
 Die eigentliche Kursvorlage, die .mbz Datei, ist ein normales Kursbackup eines Beispielkurses (dieser sollte keine Einschreibemethoden haben). Einen zugehörigen Beschreibungstext, der dem Nutzer angezeigt wird, kann man in der txt-Datei ablegen, wobei die erste Zeile einen Namen angibt und alle weiteren Zeilen eine Beschreibung beinhalten können.
 Ein Beispiel für die Kursvorlage-Dateien ist in course_templates.zip zu finden.

@@ -6,17 +6,17 @@ Die notwendigen Änderungen an enrol/database/lib.php sind in changes_to_enrol_d
 ##Konfiguration des Plugins
 Einstellungen unter admin/enrol/database: (falls nicht anders spezifiziert)
 - enrol_database | dbtype = 'postgres7'
-- enrol_database | dbhost= <DatenbankHost>
-- enrol_database | dbuser= <DatenbankNutzer>
-- enrol_database | dbpass= <DatenbankPasswort>
-- enrol_database | dbname= <DatenbankName>
-- enrol_database | remoteenroltable= ' (SELECT * FROM ((SELECT "mtknr", "veranstid", max("zeitstempel") as "zeitstempel" FROM <SichtName> GROUP BY "mtknr", "veranstid") AS "neusteEintraege" NATURAL INNER JOIN <SichtName>) WHERE "zeitstempel" > (current_timestamp - interval '1 year') AND "status" IN ('AN', 'ZU', 'YY', 'TE', 'NE', 'SP')) as einschreibungen'
+- enrol_database | dbhost= [DatenbankHost]
+- enrol_database | dbuser= [DatenbankNutzer]
+- enrol_database | dbpass= [DatenbankPasswort]
+- enrol_database | dbname= [DatenbankName]
+- enrol_database | remoteenroltable= ' (SELECT * FROM ((SELECT "mtknr", "veranstid", max("zeitstempel") as "zeitstempel" FROM [SichtName] GROUP BY "mtknr", "veranstid") AS "neusteEintraege" NATURAL INNER JOIN [SichtName]) WHERE "zeitstempel" > (current_timestamp - interval '1 year') AND "status" IN ('AN', 'ZU', 'YY', 'TE', 'NE', 'SP')) as einschreibungen'
 - enrol_database | remotecoursefield= 'veranstid'
 - enrol_database | remoteuserfield= 'mtknr'
 - enrol_database | unenrolaction= 'Keep user enrolled'
 
 ##Anbindung an das HISLSF
-Sofern die nötigen Informationen in einem (im Vergleich zur Sicht unten) anderen Format  zur Verfügung stehen, kann die Anbindung durch eine Anpassung der Pluginkonfiguration (enrol_database | remoteenroltable) geschaffen werden. (Anmerkung: In Münster gilt <SichtName> = "public"."learnweb_eingeschrieben")
+Sofern die nötigen Informationen in einem (im Vergleich zur Sicht unten) anderen Format  zur Verfügung stehen, kann die Anbindung durch eine Anpassung der Pluginkonfiguration (enrol_database | remoteenroltable) geschaffen werden. (Anmerkung: In Münster gilt [SichtName] = "public"."learnweb_eingeschrieben")
 
 In der vorliegenden Version geschieht das Mapping der Studenten über deren Matrikelnummer, die beim SSO-Verfahren dem Learnweb übergeben wird. Sofern das HisLsf die Nutzerkennung übergeben würde, wäre auch ein mapping über die Nutzerkennung denkbar. Dementsprechend müsste die Sicht und Konfiguration angepasst werden.
 
