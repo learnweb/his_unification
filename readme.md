@@ -116,4 +116,4 @@ SELECT veranstaltung.veranstid, veranstaltung.veranstnr, veranstaltung.semester,
 ```
 
 #Beispieldaten
-
+Zu Testzwecken kann eine Datenbank mit den Beispieltabellen gefüllt werden, die in der Datei beispieltabellen.sql stehen.
