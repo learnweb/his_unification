@@ -125,7 +125,7 @@ function send_course_creation_mail($recipient, $course) {
     $params->a = $USER->firstname." ".$USER->lastname;
     $params->b = $USER->id;
     $params->c = utf8_encode($course->titel);
-    $params->d = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid='.$course->veranstid;
+    $params->d = get_remote_creation_continue_link($course->veranstid);
     $content = get_string('email3','local_lsf_unification',$params);
     return email_to_user($recipient,  get_string('email_from','local_lsf_unification')." (by ".$USER->firstname." ".$USER->lastname.")", get_string('email3_title','local_lsf_unification'),$content);
 }

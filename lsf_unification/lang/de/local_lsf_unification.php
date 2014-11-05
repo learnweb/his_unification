@@ -156,6 +156,11 @@ $string['continue_with_empty_course'] = 'Mit einem leeren Kurs fortfahren';
 
 $string['duplication_timeframe_error'] = 'Aus Sicherheitsgr&uuml;nden ist es nicht erlaubt Kursdaten aus Musterkursen oder Kursbackups wiederherzustellen, falls die Kurserstellung mehr als {$a} Stunden zur&uuml;ckliegt.';
 
+$string['importcalendar'] = 'HISLSF Stundenplan';
+$string['importical'] = 'Stundenplan importieren';
+$string['icalurl'] = 'ICal URL';
+$string['icalurl_description'] = 'URL des HisLSF ICal Exports (eine Liste der relevanten Termine wird dynamisch angeh&auml;ngt)';
+
 $string['eventcourse_imported'] = 'Kurs importiert';
 $string['eventmatchingtable_updated'] = 'Matchingtable ge&auml;ndert';
 $string['eventcourse_duplicated'] = 'Kursinhalte dupliziert';

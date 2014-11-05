@@ -88,6 +88,11 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     		get_string('moodle_url', 'local_lsf_unification'), get_string('moodle_url_description', 'local_lsf_unification'),
     		$CFG->wwwroot, PARAM_RAW));
 
+    $settings->add(new admin_setting_heading('heading_cal_import', get_string('importcalendar', 'local_lsf_unification'), get_string('his_deeplink_information', 'local_lsf_unification')));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/icalurl',
+    		get_string('icalurl', 'local_lsf_unification'), get_string('icalurl_description', 'local_lsf_unification'),
+    		'https://studium.uni-muenster.de/qisserver/rds?state=verpublish&status=transform&vmfile=no&moduleCall=iCalendarPlan&publishConfFile=reports&publishSubDir=veranstaltung&termine=', PARAM_RAW));
+
     /*
      $settings->add(new admin_setting_configselect('local_lsf_unification/enter_groupmode',
          get_string('enter_groupmode', 'local_lsf_unification'), get_string('enter_groupmode_description', 'local_lsf_unification'),

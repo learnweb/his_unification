@@ -7,6 +7,7 @@ defined('MOODLE_INTERNAL') || die;
 //require_once("$CFG->dirroot/group/lib.php");
 require_once($CFG->libdir . '/enrollib.php');
 require_once($CFG->dirroot . '/user/lib.php');
+require_once($CFG->dirroot . '/local/lsf_unification/cal_lib.php');
 
 /**
  * get_course_by_idnumber returns the course's id, where idnumber fits $courseid

@@ -9,6 +9,7 @@ define("HIS_PERSONAL",         "public.learnweb_personal");
 define("HIS_VERANSTALTUNG",    "public.learnweb_veranstaltung");
 define("HIS_PERSONAL_VERANST", "public.learnweb_personal_veranst");
 define("HIS_UEBERSCHRIFT",     "public.learnweb_ueberschrift");
+define("HIS_STDP",             "public.learnweb_stdp");
 /**
  * establish_secondary_DB_connection is a required function for the lsf_unification plugin
 */
@@ -60,6 +61,19 @@ function removeHisLink($veranstid) {
 	if (!setupHisSoap()) return false;
 	$hislsf_soapclient->removeMoodleLink($veranstid);
 	return true;
+}
+
+function get_students_stdp_terminids($mtknr) {
+    global $pgDB;
+    establish_secondary_DB_connection();
+    $q = pg_query($pgDB->connection,
+        "SELECT terminid FROM ". HIS_STDP ." WHERE mtknr = $mtknr and terminid is not null group by terminid order by terminid;");
+    $return = array();
+    while ($terminid = pg_fetch_object($q)) {
+        array_push($return, $terminid->terminid);
+    }
+    close_secondary_DB_connection();
+    return $return;
 }
 
 /**
