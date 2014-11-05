@@ -11,6 +11,9 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     
     $settings3 = new admin_externalpage('local_lsf_unification_deeplink_remove', 'LSF Deeplink Removal', $CFG->wwwroot.'/local/lsf_unification/deeplink_remove.php');
     $ADMIN->add('localplugins', $settings3);
+    
+    $settings4 = new admin_externalpage('local_lsf_unification_remoterequests', 'LSF Remote Request Handling', $CFG->wwwroot.'/local/lsf_unification/remoterequests.php');
+    $ADMIN->add('localplugins', $settings4);
 
     /*
      $settings->add(new admin_setting_configcheckbox('local_lsf_unification/send_errors',

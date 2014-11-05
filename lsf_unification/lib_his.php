@@ -382,6 +382,16 @@ function set_course_created($veranstid, $courseid) {
     }
 }
 
+function get_course_request($rid) {
+    global $DB;
+    return $DB->get_record("local_lsf_course", array("id" => $rid, "mdlid" => 0));
+}
+
+function get_course_requests() {
+    global $DB;
+    return $DB->get_records("local_lsf_course", array("mdlid" => 0), "id");
+}
+
 function set_course_requested($veranstid) {
     global $DB, $USER;
     if ($courseentry = $DB->get_record("local_lsf_course", array("veranstid" => $veranstid))) {
