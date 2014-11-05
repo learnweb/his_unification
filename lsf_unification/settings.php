@@ -26,6 +26,9 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     $settings->add(new admin_setting_configtext('local_lsf_unification/dbhost',
         get_string('dbhost', 'local_lsf_unification'), get_string('dbhost_description', 'local_lsf_unification'),
         '', PARAM_RAW));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/dbport',
+        get_string('dbport', 'local_lsf_unification'), get_string('dbport_description', 'local_lsf_unification'),
+        '', PARAM_RAW));
     $settings->add(new admin_setting_configtext('local_lsf_unification/dbuser',
         get_string('dbuser', 'local_lsf_unification'), get_string('dbuser_description', 'local_lsf_unification'),
         '', PARAM_RAW));

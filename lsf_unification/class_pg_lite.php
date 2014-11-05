@@ -6,7 +6,7 @@ class pg_lite {
     public $connection = null;
 
     public function connect() {
-        $config = "host='".get_config('local_lsf_unification', 'dbhost')."' port ='5432' user='".get_config('local_lsf_unification', 'dbuser')."' password='".get_config('local_lsf_unification', 'dbpass')."' dbname='".get_config('local_lsf_unification', 'dbname')."'";
+        $config = "host='".get_config('local_lsf_unification', 'dbhost')."' port ='".get_config('local_lsf_unification', 'dbport')."' user='".get_config('local_lsf_unification', 'dbuser')."' password='".get_config('local_lsf_unification', 'dbpass')."' dbname='".get_config('local_lsf_unification', 'dbname')."'";
         ob_start();
         $this->connection = pg_connect($config, PGSQL_CONNECT_FORCE_NEW);
         $dberr = ob_get_contents();

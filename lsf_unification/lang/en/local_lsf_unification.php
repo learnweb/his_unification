@@ -46,6 +46,8 @@ $string['update_helptable'] = 'Update Helptable With HIS-LSF data';
 
 $string['dbhost'] = 'Host';
 $string['dbhost_description'] = 'PostgreDB-Host';
+$string['dbport'] = 'Port';
+$string['dbport_description'] = 'PostgreDB-Port';
 $string['dbname'] = 'Name';
 $string['dbname_description'] = 'PostgreDB-Name';
 $string['dbpass'] = 'Pass';
