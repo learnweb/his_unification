@@ -43,7 +43,6 @@ $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 echo $OUTPUT->header();
 
-
 if (!empty($requestid)) {
     if (($request = $DB->get_record("local_lsf_course", array("id" => $requestid))) && ($request->requeststate == 1)) {
         $veranstid = $request->veranstid;
@@ -117,13 +116,22 @@ function print_res_selection() {
         
         // "Continue with the course template ..."
         if (get_config('local_lsf_unification', 'restore_templates') && !empty($templatefiles)) {
-            echo "<b>".get_string('pre_template','local_lsf_unification',$alternative_counter++)."</b><ul>";
-            foreach ($templatefiles as $id => $fileinfo) {
-                $lines = explode("\n", trim($fileinfo->info, " \t\r\n"),  2 );
-                echo "<li><a href='duplicate_course.php?courseid=".$courseid."&filetype=t&fileid=".$id."'>".utf8_encode($lines[0])."</a>";
-                if(count($lines) == 2)
-                    echo "<br/>".utf8_encode($lines[1]);
-                echo "</li>";
+            $cats = array();
+            $i = 0;
+            foreach ($templatefiles as $id => $fileinfo) $cats[$fileinfo->category][$id] = $fileinfo;
+            echo "<b>".get_string('pre_template','local_lsf_unification',$alternative_counter++).'</b><ul style="list-style-type:none">';
+            foreach ($cats as $name => $catfiles) {
+                if (!empty($name)) {
+                    echo '<li style="list-style-type:disc"><a onclick="'."document.getElementById('reslist".(++$i)."').style.display=((document.getElementById('reslist".$i."').style.display == 'none') ? 'block' : 'none')".'" style="cursor:default">['.$name.']</a></b><ul id="reslist'.$i.'" style="display:none">';
+                }
+                foreach ($catfiles as $id => $fileinfo) {
+                    $lines = explode("\n", trim($fileinfo->info, " \t\r\n"),  2 );
+                    echo '<li style="list-style-type:disc"><a href="duplicate_course.php?courseid='.$courseid."&filetype=t&fileid=".$id.'">'.utf8_encode($lines[0])."</a>";
+                    if(count($lines) == 2)
+                        echo "<br/>".utf8_encode($lines[1]);
+                    echo "</li>";
+                }
+                if (!empty($name)) echo "</li></ul>";
             }
             echo "</ul>";
         }

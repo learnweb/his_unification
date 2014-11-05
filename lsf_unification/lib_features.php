@@ -185,11 +185,12 @@ function get_template_files() {
     //read files
     while (false !== ($entry = readdir($handle))) {
         $matches = array();
-        if (preg_match('/^template(\d{1,})\.mbz$/mi',$entry,$matches)) {
+        if (preg_match('/^((.+)_)?template(\d{1,})\.mbz$/mi',$entry,$matches)) {
             $file = new stdClass();
             $file->name = $entry;
             $file->path = $backuppath;
             $file->info = "no info available";
+            $file->category = isset($matches[2])?$matches[2]:"";
             $txt_file = $file->path."/".substr($file->name,0,-3)."txt";
             if (file_exists($txt_file)) {
                 $file->info = file_get_contents($txt_file);
