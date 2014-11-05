@@ -88,8 +88,13 @@ $string['config_auto_update_duration-1'] = "Nie";
 $string['config_category'] = "Kategorie";
 $string['config_category_wish'] = "Kategorie-Umzugs-Wunsch";
 $string['config_category_wish_help'] = "Falls Sie den Kurs gerne in einer anderen st&auml;rker spezifizierten Kategorie eingeordnet haben m&ouml;chten, hinterlassen Sie bitte hier einen Kommentar  mit der entsprechenden Wunschkategorie und -pfad.";
-$string['config_enrolment_key'] = "Einschreibeschl&uuml;ssel";
-$string['config_enrolment_key_help'] = "Eine M&ouml;glichkeit den Kurs nur f&uuml;r bestimmte Studierende freizuschalten, ist die Passwort-Einschreibung. Das nachfolgend eingegebene Passwort m&uuml;ssen Studierende einmalig beim Betreten des Kursraums eingeben. Wenn der Learnweb-Kurs nicht Passwortgesch&uuml;tzt werden soll, lassen Sie das Feld leer.";
+$string['config_enrol'] = "Einschreibemethoden";
+$string['config_dbenrolment'] = "HISLSF Einschreibung";
+$string['config_dbenrolment_help'] = "Eine M&ouml;glichkeit den Kurs nur f&uuml;r bestimmte Studierende freizuschalten, ist die automatische Synchronisierung mit der HISLSF-Datenbank. Die Einschreibungen der Studenten in Ihren Kurs werden automatisch mit dem HISLSF synchronisiert sobald sich diese im Learnweb anmelden. Wir empfehlen zus&auml;tzlich die Selbsteinschreibung mit Passwort, da der Abgleich mit den HISLSF-Daten systembedingt ca. 24 Std. versetzt stattfinden.";
+$string['config_selfenrolment'] = "Selbsteinschreibung";
+$string['config_selfenrolment_help'] = "Eine M&ouml;glichkeit den Kurs nur f&uuml;r bestimmte Studierende freizuschalten, ist die Selbsteinschreibung mit oder ohne Passwort. Wir empfehlen ein Passwort zu setzen und dieses in der Pr&auml;senzveranstaltung bekanntzugeben.";
+$string['config_enrolment_key'] = "Selbsteinschreibungs-Schl&uuml;ssel";
+$string['config_enrolment_key_help'] = "Das nachfolgend eingegebene Passwort m&uuml;ssen Studierende einmalig beim Betreten des Kursraums durch Selbsteinschreibung eingeben. Wenn der Learnweb-Kurs nicht Passwortgesch&uuml;tzt werden soll, lassen Sie das Feld leer. Wir empfehlen dringend ein Passwort zu vergeben, insb. wenn se digitale Dokumente im Rahmen von e-Semesterapparaten oder &auml;hnlichem bereitstellen m&ouml;chten.";
 $string['config_misc'] = "Sonstiges";
 $string['config_shortname'] = "Kurztitel";
 $string['config_summary'] = "Kurzbeschreibung";
@@ -133,19 +138,19 @@ $string['request_sent'] = 'Die Anfrage wurde per Mail an den Lehrenden gesendet.
 $string['answer_sent'] = 'Vielen Dank f&uuml;r das Verarbeiten dieser Anfrage. Ihre Entscheidung wird dem Anfragenden automatisch per Email mitgeteilt.';
 
 $string['email_from'] = "HIS LSF Import";
-$string['email2_title'] = "Kurs Erstellungs Anfrage";
+$string['email2_title'] = "Kurs Erstellungs-Anfrage";
 $string['email2'] = 'Der Benutzer "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) versucht den Kurs "{$a->c}" in Ihrem Namen zu erstellen. Bitte akzeptieren oder verweigern sie die Anfrage auf dieser Webseite: {$a->d}';
-$string['email3_title'] = "Kurs Erstellungs Anfrage akzeptiert";
+$string['email3_title'] = "Kurs Erstellungs-Anfrage akzeptiert";
 $string['email3'] = 'Der Benutzer "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) akzeptierte Ihre Kursanfrage "{$a->c}". Bitte fahren Sie mit der Erstellung hier fort: {$a->d}';
-$string['email4_title'] = "Kurs Erstellungs Anfrage verweigert";
+$string['email4_title'] = "Kurs Erstellungs-Anfrage verweigert";
 $string['email4'] = 'Der Benutzer "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) verweigerte Ihre Kursanfrage "{$a->c}".';
 $string['remote_request_select_alternative'] = 'Bitte w&auml;hlen Sie eine Aktion aus:';
 $string['remote_request_accept'] = 'Akzeptiere die Anfrage von "{$a->a}" den Kurs "{$a->b}" zu erstellen';
 $string['remote_request_decline'] = 'Verweigere die Anfrage von "{$a->a}"';
 
-$string['no_template'] = 'Alternative {$a}: Kurs ohne Inhalte vorbereiten ...';
-$string['pre_template'] = 'Alternative {$a}: Kurs mit Inhalten aus einer Vorlage vorbereiten ...';
-$string['template_from_course'] = 'Alternative {$a}: Fortfahren mit den Inhalten eines existierenden Kurses ...';
+$string['no_template'] = 'Alternative {$a}: Kurs ohne Inhalte vorbereiten...';
+$string['pre_template'] = 'Alternative {$a}: Kurs mit Inhalten aus einer Vorlage vorbereiten...';
+$string['template_from_course'] = 'Alternative {$a}: Fortfahren mit den Inhalten eines existierenden Kurses...';
 $string['continue'] = 'Fortfahren';
 $string['continue_with_empty_course'] = 'Mit einem leeren Kurs fortfahren';
 

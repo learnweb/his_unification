@@ -186,7 +186,13 @@ function print_coursecreation() {
     global $USER, $OUTPUT, $answer, $teachername, $veranstid, $courseid;
     $editform = new lsf_course_request_form(NULL, array('veranstid'=>$veranstid));
     if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
-        $result = create_lsf_course($veranstid,$data->fullname,$data->shortname,$data->summary,$data->startdate,-1/*$data->update_duration*/,$data->enrolment_key,$data->category);
+        // dbenrolment enrolment can only be enabled if it is globally enabled
+        $ext_enabled_global = get_config('local_lsf_unification', 'enable_enrol_ext_db') == true;
+        $enable_dbenrolment = $ext_enabled_global ? $data->dbenrolment == 1 : false;
+        // enable self enrolment if dbenrolment is disabled globally
+        $enable_self_enrolment = !$ext_enabled_global ? true : ($data->selfenrolment == 1);
+        
+        $result = create_lsf_course($veranstid, $data->fullname, $data->shortname, $data->summary, $data->startdate, $enable_dbenrolment, $enable_self_enrolment, empty($data->enrolment_key) ? "" : ($data->enrolment_key), $data->category);
         $courseid = $result['course']->id;
         $event = \local_lsf_unification\event\course_imported::create(array(
                 'objectid' => $courseid,

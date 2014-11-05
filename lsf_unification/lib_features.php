@@ -18,11 +18,14 @@ require_once($CFG->dirroot . '/course/format/lib.php');
  * @param $shortname
  * @param $summary
  * @param $startdate
+ * @param $database_enrol
+ * @param $self_enrol
  * @param $password
- * @param $category (id)
+ * @param $category
+ * @throws moodle_exception
  * @return array consisting of the course-object and warnings
 */
-function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startdate, $update_duration, $password, $category) {
+function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startdate, $database_enrol, $self_enrol, $password, $category) {
     global $DB, $USER, $CFG;
     $transaction = $DB->start_delegated_transaction();
     $warnings = "";
@@ -60,12 +63,12 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
     // create guest-enrolment
     create_guest_enrolment($course, $enable = FALSE);
     
-    // enable self-enrolment
-    enable_self_enrolment($course, $password);
-
-    // enrole students
-    if ($update_duration > 0) {
-        //enable_lsf_enrolment($course->id, $startdate, $startdate + $update_duration*60*60*24);
+    // enable enrolment-plugins
+    if ($database_enrol) {
+        enable_database_enrolment($course);
+    }
+    if ($self_enrol) {
+        enable_self_enrolment($course, $password);
     }
 
     // create course in helptable

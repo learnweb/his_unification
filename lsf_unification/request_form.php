@@ -55,9 +55,22 @@ class lsf_course_request_form extends moodleform {
         $mform->addHelpButton('startdate', 'startdate');
         $mform->setDefault('startdate', get_default_startdate($lsf_course));
 
+        $mform->addElement('header','enrol', get_string('config_enrol', 'local_lsf_unification'));
+        $mform->setExpanded('enrol');
+        if (get_config('local_lsf_unification', 'enable_enrol_ext_db')) {
+            $mform->addElement('advcheckbox', 'dbenrolment', get_string('config_dbenrolment', 'local_lsf_unification'), '', array('group' => 1), array(0, 1));
+            $mform->addHelpButton('dbenrolment', 'config_dbenrolment', 'local_lsf_unification');
+            $mform->setDefault('dbenrolment', 0);
+            
+            $mform->addElement('advcheckbox', 'selfenrolment', get_string('config_selfenrolment', 'local_lsf_unification'), '', array('group' => 2), array(0,1));
+            $mform->setDefault('selfenrolment', 1);
+            $mform->addHelpButton('selfenrolment', 'config_selfenrolment', 'local_lsf_unification');
+        }
+        
         $mform->addElement('passwordunmask','enrolment_key', get_string('config_enrolment_key','local_lsf_unification'),'maxlength="100"  size="10"');
         $mform->setType('enrolment_key', PARAM_RAW);
         $mform->addHelpButton('enrolment_key', 'config_enrolment_key','local_lsf_unification');
+        $mform->disabledIf('enrolment_key', 'selfenrolment', 'neq', 1);
 
         /* Enrolment Settings (to be implemented)
          $mform->addElement('header','', get_string('config_auto_update', 'local_lsf_unification'));
@@ -72,7 +85,7 @@ class lsf_course_request_form extends moodleform {
         $mform->setDefault('update_duration', -1);
         */
 
-        $mform->addElement('header','', get_string('config_category', 'local_lsf_unification'));
+        $mform->addElement('header','categoryheader', get_string('config_category', 'local_lsf_unification'));
 
         $choices = get_courses_categories($veranstid);
         $choices = add_path_description($choices);

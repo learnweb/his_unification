@@ -122,7 +122,7 @@ function enable_lsf_enrolment($id, $enrolment_start, $enrolment_end) {
 }
 
 /**
- * enable_self_enrolement deletes old and creates a new self enrolment instance
+ * enable_self_enrolment deletes old and creates a new self enrolment instance
  *
  * @param $course
  * @param $password
@@ -138,6 +138,19 @@ function enable_self_enrolment($course,$password) {
 	$instance -> roleid = get_config('local_lsf_unification', 'roleid_student');
 	$instance -> expirythreshold = 0;
 	$DB->update_record('enrol', $instance);
+}
+
+/**
+ * enable_database_enrolment deletes old and creates a new ext. database enrolment instance
+ *
+ * @param $course
+ * @return null
+ */
+function enable_database_enrolment($course) {
+	global $DB;
+	
+	$plugin = enrol_get_plugin('database');
+	$instanceid = $plugin -> add_default_instance($course);
 }
 
 function create_guest_enrolment($course,$password = "", $enable = FALSE) {
