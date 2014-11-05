@@ -436,28 +436,25 @@ function get_courses_categories($veranstid, $update_helptables_if_necessary=true
     };
     $q = pg_query($pgDB->connection, "SELECT ueid FROM ". HIS_UEBERSCHRIFT ." WHERE veranstid=".$veranstid."");
     $choices = array();
-    $courses = array();
+    $categories = array();
     while ($hislsf_title = pg_fetch_object($q)) $ueids = (empty($ueids)?"":($ueids.", ")).("".$hislsf_title->ueid."");
     $other_ueids_sql = "SELECT parent FROM ".$CFG->prefix."local_lsf_categoryparenthood WHERE child in (".$ueids.")";
     $origins_sql = "SELECT origin FROM ".$CFG->prefix."local_lsf_category WHERE ueid in (".$other_ueids_sql.") OR ueid in (".$ueids.")";
     $origins = implode(", ", array_map($helpfuntion1, $DB->get_records_sql($origins_sql)));
     if (!empty($origins)) {
-        if (!get_config('local_lsf_unification', 'subcategories')) {
-            $courses_sql = "SELECT mdlid, name FROM (".$CFG->prefix."local_lsf_category JOIN ".$CFG->prefix."course_categories ON ".$CFG->prefix."local_lsf_category.mdlid = ".$CFG->prefix."course_categories.id) WHERE ueid in (".$origins.") ORDER BY sortorder";
-            $courses = array_map($helpfuntion2, $DB->get_records_sql($courses_sql));
-        } else {
-            $courses_sql = "SELECT mdlid, name FROM (".$CFG->prefix."local_lsf_category JOIN ".$CFG->prefix."course_categories ON ".$CFG->prefix."local_lsf_category.mdlid = ".$CFG->prefix."course_categories.id) WHERE ueid in (".$origins.") ORDER BY sortorder";
-            $maincourses = implode(", ", array_map($helpfuntion3, $DB->get_records_sql($courses_sql)));
-            if (empty($maincourses)) return array(get_config('local_lsf_unification', 'defaultcategory') => get_config('local_lsf_unification', 'max_import_age'));
-            $courses_and_subcourses_sql = "SELECT id, name FROM ".$CFG->prefix."course_categories WHERE id in (".$maincourses.") OR parent in (".$maincourses.") ORDER BY sortorder";
-            $courses = array_map($helpfuntion2, $DB->get_records_sql($courses_and_subcourses_sql));
+        $categories_sql = "SELECT mdlid, name FROM (".$CFG->prefix."local_lsf_category JOIN ".$CFG->prefix."course_categories ON ".$CFG->prefix."local_lsf_category.mdlid = ".$CFG->prefix."course_categories.id) WHERE ueid in (".$origins.") ORDER BY sortorder";
+        if (get_config('local_lsf_unification', 'subcategories')) {
+            $maincourses = implode(", ", array_map($helpfuntion3, $DB->get_records_sql($categories_sql)));
+            if (empty($maincourses)) {  $maincourses = get_config('local_lsf_unification', 'defaultcategory');  }
+            $categories_sql = "SELECT id, name FROM ".$CFG->prefix."course_categories WHERE id in (".$maincourses.") OR parent in (".$maincourses.") ORDER BY sortorder";
         }
+        $categories = array_map($helpfuntion2, $DB->get_records_sql($categories_sql));
     }
-    if ($update_helptables_if_necessary && (count($courses) == 0)) {
+    if ($update_helptables_if_necessary && (count($categories) == 0)) {
         insert_missing_helptable_entries(false);
         return get_courses_categories($veranstid, false);
     }
-    return $courses;
+    return $categories;
 }
 
 
@@ -470,8 +467,8 @@ function get_courses_categories($veranstid, $update_helptables_if_necessary=true
  * @param $veranstid idnumber/veranstid
  * @return $courselist
  */
-function insert_missing_helptable_entries($debugoutput=false) {
-    $a = 0;
+function insert_missing_helptable_entries($debugoutput=false, $tryeverything=false) {
+    $a = 1;
     global $pgDB, $DB;
     $list1 = "";
     $list2 = "";
@@ -480,10 +477,15 @@ function insert_missing_helptable_entries($debugoutput=false) {
     $records1_unique = array();
     $records2_unique = array();
     foreach ($records1 as $record1) $records1_unique[$record1->ueid]=true;
-    foreach ($records2 as $record2) $records2_unique[$record2->child][$record2->parent]=true;
+    foreach ($records2 as $record2) $records2_unique[$record2->child][$record2->parent]=($tryeverything === false);
 
-    $q_main = pg_query($pgDB->connection, "SELECT ueid, uebergeord, uebergeord, quellid, txt, zeitstempel FROM ". HIS_UEBERSCHRIFT ." ");
+    $q_main = pg_query($pgDB->connection, "SELECT ueid, uebergeord, uebergeord, quellid, txt, zeitstempel FROM ". HIS_UEBERSCHRIFT ." ".((!empty($tryeverything))?("WHERE ueid >= '".$tryeverything."'"):""));
     while ($hislsf_title = pg_fetch_object($q_main)) {
+        if (!isset($records1_unique[$hislsf_title->ueid]) || 
+                  (!isset($records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord]) || 
+                        $records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord] != true)) {
+            $a++;echo $hislsf_title->ueid." ";
+        }
         if (!isset($records1_unique[$hislsf_title->ueid])) {
             // create match-table-entry if not existing
             $entry = new stdClass();
@@ -508,17 +510,14 @@ function insert_missing_helptable_entries($debugoutput=false) {
                     if ($debugoutput) print("<pre>FEHLER1 ".print_r($e,true)."".print_r($DB->get_last_error(),true));
                 }
             }
-            if ($debugoutput) echo "<br>";
-            $a++;
         }
-        if (!isset($records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord])) {
+        if (!isset($records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord]) || $records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord] != true) {
             // create parenthood-table-entry if not existing
             $child = $hislsf_title->ueid;
             $ueid = $hislsf_title->ueid;
             $parent = $hislsf_title->ueid;
             $fullname = "";
             $distance = 0;
-            if ($debugoutput) echo "?"; //((
             do {
                 $ueid = $parent;
                 $distance++;
@@ -527,18 +526,18 @@ function insert_missing_helptable_entries($debugoutput=false) {
                     $parent = $hislsf_title2->uebergeord;
                     $fullname = ($hislsf_title2->txt).(empty($fullname)?"":("/".$fullname));
                     if (!empty($parent) && !isset($records2_unique[$child][$parent])) {
-                        $entry = new stdClass();
-                        $entry->child = $child;
-                        $entry->parent = $parent;
-                        $entry->distance = $distance;
                         try {
+                            $entry = new stdClass();
+                            $entry->child = $child;
+                            $entry->parent = $parent;
+                            $entry->distance = $distance;
                             $DB->insert_record("local_lsf_categoryparenthood", $entry, true);
-                            $records2_unique[$child][$parent] = true;
-                            if ($debugoutput) echo "x";
+                            if ($debugoutput) echo "?"; //((
                         } catch(Exception $e) {
                             if ($debugoutput) print("<pre>FEHLER2 ".print_r($e,true)."".print_r($DB->get_last_error(),true));
                         }
                     }
+                    $records2_unique[$child][$parent] = true;
                 }
             } while (!empty($parent) && ($ueid != $parent));
             $entry = $DB->get_record('local_lsf_category', array("ueid"=>$hislsf_title->ueid));
@@ -553,10 +552,10 @@ function insert_missing_helptable_entries($debugoutput=false) {
                     if ($debugoutput) print("<pre>FEHLER2 ".print_r($e,true)."".print_r($DB->get_last_error(),true));
                 }
             }
-            if ($debugoutput) echo "<br>"; //((
         }
-        if ($debugoutput && (($a % 80) == 0)) {
-            echo "<br>"; $a++;
+        if ($debugoutput && (($a % 101) == 0)) {
+            echo "<br>&nbsp;&nbsp;"; $a++;
+            flush();
         }
     }
 }
@@ -606,8 +605,9 @@ function has_sublevels($origins) {
 function get_newest_element($id) {
     global $CFG, $DB;
     $origins = $DB->get_record("local_lsf_category", array("ueid"=>$id), "origin")->origin;
-    $sublevels_sql = "SELECT max(ueid) as max_ueid, origin FROM ".$CFG->prefix."local_lsf_category WHERE origin in (".$origins.")";
-    $ueid = array_shift($DB->get_records_sql($sublevels_sql))->max_ueid;
+    $sublevels_sql = "SELECT max(ueid) as max_ueid, origin FROM ".$CFG->prefix."local_lsf_category WHERE origin in (".$origins.") GROUP BY origin";
+    $sublevels = $DB->get_records_sql($sublevels_sql);
+    $ueid = array_shift($sublevels)->max_ueid;
     return $DB->get_record("local_lsf_category", array("ueid"=>$ueid));
 }
 

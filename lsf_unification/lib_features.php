@@ -286,7 +286,7 @@ function duplicate_course($courseid, $foldername) {
 }
 
 
-function unzip($zipfile, $destination = '', $showstatus_ignored = true) {
+function lsf_unification_unzip($zipfile, $destination = '', $showstatus_ignored = true) {
     global $CFG, $USER;
     $fb = get_file_packer('application/vnd.moodle.backup');
     $result = $fb->extract_to_pathname($zipfile,

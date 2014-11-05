@@ -62,7 +62,7 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
         if (is_dir($pathname)) die("error #1");
         if (!mkdir($pathname,0777,true)) die("error #2: ".$pathname);
         if (!copy($fileinfo->path."/".$fileinfo->name, $pathname."/".$fileinfo->name)) die("error #3");
-        if (!unzip($pathname."/".$fileinfo->name, $pathname)) die("error #4");
+        if (!lsf_unification_unzip($pathname."/".$fileinfo->name, $pathname)) die("error #4");
         restore_dbops::delete_course_content($courseid, array("keep_roles_and_enrolments" => true));
         //log is deleted by restore_dbops::delete_course_content
         $event = \local_lsf_unification\event\course_duplicated::create(array(
