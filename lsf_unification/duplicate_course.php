@@ -21,6 +21,8 @@ $context = context_system::instance();
 $PAGE->set_context($context);
 require_capability('moodle/course:request', $context);
 
+establish_secondary_DB_connection();
+
 $strtitle = get_string('courserequest');
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
@@ -46,7 +48,7 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
         if (!enrol_try_internal_enrol($course->id, $USER->id, $creatorroleid)){
             die("error ##");
         }
-        // do backup
+        // restore backup
         if ($filetype == "t" && get_config('local_lsf_unification', 'restore_templates')) {
             if (empty($files_templates[$fileid])) die("error #0");
             $fileinfo = $files_templates[$fileid];
@@ -61,6 +63,9 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
         $pathname = $tmpdir.'/'.$foldername;
         if (is_dir($pathname)) die("error #1");
         if (!mkdir($pathname,0777,true)) die("error #2: ".$pathname);
+        if (!empty($fileinfo->category)) {
+            if (!mkdir($pathname."/".$fileinfo->category,0777,true)) die("error #2: ".$pathname);
+        }
         if (!copy($fileinfo->path."/".$fileinfo->name, $pathname."/".$fileinfo->name)) die("error #3");
         if (!lsf_unification_unzip($pathname."/".$fileinfo->name, $pathname)) die("error #4");
         restore_dbops::delete_course_content($courseid, array("keep_roles_and_enrolments" => true));
@@ -79,3 +84,4 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
 echo "<a href='request.php?courseid=".$courseid."&answer=7'>".get_string('continue')."</a><br>";
 
 echo $OUTPUT->footer();
+close_secondary_DB_connection();

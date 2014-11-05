@@ -102,6 +102,7 @@ function print_final() {
 
 function print_res_selection() {
     global $CFG, $OUTPUT, $courseid;
+
     $acceptorid = get_course_acceptor($courseid);
     if (get_config('local_lsf_unification', 'restore_old_courses')) {
         $backupfiles = get_backup_files($acceptorid);
@@ -111,27 +112,33 @@ function print_res_selection() {
     }
     if (empty($backupfiles) && empty($templatefiles)) {
         print_final();
-    } else {
+    } elseif (!empty($templatefiles)) {
         $alternative_counter = 1;
         
         // "Continue with the course template ..."
         if (get_config('local_lsf_unification', 'restore_templates') && !empty($templatefiles)) {
             $cats = array();
             $i = 0;
-            foreach ($templatefiles as $id => $fileinfo) $cats[$fileinfo->category][$id] = $fileinfo;
+            foreach ($templatefiles as $id => $fileinfo) 
+                $cats[$fileinfo->category][$id] = $fileinfo;
+            // if there are items without a category move them to the end
+            $catkeys = array_keys($cats);
+            if (!empty($cats) && array_pop($catkeys) == "") 
+                array_unshift($cats, array_pop($cats));
+            // render
             echo "<b>".get_string('pre_template','local_lsf_unification',$alternative_counter++).'</b><ul style="list-style-type:none">';
             foreach ($cats as $name => $catfiles) {
                 if (!empty($name)) {
-                    echo '<li style="list-style-type:disc"><a onclick="'."document.getElementById('reslist".(++$i)."').style.display=((document.getElementById('reslist".$i."').style.display == 'none') ? 'block' : 'none')".'" style="cursor:default">['.$name.']</a></b><ul id="reslist'.$i.'" style="display:none">';
+                    echo '<li style="list-style-image: url('.$OUTPUT->pix_url("t/collapsed")->out(true).')" id="reslistselector'.++$i.'"><a onclick="'."document.getElementById('reslist".($i)."').style.display=((document.getElementById('reslist".$i."').style.display == 'none') ? 'block' : 'none'); document.getElementById('reslistselector".($i)."').style.listStyleImage=((document.getElementById('reslist".$i."').style.display == 'none') ? 'url(".$OUTPUT->pix_url("t/collapsed")->out(true).")' : 'url(".$OUTPUT->pix_url("t/expanded")->out(true).")');".'" style="cursor:default">[<b>'.$name.'</b>]</a></b><ul id="reslist'.$i.'" style="display:none">';
                 }
                 foreach ($catfiles as $id => $fileinfo) {
                     $lines = explode("\n", trim($fileinfo->info, " \t\r\n"),  2 );
-                    echo '<li style="list-style-type:disc"><a href="duplicate_course.php?courseid='.$courseid."&filetype=t&fileid=".$id.'">'.utf8_encode($lines[0])."</a>";
+                    echo '<li style="list-style-image: url('.$OUTPUT->pix_url("i/navigationitem")->out(true).')"><a href="duplicate_course.php?courseid='.$courseid."&filetype=t&fileid=".$id.'">'.utf8_encode($lines[0])."</a>";
                     if(count($lines) == 2)
                         echo "<br/>".utf8_encode($lines[1]);
                     echo "</li>";
                 }
-                if (!empty($name)) echo "</li></ul>";
+                if (!empty($name)) echo "</ul></li>";
             }
             echo "</ul>";
         }

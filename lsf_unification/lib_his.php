@@ -10,6 +10,8 @@ define("HIS_VERANSTALTUNG",    "public.learnweb_veranstaltung");
 define("HIS_PERSONAL_VERANST", "public.learnweb_personal_veranst");
 define("HIS_UEBERSCHRIFT",     "public.learnweb_ueberschrift");
 define("HIS_STDP",             "public.learnweb_stdp");
+define("HIS_VERANST_KOMMENTAR","public.learnweb_veranst_kommentar");
+
 /**
  * establish_secondary_DB_connection is a required function for the lsf_unification plugin
 */
@@ -282,7 +284,15 @@ function get_default_shortname($lsf_course, $long=false) {
  * @return $summary
  */
 function get_default_summary($lsf_course) {
-    return utf8_encode("Imported course (".$lsf_course->urlveranst.")");
+    global $pgDB;
+    $summary = "(".$lsf_course->urlveranst.")";
+    $q = pg_query($pgDB->connection, "SELECT kommentar FROM ". HIS_VERANST_KOMMENTAR ." WHERE veranstid = '".$lsf_course->veranstid."'");
+    if ($sum_object = pg_fetch_object($q)) {
+        if (!empty($sum_object->kommentar)) {
+            $summary = $sum_object->kommentar." ".$summary;
+        }
+    }
+    return utf8_encode($summary);
 }
 
 /**

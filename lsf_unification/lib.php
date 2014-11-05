@@ -200,6 +200,7 @@ function get_default_course($fullname, $idnumber, $summary, $shortname)
 	$course->fullname = substr($fullname,0,254);
 	$course->idnumber = $idnumber;
 	$course->summary = $summary;
+	$course->summaryformat = 1;
 	$course->shortname = $shortname;
 	$course->startdate = time();
 	$course->category = get_config('local_lsf_unification', 'default_category');

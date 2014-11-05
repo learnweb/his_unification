@@ -107,7 +107,7 @@ function send_course_request_mail($recipient_username, $course, $request_id) {
     $user = get_or_create_user($recipient_username, $email);
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
-    $params->b = $USER->id;
+    $params->b = $CFG->wwwroot.'/user/view.php?id='.$USER->id;
     $params->c = utf8_encode($course->titel);
     $params->d = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid='.$request_id;
     $content = get_string('email2','local_lsf_unification',$params);
@@ -123,7 +123,7 @@ function send_course_creation_mail($recipient, $course) {
     global $USER, $CFG;
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
-    $params->b = $USER->id;
+    $params->b = $CFG->wwwroot.'/user/view.php?id='.$USER->id;
     $params->c = utf8_encode($course->titel);
     $params->d = get_remote_creation_continue_link($course->veranstid);
     $content = get_string('email3','local_lsf_unification',$params);
@@ -134,7 +134,7 @@ function send_sorry_mail($recipient, $course) {
     global $USER, $CFG;
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
-    $params->b = $USER->id;
+    $params->b = $CFG->wwwroot.'/user/view.php?id='.$USER->id;
     $params->c = utf8_encode($course->titel);
     $content = get_string('email4','local_lsf_unification',$params);
     return email_to_user($recipient,  get_string('email_from','local_lsf_unification')." (by ".$USER->firstname." ".$USER->lastname.")", get_string('email4_title','local_lsf_unification'),$content);
@@ -190,10 +190,22 @@ function get_template_files() {
     $result = array();
     $files = array();
     if (!($handle = opendir($backuppath))) return $result;
-    //read files
+    // read filetree
+    $filenames = array();
     while (false !== ($entry = readdir($handle))) {
+        if ($entry != "." && $entry != ".." && is_dir($backuppath."/".$entry)) {
+            $handle2 = opendir($backuppath."/".$entry);
+            while (false !== ($entry2 = readdir($handle2))) {
+                $filenames[] = $entry."/".$entry2;
+            }
+        } else {
+            $filenames[] = $entry;
+        }
+    }
+    // build file-info objects
+    foreach ($filenames as $entry) {
         $matches = array();
-        if (preg_match('/^((.+)_)?template(\d{1,})\.mbz$/mi',$entry,$matches)) {
+        if (preg_match('/^((.+)\/)?template(\d{1,})\.mbz$/mi',$entry,$matches)) {
             $file = new stdClass();
             $file->name = $entry;
             $file->path = $backuppath;
@@ -282,6 +294,9 @@ function duplicate_course($courseid, $foldername) {
             $format = course_get_format($courseid);
             $format->update_course_format_options(array("numsections" => ($sectioncount-1)));
         }
+        
+        // Restore Course Summary
+        $DB->update_record("course", (object) array("id" => $courseid, "summaryformat" => 1, "summary" => get_default_summary(get_course_by_veranstid($DB->get_record("course",array("id" => $courseid),"id, idnumber")->idnumber))));
 
         // Commit
         $transaction->allow_commit();

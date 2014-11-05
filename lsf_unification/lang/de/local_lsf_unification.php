@@ -139,11 +139,11 @@ $string['answer_sent'] = 'Vielen Dank f&uuml;r das Verarbeiten dieser Anfrage. I
 
 $string['email_from'] = "HIS LSF Import";
 $string['email2_title'] = "Kurs Erstellungs-Anfrage";
-$string['email2'] = 'Der Benutzer "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) versucht den Kurs "{$a->c}" in Ihrem Namen zu erstellen. Bitte akzeptieren oder verweigern sie die Anfrage auf dieser Webseite: {$a->d}';
+$string['email2'] = 'Der Benutzer "{$a->a}" ({$a->b}) versucht den Kurs "{$a->c}" in Ihrem Namen zu erstellen. Bitte akzeptieren oder verweigern sie die Anfrage auf dieser Webseite: {$a->d}';
 $string['email3_title'] = "Kurs Erstellungs-Anfrage akzeptiert";
-$string['email3'] = 'Der Benutzer "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) akzeptierte Ihre Kursanfrage "{$a->c}". Bitte fahren Sie mit der Erstellung hier fort: {$a->d}';
+$string['email3'] = 'Der Benutzer "{$a->a}" ({$a->b}) akzeptierte Ihre Kursanfrage "{$a->c}". Bitte fahren Sie mit der Erstellung hier fort: {$a->d}';
 $string['email4_title'] = "Kurs Erstellungs-Anfrage verweigert";
-$string['email4'] = 'Der Benutzer "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) verweigerte Ihre Kursanfrage "{$a->c}".';
+$string['email4'] = 'Der Benutzer "{$a->a}" ({$a->b}) verweigerte Ihre Kursanfrage "{$a->c}".';
 $string['remote_request_select_alternative'] = 'Bitte w&auml;hlen Sie eine Aktion aus:';
 $string['remote_request_accept'] = 'Akzeptiere die Anfrage von "{$a->a}" den Kurs "{$a->b}" zu erstellen';
 $string['remote_request_decline'] = 'Verweigere die Anfrage von "{$a->a}"';

@@ -136,11 +136,11 @@ $string['answer_sent'] = 'Thank you for processing this request, your decision i
 
 $string['email_from'] = "HIS LSF Import";
 $string['email2_title'] = "Course Creation Request";
-$string['email2'] = 'The user "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) requested to create the Learnweb-course "{$a->c}" in your name. Please confirm or refuse the request on this website: {$a->d}';
+$string['email2'] = 'The user "{$a->a}" ({$a->b}) requested to create the Learnweb-course "{$a->c}" in your name. Please confirm or refuse the request on this website: {$a->d}';
 $string['email3_title'] = "Course Creation Request accepted";
-$string['email3'] = 'The user "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) accepted your request to create the Learnweb-course "{$a->c}". Please continue the course-creation on this website: {$a->d}';
+$string['email3'] = 'The user "{$a->a}" ({$a->b}) accepted your request to create the Learnweb-course "{$a->c}". Please continue the course-creation on this website: {$a->d}';
 $string['email4_title'] = "Course Creation Request declined";
-$string['email4'] = 'The user "{$a->a}" ('.$CFG->wwwroot.'/user/view.php?id={$a->b}) declined your request to create the Learnweb-course "{$a->c}".';
+$string['email4'] = 'The user "{$a->a}" ({$a->b}) declined your request to create the Learnweb-course "{$a->c}".';
 $string['remote_request_select_alternative'] = 'Please select the action you want to perform:';
 $string['remote_request_accept'] = 'Accept request by "{$a->a}" to create the course "{$a->b}"';
 $string['remote_request_decline'] = 'Decline request and send the regarding information to "{$a->a}"';
