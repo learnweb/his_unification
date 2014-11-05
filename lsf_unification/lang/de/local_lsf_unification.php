@@ -150,3 +150,8 @@ $string['continue'] = 'Fortfahren';
 $string['continue_with_empty_course'] = 'Mit einem leeren Kurs fortfahren';
 
 $string['duplication_timeframe_error'] = 'Aus Sicherheitsgr&uuml;nden ist es nicht erlaubt Kursdaten aus Musterkursen oder Kursbackups wiederherzustellen, falls die Kurserstellung mehr als {$a} Stunden zur&uuml;ckliegt.';
+
+$string['eventcourse_imported'] = 'Kurs importiert';
+$string['eventmatchingtable_updated'] = 'Matchingtable ge&auml;ndert';
+$string['eventcourse_duplicated'] = 'Kursinhalte dupliziert';
+

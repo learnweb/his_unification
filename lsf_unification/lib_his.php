@@ -645,8 +645,14 @@ function get_mdlname($id) {
  * sets a category-mapping
  */
 function set_cat_mapping($ueid, $mdlid) {
-    global $DB;
+    global $DB, $SITE;
     $obj = $DB->get_record("local_lsf_category",array("ueid"=>$ueid));
+    $event = \local_lsf_unification\event\matchingtable_updated::create(array(
+            'objectid' => $obj->id,
+            'context' => context_system::instance(0, IGNORE_MISSING),
+            'other' => array('mappingold' => $obj->mdlid, 'mappingnew' => $mdlid, 'originid' => $ueid)
+    ));
+    $event->trigger();
     $obj->mdlid = $mdlid;
     $DB->update_record("local_lsf_category", $obj);
 }

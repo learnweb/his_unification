@@ -172,3 +172,9 @@ $string['his_deeplink_via_soap_description'] = 'Enable the HIS Deeplink web serv
 $string['his_deeplink_via_soap'] = 'Enable HIS Deeplink';
 $string['moodle_url'] = 'Moodle www root';
 $string['moodle_url_description'] = 'URL to Moodle www root, which is used to create the link for the his course';
+$string['icalurl_description'] = 'URL that points to the HisLSF Ical Export (the list of relevant event ids will be dynamically appended)';
+
+$string['eventcourse_imported'] = 'Course imported';
+$string['eventmatchingtable_updated'] = 'Matchingtable updated';  
+$string['eventcourse_duplicated'] = 'Course duplicated';  
+

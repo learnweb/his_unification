@@ -180,6 +180,12 @@ function print_coursecreation() {
     if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
         $result = create_lsf_course($veranstid,$data->fullname,$data->shortname,$data->summary,$data->startdate,-1/*$data->update_duration*/,$data->enrolment_key,$data->category);
         $courseid = $result['course']->id;
+        $event = \local_lsf_unification\event\course_imported::create(array(
+                'objectid' => $courseid,
+                'context' => context_system::instance(0, IGNORE_MISSING),
+                'other' => $veranstid
+        ));
+        $event->trigger();
         if (!empty($data->category_wish)) $result['warnings'] .= (send_support_mail($result['course'], $data->category_wish)?("\n".get_string('email_success','local_lsf_unification')):("\n".get_string('email_error','local_lsf_unification')));
         echo (!empty($result["warnings"]))?("<p>".$OUTPUT->box("<b>".get_string('warnings','local_lsf_unification')."</b><br>"."<pre>".$result["warnings"]."<pre>")."</p>"):"";
         print_res_selection($result["course"]->id);
