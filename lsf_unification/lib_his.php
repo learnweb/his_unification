@@ -617,11 +617,18 @@ function get_newest_sublevels($origins) {
     $helpfuntion1 = function($array_el) {
         return $array_el->ueid;
     };
+    // get all copies of current category
     $origins_sql = "SELECT ueid FROM ".$CFG->prefix."local_lsf_category WHERE origin in (".$origins.")";
     $copies = implode(", ", array_map($helpfuntion1, $DB->get_records_sql($origins_sql)));
-
-    $sublevels_sql = "SELECT * FROM (SELECT max(ueid) as max_ueid, origin FROM ".$CFG->prefix."local_lsf_category WHERE parent in (".$copies.") AND ueid not in (".$origins.") GROUP BY origin) AS a JOIN ".$CFG->prefix."local_lsf_category ON a.max_ueid = ".$CFG->prefix."local_lsf_category.ueid WHERE ".$CFG->prefix."local_lsf_category.timestamp >= (".(time() - 2 * 365 * 24 * 60 * 60).") ORDER BY txt";
-    return $DB->get_records_sql($sublevels_sql);
+    // get all their childcategories, that newest copy is not older than 2 years
+    $sublevels_all_sql = "SELECT * FROM (SELECT max(ueid) as max_ueid, origin FROM ".$CFG->prefix."local_lsf_category WHERE parent in (".$copies.") AND ueid not in (".$origins.") GROUP BY origin) AS a JOIN ".$CFG->prefix."local_lsf_category ON a.max_ueid = ".$CFG->prefix."local_lsf_category.ueid ";
+    $sublevels_young_sql = $sublevels_all_sql."WHERE ".$CFG->prefix."local_lsf_category.timestamp >= (".(time() - 2 * 365 * 24 * 60 * 60).") ORDER BY txt";
+    $result = $DB->get_records_sql($sublevels_young_sql);
+    // get all their childcategories, if there is no childcategory with a copy, that is not older than 2 years
+    if (empty($result)) {
+        $result = $DB->get_records_sql($sublevels_all_sql."ORDER BY txt");
+    }
+    return $result;
 }
 
 /**
