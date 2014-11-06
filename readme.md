@@ -1,7 +1,22 @@
 #Installation
 
 1. Entpacken nach $CFG->wwwroot.'\local\lsf_unification' und Moodle Plugin-Installation starten
-2. unter 'Administrator' -> 'Plugins' -> 'Lokale Plugins' befinden sich vier Erweiterungen 'LSF Unification Config', 'LSF Unification Matching', 'LSF Deeplink Removal' und 'LSF Remote Request Handling'.
+2. Datenbank einrichten: (eines der folgenden)
+  * Testdatenbank (postgres) mit Beispieldaten (siehe beispieltabellen.sql) einrichten
+  * Views mit Live-Daten entsprechend der unter [Notwendige Tabellen/Sichten auf Tabellen] beschriebenen Sichten auf die LSF-DB bereitstellen
+2. unter 'Administrator' -> 'Plugins' -> 'Lokale Plugins' befinden sich vier Erweiterungen 'LSF Unification Config', 'LSF Unification Matching', 'LSF Deeplink Removal' und 'LSF Remote Request Handling'. Siehe [Menüpunkte]
+3. Zuordnung zwischen Moodle-Kategorien und LSF-Überschriften generieren [wwwroot/local/lsf_unification/helptablemanager.php]
+  1. Hilfstabelle aktualisieren -> **Update Helptable With HIS-LSF data** auswählen
+  2. LSF-Überschriften zu Moodle-Kategorien zuordnen.'-> **Create New Mappings**
+4. Kursbeantragung auf z.B. der Startseite verlinken [wwwroot/local/lsf_unification/request.php]
+```
+    <p>Hier können Lehrende der Universität Münster neue Kurse für ihre Veranstaltungen beantragen.<br />Nach Abgabe des Antrags werden Sie per Mail informiert, sobald Ihr Kurs angelegt wurde.</p>
+    <div class="buttons">
+    <div class="singlebutton"><form method="get" action="local/lsf_unification/request.php">
+    <div><input value="Kurs beantragen" type="submit" /></div>
+    </form></div>
+    </div>
+```
 
 ##Menüpunkte
 
