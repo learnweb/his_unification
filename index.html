@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>His unification by learnweb</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>His unification</h1>
+        <p></p>
+
+        <p class="view"><a href="https://github.com/learnweb/his_unification">View the Project on GitHub <small>learnweb/his_unification</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/learnweb/his_unification/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/learnweb/his_unification/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/learnweb/his_unification">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h1>
+
+<ol>
+<li>Entpacken nach $CFG-&gt;wwwroot.'\local\lsf_unification' und Moodle Plugin-Installation starten</li>
+<li>Datenbank einrichten: (eines der folgenden)
+
+<ul>
+<li>Testdatenbank (postgres) mit Beispieldaten (siehe beispieltabellen.sql) einrichten</li>
+<li>Views mit Live-Daten entsprechend der unter [Notwendige Tabellen/Sichten auf Tabellen] beschriebenen Sichten auf die LSF-DB bereitstellen</li>
+</ul>
+</li>
+<li>unter 'Administrator' -&gt; 'Plugins' -&gt; 'Lokale Plugins' befinden sich vier Erweiterungen 'LSF Unification Config', 'LSF Unification Matching', 'LSF Deeplink Removal' und 'LSF Remote Request Handling'. Siehe [Menüpunkte]</li>
+<li>Zuordnung zwischen Moodle-Kategorien und LSF-Überschriften generieren [wwwroot/local/lsf_unification/helptablemanager.php]
+
+<ol>
+<li>Hilfstabelle aktualisieren -&gt; <strong>Update Helptable With HIS-LSF data</strong> auswählen</li>
+<li>LSF-Überschriften zu Moodle-Kategorien zuordnen.'-&gt; <strong>Create New Mappings</strong>
+</li>
+</ol>
+</li>
+<li>Kursbeantragung auf z.B. der Startseite verlinken [wwwroot/local/lsf_unification/request.php]</li>
+</ol>
+
+<pre><code>    &lt;p&gt;Hier können Lehrende der Universität Münster neue Kurse für ihre Veranstaltungen beantragen.&lt;br /&gt;Nach Abgabe des Antrags werden Sie per Mail informiert, sobald Ihr Kurs angelegt wurde.&lt;/p&gt;
+    &lt;div class="buttons"&gt;
+    &lt;div class="singlebutton"&gt;&lt;form method="get" action="local/lsf_unification/request.php"&gt;
+    &lt;div&gt;&lt;input value="Kurs beantragen" type="submit" /&gt;&lt;/div&gt;
+    &lt;/form&gt;&lt;/div&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<h2>
+<a id="menüpunkte" class="anchor" href="#men%C3%BCpunkte" aria-hidden="true"><span class="octicon octicon-link"></span></a>Menüpunkte</h2>
+
+<h3>
+<a id="lsf-unification-config" class="anchor" href="#lsf-unification-config" aria-hidden="true"><span class="octicon octicon-link"></span></a>'LSF Unification Config'</h3>
+
+<p>dient zur Konfiguration von HIS-LSF-Server/DB, zur Zuordnung von Rollen und zur aktivierung einzelner Funktionen.</p>
+
+<h3>
+<a id="lsf-unification-matching" class="anchor" href="#lsf-unification-matching" aria-hidden="true"><span class="octicon octicon-link"></span></a>'LSF Unification Matching'</h3>
+
+<p>dient zur Zuordnung von Überschriften aus dem LSF zu Kategorien im Moodle (Zu berücksichtigen: LSF-Überschriften werden (zumindest an der WWU) jedes Semester im LSF neu angelegt (jeweils Verweis auf letztsemestrige Überschrift) und muss deshalb hin und wieder aktualisiert werden.</p>
+
+<h3>
+<a id="lsf-deeplink-removal" class="anchor" href="#lsf-deeplink-removal" aria-hidden="true"><span class="octicon octicon-link"></span></a>'LSF Deeplink Removal'</h3>
+
+<p>dient dazu einzelne Rückverlinkungen (siehe HIS Deeplink Web Service) wieder zu entfernen.</p>
+
+<h3>
+<a id="lsf-remote-request-handling" class="anchor" href="#lsf-remote-request-handling" aria-hidden="true"><span class="octicon octicon-link"></span></a>'LSF Remote Request Handling'</h3>
+
+<p>dient dazu Anfragen die von Studenten im Namen von Lehrenden gestellt wurden zu verwalten.</p>
+
+<h2>
+<a id="vorhandene-rollen-abändern-um-konflikte-zu-vermeiden" class="anchor" href="#vorhandene-rollen-ab%C3%A4ndern-um-konflikte-zu-vermeiden" aria-hidden="true"><span class="octicon octicon-link"></span></a>Vorhandene Rollen abändern um Konflikte zu vermeiden</h2>
+
+<p>Moodle unterscheidet bei Rechten zwischen erlaubt, entzogen und verboten.
+Ist ein Nutzer in einer Rolle die ein bestimmtes Recht verbietet, ist ihm dieses Recht grundsätzlich verboten, auch wenn es ihm eine andere Rolle erlaubt.
+Daher müssen je nach Rechte-Konfiguration vorhandene Rollen angepasst werden, also an den entsprechenden Stellen von "verboten" auf "entzogen" (was so viel bedeutet wie: nicht erlaubt außer durch eine andere Rolle) umgestellt werden.</p>
+
+<p>Zum Beispiel sollte es für Tutoren und Lehrende nicht verboten sein Kurse wiederherzustellen, da sie dann nicht fehlerfrei die Templates bei der Kurserstellung verwenden können - hier bietet sich die Einstellung "entzogen" an, da ihnen die notwendigen Rechte temporär zugeteilt werden.
+Die dafür notwendigen Rechte sind insbesondere "moodle/restore:restorecourse", "moodle/restore:restoreactivity", "moodle/restore:restoresection", "moodle/restore:configure"</p>
+
+<h2>
+<a id="kurs-templates" class="anchor" href="#kurs-templates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kurs Templates</h2>
+
+<p>Dozenten können (sofern dies durch die Einstellungen erlaubt wird) bei der Kurserstellung auf Kurs-Templates (spezielle Kurssicherungen) zurückgreifen.
+Diese Templates müssen dafür im Ordner [backup_auto_destination]/templates abgelegt werden. Die Templates können in Kategorien eingeteilt werden, dazu können Ordner [backup_auto_destination]/[KategorieName] angelegt werden, in die dann die Kurs-Templates abgelegt werden.
+Dabei ist [backup_auto_destination] der in den Moodle-Einstellungen festgelegte entsprechende Pfad.
+Die hinterlegten Dateien müssen das Format template[0-9]+.(mbz|txt) haben (z.B. template2.mbz und template2.txt). 
+Die eigentliche Kursvorlage, die .mbz Datei, ist ein normales Kursbackup eines Beispielkurses (dieser sollte keine Einschreibemethoden haben). Einen zugehörigen Beschreibungstext, der dem Nutzer angezeigt wird, kann man in der txt-Datei ablegen, wobei die erste Zeile einen Namen angibt und alle weiteren Zeilen eine Beschreibung beinhalten können.
+Ein Beispiel für die Kursvorlage-Dateien ist in course_templates.zip zu finden.</p>
+
+<h2>
+<a id="kursinhalte-aus-kurssicherungen-übernehmen" class="anchor" href="#kursinhalte-aus-kurssicherungen-%C3%BCbernehmen" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kursinhalte aus Kurssicherungen übernehmen</h2>
+
+<p>Bei entsprechender Einstellung des Plugins können Dozenten die Inhalte aus alten Kursen in den neuen Kurs wiederherstellen.
+Hierzu müssen die Kurssicherungen in dem entsprechenden Pfad für Kurssicherungen hinterlegt sein.</p>
+
+<h2>
+<a id="erweiterung-his-deeplink-web-service" class="anchor" href="#erweiterung-his-deeplink-web-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Erweiterung: HIS Deeplink Web Service</h2>
+
+<p>Die Universität Dortmund hat eine Erweiterung für HIS-LSF geschrieben, die es ermöglicht, einer LSF-Veranstaltung einen Link zum Moodle-Kurs hinzuzufügen. Nachdem ein Kurs im Moodle über dieses Moodle-Plugin erstellt wurde, wird der 'HIS Deeplink Web Service' aufgerufen. So wird dem LSF mitgeteilt, dass nun ein Moodle-Kurs zu der LSF-Veranstaltung existiert. Die Veranstaltungsbeschreibung im LSF wird somit um einen Link zu der Moodle-Veranstaltung ergänzt.</p>
+
+<h2>
+<a id="erweiterung-automatisierte-studenteneinschreibung" class="anchor" href="#erweiterung-automatisierte-studenteneinschreibung" aria-hidden="true"><span class="octicon octicon-link"></span></a>Erweiterung: Automatisierte Studenteneinschreibung</h2>
+
+<p>Es ist möglich durch eine Anpassung des Database-Enrolmentplugins Studenten automatisiert in die Kurse einzuschreiben, die ins Learnweb importiert wurden. Genauere Informationen finden sich dazu im Ordner ./enrol_database.</p>
+
+<h2>
+<a id="stundenplanimport" class="anchor" href="#stundenplanimport" aria-hidden="true"><span class="octicon octicon-link"></span></a>Stundenplanimport</h2>
+
+<p>Um den Stundenplanimport zu aktivieren, müssen geringfuegige Änderungen im Kalender-Modul von Moodle vorgenommen werden. Genauere Informationen finden sich dazu im Ordner ./cal_stundenplan.</p>
+
+<h2>
+<a id="notwendige-tabellensichten-auf-tabellen" class="anchor" href="#notwendige-tabellensichten-auf-tabellen" aria-hidden="true"><span class="octicon octicon-link"></span></a>Notwendige Tabellen/Sichten auf Tabellen</h2>
+
+<p>Die Namen der Sichten können in den Definitionen zu Beginn der lib_his.php Datei manipuliert werden.</p>
+
+<h3>
+<a id="sicht-der-dozenten" class="anchor" href="#sicht-der-dozenten" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sicht der Dozenten</h3>
+
+<p>(HIS_PERSONAL)
+Anmerkung: zivk ist die Nutzerkennung des Dozenten, der sich bei uns einloggt, hierüber werden die Dozenten gematcht</p>
+
+<div class="highlight highlight-sql"><pre><span class="pl-k">SELECT DISTINCT</span> <span class="pl-c1">personal</span>.<span class="pl-c1">pid</span>, nutzer.<span class="pl-s1"><span class="pl-pds">"</span>login<span class="pl-pds">"</span></span>, <span class="pl-s1"><span class="pl-pds">"</span>replace<span class="pl-pds">"</span></span>(<span class="pl-sf">lower</span>(<span class="pl-s1"><span class="pl-pds">"</span>replace<span class="pl-pds">"</span></span>(<span class="pl-s1"><span class="pl-pds">"</span>replace<span class="pl-pds">"</span></span>(<span class="pl-c1">peremail</span>.<span class="pl-c1">email</span>::<span class="pl-s">text</span>, <span class="pl-s1"><span class="pl-pds">'</span> <span class="pl-pds">'</span></span>::<span class="pl-s">text</span>, <span class="pl-s1"><span class="pl-pds">'</span><span class="pl-pds">'</span></span>::<span class="pl-s">text</span>), <span class="pl-s1"><span class="pl-pds">'</span>@uni-muenster.de<span class="pl-pds">'</span></span>::<span class="pl-s">text</span>, <span class="pl-s1"><span class="pl-pds">'</span><span class="pl-pds">'</span></span>::<span class="pl-s">text</span>)), <span class="pl-s1"><span class="pl-pds">'</span>atuni-muensterdotde<span class="pl-pds">'</span></span>::<span class="pl-s">text</span>, <span class="pl-s1"><span class="pl-pds">'</span><span class="pl-pds">'</span></span>::<span class="pl-s">text</span>) <span class="pl-k">AS</span> zivk, <span class="pl-c1">personal</span>.<span class="pl-c1">akadgrad</span>, <span class="pl-c1">personal</span>.<span class="pl-c1">vorname</span>, <span class="pl-c1">personal</span>.<span class="pl-c1">nachname</span>
+   <span class="pl-k">FROM</span> personal
+   <span class="pl-k">LEFT JOIN</span> r_verpers <span class="pl-k">ON</span> <span class="pl-c1">personal</span>.<span class="pl-c1">pid</span> <span class="pl-ko">=</span> <span class="pl-c1">r_verpers</span>.<span class="pl-c1">pid</span>
+   <span class="pl-k">LEFT JOIN</span> k_verkenn <span class="pl-k">ON</span> <span class="pl-c1">k_verkenn</span>.<span class="pl-c1">verkennid</span> <span class="pl-ko">=</span> <span class="pl-c1">r_verpers</span>.<span class="pl-c1">verkennid</span>
+   <span class="pl-k">LEFT JOIN</span> r_pernutzer <span class="pl-k">ON</span> <span class="pl-c1">r_pernutzer</span>.<span class="pl-c1">pid</span> <span class="pl-ko">=</span> <span class="pl-c1">personal</span>.<span class="pl-c1">pid</span>
+   <span class="pl-k">LEFT JOIN</span> kontakt <span class="pl-k">ON</span> <span class="pl-c1">kontakt</span>.<span class="pl-c1">tabpk</span> <span class="pl-ko">=</span> <span class="pl-c1">personal</span>.<span class="pl-c1">pid</span>
+   <span class="pl-k">LEFT JOIN</span> nutzer <span class="pl-k">ON</span> <span class="pl-c1">nutzer</span>.<span class="pl-c1">nid</span> <span class="pl-ko">=</span> <span class="pl-c1">r_pernutzer</span>.<span class="pl-c1">nid</span>
+   <span class="pl-k">LEFT JOIN</span> peremail <span class="pl-k">ON</span> <span class="pl-c1">peremail</span>.<span class="pl-c1">pid</span> <span class="pl-ko">=</span> <span class="pl-c1">personal</span>.<span class="pl-c1">pid</span>
+  <span class="pl-k">ORDER BY</span> <span class="pl-c1">personal</span>.<span class="pl-c1">pid</span>, nutzer.<span class="pl-s1"><span class="pl-pds">"</span>login<span class="pl-pds">"</span></span>, <span class="pl-s1"><span class="pl-pds">"</span>replace<span class="pl-pds">"</span></span>(<span class="pl-sf">lower</span>(<span class="pl-s1"><span class="pl-pds">"</span>replace<span class="pl-pds">"</span></span>(<span class="pl-s1"><span class="pl-pds">"</span>replace<span class="pl-pds">"</span></span>(<span class="pl-c1">peremail</span>.<span class="pl-c1">email</span>::<span class="pl-s">text</span>, <span class="pl-s1"><span class="pl-pds">'</span> <span class="pl-pds">'</span></span>::<span class="pl-s">text</span>, <span class="pl-s1"><span class="pl-pds">'</span><span class="pl-pds">'</span></span>::<span class="pl-s">text</span>), <span class="pl-s1"><span class="pl-pds">'</span>@uni-muenster.de<span class="pl-pds">'</span></span>::<span class="pl-s">text</span>, <span class="pl-s1"><span class="pl-pds">'</span><span class="pl-pds">'</span></span>::<span class="pl-s">text</span>)), <span class="pl-s1"><span class="pl-pds">'</span>atuni-muensterdotde<span class="pl-pds">'</span></span>::<span class="pl-s">text</span>, <span class="pl-s1"><span class="pl-pds">'</span><span class="pl-pds">'</span></span>::<span class="pl-s">text</span>), <span class="pl-c1">personal</span>.<span class="pl-c1">akadgrad</span>, <span class="pl-c1">personal</span>.<span class="pl-c1">vorname</span>, <span class="pl-c1">personal</span>.<span class="pl-c1">nachname</span>;</pre></div>
+
+<h3>
+<a id="sicht-der-veranstaltungen" class="anchor" href="#sicht-der-veranstaltungen" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sicht der Veranstaltungen</h3>
+
+<p>(HIS_VERANSTALTUNG)</p>
+
+<div class="highlight highlight-sql"><pre><span class="pl-k">SELECT</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstid</span>, <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstnr</span>, <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">semester</span>, <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">kommentar</span>, <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">zeitstempel</span>, <span class="pl-c1">k_semester</span>.<span class="pl-c1">ktxt</span> <span class="pl-k">AS</span> semestertxt, <span class="pl-c1">k_verart</span>.<span class="pl-c1">dtxt</span> <span class="pl-k">AS</span> veranstaltungsart, <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">dtxt</span> <span class="pl-k">AS</span> titel, <span class="pl-s1"><span class="pl-pds">'</span>http://uvlsf.uni-muenster.de/qisserver/rds?state=verpublish&amp;status=init&amp;vmfile=no&amp;moduleCall=webInfo&amp;publishConfFile=webInfo&amp;publishSubDir=veranstaltung&amp;publishid=<span class="pl-pds">'</span></span>::<span class="pl-s">text</span> <span class="pl-ko">||</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstid</span>::<span class="pl-s">text</span> <span class="pl-k">AS</span> urlveranst
+   <span class="pl-k">FROM</span> veranstaltung
+   <span class="pl-k">LEFT JOIN</span> k_semester <span class="pl-k">ON</span> <span class="pl-c1">k_semester</span>.<span class="pl-c1">semid</span> <span class="pl-ko">=</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">semester</span>
+   <span class="pl-k">LEFT JOIN</span> k_verart <span class="pl-k">ON</span> <span class="pl-c1">k_verart</span>.<span class="pl-c1">verartid</span> <span class="pl-ko">=</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">verartid</span>
+  <span class="pl-k">WHERE</span> (<span class="pl-c1">veranstaltung</span>.<span class="pl-c1">semester</span> <span class="pl-k">IN</span> ( <span class="pl-k">SELECT</span> <span class="pl-c1">k_semester</span>.<span class="pl-c1">semid</span>
+   <span class="pl-k">FROM</span> k_semester
+  <span class="pl-k">WHERE</span> <span class="pl-c1">k_semester</span>.<span class="pl-c1">semstatus</span> <span class="pl-ko">=</span> <span class="pl-cn">1</span>)) <span class="pl-k">AND</span> (<span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstid</span> <span class="pl-k">IN</span> ( <span class="pl-k">SELECT</span> <span class="pl-c1">r_vvzzuord</span>.<span class="pl-c1">veranstid</span>
+   <span class="pl-k">FROM</span> r_vvzzuord)) <span class="pl-k">AND</span> (<span class="pl-c1">veranstaltung</span>.<span class="pl-c1">aikz</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>A<span class="pl-pds">'</span></span>::bpchar <span class="pl-k">OR</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">aikz</span> IS <span class="pl-k">NULL</span>);</pre></div>
+
+<h3>
+<a id="sicht-zuordnung-veranstaltung-zu-personal" class="anchor" href="#sicht-zuordnung-veranstaltung-zu-personal" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sicht Zuordnung Veranstaltung zu Personal</h3>
+
+<p>(HIS_PERSONAL_VERANST)</p>
+
+<div class="highlight highlight-sql"><pre> <span class="pl-k">SELECT</span> <span class="pl-c1">r_verpers</span>.<span class="pl-c1">veranstid</span>, <span class="pl-c1">personal</span>.<span class="pl-c1">pid</span>, <span class="pl-c1">r_verpers</span>.<span class="pl-c1">sort</span>, <span class="pl-c1">k_verkenn</span>.<span class="pl-c1">dtxt</span> <span class="pl-k">AS</span> zustaendigkeit
+   <span class="pl-k">FROM</span> personal
+   <span class="pl-k">LEFT JOIN</span> r_verpers <span class="pl-k">ON</span> <span class="pl-c1">personal</span>.<span class="pl-c1">pid</span> <span class="pl-ko">=</span> <span class="pl-c1">r_verpers</span>.<span class="pl-c1">pid</span>
+   <span class="pl-k">LEFT JOIN</span> k_verkenn <span class="pl-k">ON</span> <span class="pl-c1">k_verkenn</span>.<span class="pl-c1">verkennid</span> <span class="pl-ko">=</span> <span class="pl-c1">r_verpers</span>.<span class="pl-c1">verkennid</span>;</pre></div>
+
+<h3>
+<a id="sicht-zur-pflege-der-Überschriften" class="anchor" href="#sicht-zur-pflege-der-%C3%9Cberschriften" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sicht zur Pflege der Überschriften</h3>
+
+<p>(HIS_UEBERSCHRIFT)</p>
+
+<div class="highlight highlight-sql"><pre> <span class="pl-k">SELECT</span> <span class="pl-c1">r_hierarchie</span>.<span class="pl-c1">uebergeord</span>, <span class="pl-c1">r_hierarchie</span>.<span class="pl-c1">untergeord</span>, <span class="pl-c1">r_hierarchie</span>.<span class="pl-c1">semester</span>, <span class="pl-c1">ueberschrift</span>.<span class="pl-c1">zeitstempel</span>, <span class="pl-c1">ueberschrift</span>.<span class="pl-c1">ueid</span>, <span class="pl-c1">ueberschrift</span>.<span class="pl-c1">eid</span>, <span class="pl-c1">ueberschrift</span>.<span class="pl-c1">txt</span>, <span class="pl-c1">ueberschrift</span>.<span class="pl-c1">quellid</span>, <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstid</span>
+   <span class="pl-k">FROM</span> r_hierarchie
+   <span class="pl-k">LEFT JOIN</span> ueberschrift <span class="pl-k">ON</span> <span class="pl-c1">ueberschrift</span>.<span class="pl-c1">ueid</span> <span class="pl-ko">=</span> <span class="pl-c1">r_hierarchie</span>.<span class="pl-c1">untergeord</span>
+   <span class="pl-k">LEFT JOIN</span> r_vvzzuord <span class="pl-k">ON</span> <span class="pl-c1">r_vvzzuord</span>.<span class="pl-c1">ueid</span> <span class="pl-ko">=</span> <span class="pl-c1">ueberschrift</span>.<span class="pl-c1">ueid</span>
+   <span class="pl-k">LEFT JOIN</span> veranstaltung <span class="pl-k">ON</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstid</span> <span class="pl-ko">=</span> <span class="pl-c1">r_vvzzuord</span>.<span class="pl-c1">veranstid</span>
+  <span class="pl-k">WHERE</span> <span class="pl-c1">r_hierarchie</span>.<span class="pl-c1">tabelle</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>ueberschrift<span class="pl-pds">'</span></span>::bpchar <span class="pl-k">AND</span> <span class="pl-c1">r_hierarchie</span>.<span class="pl-c1">beziehung</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>U<span class="pl-pds">'</span></span>::bpchar <span class="pl-k">AND</span> <span class="pl-c1">ueberschrift</span>.<span class="pl-c1">aikz</span> <span class="pl-ko">&lt;&gt;</span> <span class="pl-s1"><span class="pl-pds">'</span>I<span class="pl-pds">'</span></span>::bpchar
+  <span class="pl-k">ORDER BY</span> <span class="pl-c1">r_hierarchie</span>.<span class="pl-c1">sortierung</span>, <span class="pl-c1">ueberschrift</span>.<span class="pl-c1">txt</span>;</pre></div>
+
+<h3>
+<a id="sicht-zum-auslesen-der-veranstaltungsbeschreibung" class="anchor" href="#sicht-zum-auslesen-der-veranstaltungsbeschreibung" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sicht zum Auslesen der Veranstaltungsbeschreibung</h3>
+
+<p>(HIS_VERANST_KOMMENTAR)</p>
+
+<div class="highlight highlight-sql"><pre> <span class="pl-k">SELECT</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstid</span>, <span class="pl-c1">blobs</span>.<span class="pl-c1">txt</span> <span class="pl-k">AS</span> kommentar, <span class="pl-c1">r_blob</span>.<span class="pl-c1">sprache</span>
+   <span class="pl-k">FROM</span> veranstaltung
+   <span class="pl-k">LEFT JOIN</span> r_blob <span class="pl-k">ON</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstid</span> <span class="pl-ko">=</span> <span class="pl-c1">r_blob</span>.<span class="pl-c1">tabpk</span>
+   <span class="pl-k">LEFT JOIN</span> blobs <span class="pl-k">ON</span> <span class="pl-c1">r_blob</span>.<span class="pl-c1">blobid</span> <span class="pl-ko">=</span> <span class="pl-c1">blobs</span>.<span class="pl-c1">blobid</span>
+   <span class="pl-k">LEFT JOIN</span> k_semester <span class="pl-k">ON</span> <span class="pl-c1">k_semester</span>.<span class="pl-c1">semid</span> <span class="pl-ko">=</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">semester</span>
+  <span class="pl-k">WHERE</span> <span class="pl-c1">r_blob</span>.<span class="pl-c1">tabelle</span>::<span class="pl-s">text</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>veranstaltung<span class="pl-pds">'</span></span>::<span class="pl-s">text</span> <span class="pl-k">AND</span> <span class="pl-c1">r_blob</span>.<span class="pl-c1">spalte</span>::<span class="pl-s">text</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>kommentar<span class="pl-pds">'</span></span>::<span class="pl-s">text</span> <span class="pl-k">AND</span> (<span class="pl-c1">veranstaltung</span>.<span class="pl-c1">semester</span> <span class="pl-k">IN</span> ( <span class="pl-k">SELECT</span> <span class="pl-c1">k_semester</span>.<span class="pl-c1">semid</span>
+   <span class="pl-k">FROM</span> k_semester
+  <span class="pl-k">WHERE</span> <span class="pl-c1">k_semester</span>.<span class="pl-c1">semstatus</span> <span class="pl-ko">=</span> <span class="pl-cn">1</span>));</pre></div>
+
+<h3>
+<a id="sicht-zum-import-des-stundenplans" class="anchor" href="#sicht-zum-import-des-stundenplans" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sicht zum Import des Stundenplans</h3>
+
+<p>(HIS_STDP)</p>
+
+<div class="highlight highlight-sql"><pre> <span class="pl-k">SELECT DISTINCT</span> <span class="pl-c1">veransttermin</span>.<span class="pl-c1">vtid</span> <span class="pl-k">AS</span> terminid, <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstid</span>, <span class="pl-c1">r_beleg</span>.<span class="pl-c1">tabpk</span> <span class="pl-k">AS</span> mtknr, <span class="pl-c1">r_beleg</span>.<span class="pl-c1">status</span>
+   <span class="pl-k">FROM</span> veransttermin, veranstaltung, r_beleg
+  <span class="pl-k">WHERE</span> <span class="pl-c1">veransttermin</span>.<span class="pl-c1">tabpk</span> <span class="pl-ko">=</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstid</span> <span class="pl-k">AND</span> <span class="pl-c1">veransttermin</span>.<span class="pl-c1">tabpk</span> <span class="pl-ko">=</span> <span class="pl-c1">r_beleg</span>.<span class="pl-c1">veranstid</span> <span class="pl-k">AND</span> <span class="pl-c1">veransttermin</span>.<span class="pl-c1">tabelle</span>::<span class="pl-s">text</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>veranstaltung<span class="pl-pds">'</span></span>::<span class="pl-s">text</span> <span class="pl-k">AND</span> (<span class="pl-c1">veransttermin</span>.<span class="pl-c1">parallelid</span> <span class="pl-ko">=</span> <span class="pl-c1">r_beleg</span>.<span class="pl-c1">parallelid</span> <span class="pl-k">OR</span> (<span class="pl-c1">veransttermin</span>.<span class="pl-c1">parallelid</span> <span class="pl-ko">=</span> <span class="pl-cn">0</span> <span class="pl-k">OR</span> <span class="pl-c1">veransttermin</span>.<span class="pl-c1">parallelid</span> IS <span class="pl-k">NULL</span>) <span class="pl-k">AND</span> (<span class="pl-c1">r_beleg</span>.<span class="pl-c1">parallelid</span> <span class="pl-ko">=</span> <span class="pl-cn">0</span> <span class="pl-k">OR</span> <span class="pl-c1">r_beleg</span>.<span class="pl-c1">parallelid</span> IS <span class="pl-k">NULL</span>)) <span class="pl-k">AND</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">semester</span> <span class="pl-ko">&gt;=</span> (( <span class="pl-k">SELECT</span> <span class="pl-c1">s_lsfsys</span>.<span class="pl-c1">aktsem</span>
+           <span class="pl-k">FROM</span> s_lsfsys)) <span class="pl-k">AND</span> <span class="pl-c1">r_beleg</span>.<span class="pl-c1">tabelle</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>sospos<span class="pl-pds">'</span></span>::bpchar <span class="pl-k">AND</span> (<span class="pl-c1">r_beleg</span>.<span class="pl-c1">status</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>AN<span class="pl-pds">'</span></span>::bpchar <span class="pl-k">OR</span> <span class="pl-c1">r_beleg</span>.<span class="pl-c1">status</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>ZU<span class="pl-pds">'</span></span>::bpchar <span class="pl-k">OR</span> <span class="pl-c1">r_beleg</span>.<span class="pl-c1">status</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>SP<span class="pl-pds">'</span></span>::bpchar <span class="pl-k">OR</span> <span class="pl-c1">r_beleg</span>.<span class="pl-c1">status</span> <span class="pl-ko">=</span> <span class="pl-s1"><span class="pl-pds">'</span>WL<span class="pl-pds">'</span></span>::bpchar) <span class="pl-k">AND</span> <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">aikz</span> <span class="pl-ko">&lt;&gt;</span> <span class="pl-s1"><span class="pl-pds">'</span>I<span class="pl-pds">'</span></span>::bpchar
+  <span class="pl-k">ORDER BY</span> <span class="pl-c1">veransttermin</span>.<span class="pl-c1">vtid</span>, <span class="pl-c1">veranstaltung</span>.<span class="pl-c1">veranstid</span>, <span class="pl-c1">r_beleg</span>.<span class="pl-c1">tabpk</span>, <span class="pl-c1">r_beleg</span>.<span class="pl-c1">status</span>;</pre></div>
+
+<h1>
+<a id="beispieldaten" class="anchor" href="#beispieldaten" aria-hidden="true"><span class="octicon octicon-link"></span></a>Beispieldaten</h1>
+
+<p>Zu Testzwecken kann eine Datenbank mit den Beispieltabellen gefüllt werden, die in der Datei beispieltabellen.sql stehen.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/learnweb">learnweb</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
