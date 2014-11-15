@@ -1,0 +1,40 @@
+.content {
+    margin: 0;
+}
+.all {
+    margin: auto;
+    width: 700px;
+}
+@media print {
+    .all {
+       margin 0;
+       width: auto
+    }
+}
+.content-block {
+    margin-bottom: 0px;
+}
+.tip {
+   border: 2px solid #B1C805;
+}
+
+.example{
+    border: 2px solid #009DD1;
+}
+.footnote {
+    border: 2px solid #C6C6C6;
+}
+
+
+* {
+        background: transparent !important;
+        color: #000 !important;
+        box-shadow:none !important;
+        text-shadow: none !important;
+}
+
+@page {
+  @bottom-right {
+    content: counter(page) " of " counter(pages);
+  }
+}

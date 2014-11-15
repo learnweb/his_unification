@@ -1,0 +1,51 @@
+<!doctype html>
+{% assign site_pages = (site.pages | sort:"name") %}
+
+<html>
+  <head>
+    {% include head.html %}
+  </head>
+  <body>
+
+    <section class="container">
+
+      {% include header.html %}
+
+      <section class="content">
+
+      <article class="content-block">
+          <h2>{{ page.title }}</h2>
+          {{ content }}
+          
+          <div class="dimmed">Kapitelübersicht</div>
+          
+
+{% for chapter in site.chapters %}
+    {% capture url %}/chapters/{{ chapter | replace: ' ', '_' | downcase }}{% endcapture %}
+    {% capture indexurl %}{{ url }}/index.html{% endcapture %}
+    {% if page.url == indexurl %}
+        <!-- we found the chapter of the page object that is rendered -->
+        
+        <ul class="subchapter-list">
+        {% for sub_page in site_pages %}
+          {% if sub_page.url contains url %}
+            {% unless sub_page.url == indexurl %}
+                <li><a href="{{ site.url }}{{ sub_page.url | replace: '.html', '.html' }}">{{ sub_page.title }}</a></li>
+            {% endunless %}
+          {% endif %}
+        {% endfor %}
+        </ul>
+        </article>
+        
+    {% endif %}
+{% endfor %}
+
+        {% include footer.html %}
+      </section>
+
+    </section>
+
+    {% include sidebar.html %}
+
+ </body>
+</html>

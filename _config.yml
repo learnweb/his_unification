@@ -1,0 +1,29 @@
+lsi: false
+
+url: /his_unification
+
+exclude:
+  - README.md
+  - CNAME
+  - TODO.md
+  - script
+  - Procfile
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE-CC-BY.textile
+  - cmd.lnk
+  - vendor
+timezone: Europe/Berlin
+
+github_repo: https://github.com/learnweb/his_unification
+github_git: git://github.com/learnweb/his_unification.git
+
+page_name: 'Dokumentation HIS-LSF-Plugin'
+
+university_name: Westfälische Wilhelms-Universität Münster
+university_name_short: WWU Münster
+
+chapters:
+- installation
+- enrol_database
+- cal_stundenplan

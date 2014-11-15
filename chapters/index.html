@@ -1,0 +1,32 @@
+---
+layout: default
+title: Cookbook
+---
+{% assign site_pages = (site.pages | sort:"name") %}
+<article class="content-block">
+
+  <h3 class="sidebar-title">Kapitel</h3>
+
+  <ol class="navigation chapters-list">
+    {% for chapter in site.chapters %}
+      {% capture url %}/chapters/{{ chapter | replace: ' ', '_' | downcase }}{% endcapture %}
+      {% capture indexurl %}{{ url }}/index.html{% endcapture %}
+      <li class="chapter">
+         {% for site_page in site_pages %}
+             {% if site_page.url == indexurl %}
+                 <h4><a class="chapter-title" href="{{ site.url }}{{ indexurl }}">{{ site_page.title }}</a></h4>
+             {% endif %}
+          {% endfor %}
+        <ul class="pseudo-list recipes-list">
+          {% for page in site_pages %}
+            {% if page.url contains url %}
+              {% unless page.url == indexurl %}
+                <li class="list-item recipe"><a class="recipe-title" href="{{ site.url }}/{{ page.url | replace: '.html', '' }}">{{ page.title }}</a></li>
+              {% endunless %}
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ol>
+</article>

@@ -1,0 +1,11 @@
+.rvmrc
+_site
+vendor
+.bundle
+Gemfile.lock
+
+*.swp
+*.swo
+
+.DS_Store
+*.lnk

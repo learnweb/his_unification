@@ -1,0 +1,53 @@
+---
+title: Printversion des Handbuchs
+---
+<!doctype html>
+<html>
+  <head>
+    {% include head.html %}
+    <link rel="stylesheet" href="{{site.url}}/css/print.css" type="text/css">
+  </head>
+  <body>
+    <section class="all">
+    
+      {% include header.html %}
+      
+{% assign site_pages = (site.pages | sort:"name")  %}
+{% assign chapter_number = 0 %}
+<section class="content">
+  {% for chapter in site.chapters %}
+      {% capture url %}/chapters/{{ chapter | replace: ' ', '_' | downcase }}{% endcapture %}
+      {% capture indexurl %}{{ url }}/index.html{% endcapture %}
+               {% for site_page in site_pages %}
+             {% if site_page.url == indexurl %}
+                 {% assign chapter_number = chapter_number | plus:'1' %}
+                 <h1 class="title index_title">
+                    {{ chapter_number }}. {{ site_page.title }}
+                 </h1>
+                 <section class="content-block recipe-content index_content" markdown="1">
+                    {{ site_page.content }}
+                 </section>
+             {% endif %}
+          {% endfor %}
+          
+          {% assign subchapter_number = 0 %}
+          {% for site_page in site_pages %}
+            {% if site_page.url contains url %}
+              {% unless site_page.url == indexurl %}
+                {% assign subchapter_number = subchapter_number | plus: '1' %}
+                <h1 class="title recipe_title">{{ chapter_number }}.{{ subchapter_number }}. {{site_page.title}}</h1>
+                <section class="content-block recipe-content recipe_content"  markdown="1">
+                    {{ site_page.content }}
+                </section>
+              {% endunless %}
+            {% endif %}
+            
+          {% endfor %}
+    {% endfor %}
+</section>
+      
+      {% include footer.html %}
+      
+    </section>
+ </body>
+</html>

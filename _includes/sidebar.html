@@ -1,0 +1,48 @@
+{% assign site_pages = (site.pages | sort:"name") %}
+<aside id="sidebar">
+
+  <section class="sidebar-block block-short">
+    <nav class="navigation pages-nav home-nav">
+      <h6><a class="nav-link" href="{{site.url}}"><span class="entypo">&oacute;</span>{{ site.page_name }}</a></h6>
+      <small class="dimmed"> {{site.university_name }}</small>
+    </nav>
+  </section>
+
+  <section class="sidebar-block">
+    <h5 class="sidebar-title">Inhaltsverzeichnis</h5>
+    <ol class="navigation chapters-list">
+      {% for chapter in site.chapters %}
+        {% capture url %}/chapters/{{ chapter | replace: ' ', '_' | downcase }}{% endcapture %}
+        {% capture indexurl %}{{ url }}/index.html{% endcapture %}
+        <li class="chapter">
+          {% for site_page in site_pages %}
+             {% if site_page.url == indexurl %}
+                <div class="sidebar-subtitle{% if page.url == indexurl %} page-active{% endif %}"><strong><a class="chapter-title" href="{{ site.url }}{{ indexurl }}">{{ site_page.title }}</a></strong></div>
+             {% endif %}
+          {% endfor %}
+          <ul class="pseudo-list recipes-list">
+            {% for site_page in site_pages %}
+              {% if site_page.url contains url %}
+                {% unless site_page.url == indexurl %}
+                  <li class="list-item recipe{% if page.url == site_page.url %} page-active{% endif %}"><a class="recipe-title" href="{{ site.url}}{{ site_page.url | replace: '.html', '.html' }}">{{ site_page.title }}</a></li>
+                {% endunless %}
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section class="sidebar-block">
+    <nav class="navigation pages-nav">
+      <ul class="plain-list inline-list">
+        <!-- li><a class="nav-link" href="{{site.url}}/contributing"><span class="entypo">c</span>Contribute</a></li>
+        <li><a class="nav-link" href="{{site.url}}/authors"><span class="entypo">,</span>Authors</a></li>
+        <li><a class="nav-link" href="{{site.url}}/license"><span class="entypo">&copy;</span>License</a></li-->
+      </ul>
+      <small class="thin dimmed">(last updated {{ site.time | date_to_long_string }})</small>
+    </nav>
+  </section>
+
+</aside>
