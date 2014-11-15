@@ -26,7 +26,7 @@ Die Veranstaltungsbeschreibung im LSF wird somit um einen Link zu der Moodle-Ver
 
 ##Erweiterung: Automatisierte Studenteneinschreibung
 Es ist möglich durch eine Anpassung des Database-Enrolmentplugins Studenten automatisiert in die Kurse einzuschreiben, die ins Learnweb importiert wurden. 
-Genauere Informationen finden sich dazu unter [HISLSF Enrolment](/chapters/enrol_database/index.html).
+Genauere Informationen finden sich dazu unter [HISLSF Enrolment]({{site.url}}/chapters/enrol_database/index.html).
 
 ##Stundenplan-Import
-Um den Stundenplanimport zu aktivieren, müssen geringfügige Änderungen im Kalender-Modul von Moodle vorgenommen werden. Genauere Informationen finden sich dazu [Stundenplan Import](/chapters/cal_stundenplan/index.html).
+Um den Stundenplanimport zu aktivieren, müssen geringfügige Änderungen im Kalender-Modul von Moodle vorgenommen werden. Genauere Informationen finden sich dazu [Stundenplan Import]({{site.url}}/chapters/cal_stundenplan/index.html).
