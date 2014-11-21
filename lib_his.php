@@ -568,7 +568,7 @@ function insert_missing_helptable_entries($debugoutput=false, $tryeverything=fal
                             $DB->insert_record("local_lsf_categoryparenthood", $entry, true);
                             if ($debugoutput) echo "?"; //((
                         } catch(Exception $e) {
-                            if ($debugoutput) print("<pre>FEHLER2 ".print_r($e,true)."".print_r($DB->get_last_error(),true));
+                            if ($debugoutput) mtrace("<pre>FEHLER2 ".print_r($e,true)."".print_r($DB->get_last_error(),true),'');
                         }
                     }
                     $records2_unique[$child][$parent] = true;
@@ -583,12 +583,12 @@ function insert_missing_helptable_entries($debugoutput=false, $tryeverything=fal
                     $entry->txt2 = delete_bad_chars($entry->txt2);
                     $DB->update_record('local_lsf_category', $entry, true);
                 } catch(Exception $e) {
-                    if ($debugoutput) print("<pre>FEHLER2 ".print_r($e,true)."".print_r($DB->get_last_error(),true));
+                    if ($debugoutput) mtrace("<pre>FEHLER2 ".print_r($e,true)."".print_r($DB->get_last_error(),true),'');
                 }
             }
         }
         if ($debugoutput && (($a % 101) == 0)) {
-            echo "<br>&nbsp;&nbsp;"; $a++;
+            mtrace("<br>&nbsp;&nbsp;"); $a++;
             flush();
         }
     }

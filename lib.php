@@ -281,3 +281,27 @@ function add_path_description($choices) {
 	}
 	return $choices;
 }
+
+/**
+ * Function to be run periodically according to the scheduled task.
+ *
+ * NOTE: Since 2.7.2 this function is run by scheduled task rather
+ * than standard cron.
+ */
+function local_lsf_unification_cron() {
+    global $CFG, $pgDB;
+    include_once (dirname(__FILE__) . '/class_pg_lite.php');
+    include_once (dirname(__FILE__) . '/lib_features.php');
+
+    $pgDB = new pg_lite();
+    $connected = $pgDB->connect();
+    $recourceid = $pgDB->connection;
+
+    mtrace(
+            '! = unknown category found, ? = unknown linkage found;' . 'Verbindung: ' .
+                     ($connected ? 'ja' : 'nein') . ' (' . $recourceid . ')');
+
+    insert_missing_helptable_entries(true, false);
+
+    $pgDB->dispose();
+}

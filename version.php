@@ -24,5 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2013090303;
-$plugin->component = 'local_lsf_unification'; 
+$plugin->version  = 2013090304;
+$plugin->component = 'local_lsf_unification';
+$plugin->cron      = 86400;      // once a day
