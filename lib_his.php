@@ -285,14 +285,15 @@ function get_default_shortname($lsf_course, $long=false) {
  */
 function get_default_summary($lsf_course) {
     global $pgDB;
-    $summary = "(".$lsf_course->urlveranst.")";
+    $summary = '';
     $q = pg_query($pgDB->connection, "SELECT kommentar FROM ". HIS_VERANST_KOMMENTAR ." WHERE veranstid = '".$lsf_course->veranstid."'");
-    if ($sum_object = pg_fetch_object($q)) {
-        if (!empty($sum_object->kommentar)) {
-            $summary = $sum_object->kommentar." ".$summary;
+    while ($sum_object = pg_fetch_object($q)) {
+        if (!empty($sum_object->kommentar) && strpos($summary, $sum_object->kommentar) === false) {
+            $summary .= '<p>' . $sum_object->kommentar. '</p>';
         }
     }
-    return utf8_encode($summary);
+    $summary = utf8_encode($summary) . '<p><a href="'. $lsf_course->urlveranst . '">Kurs im HIS-LSF</a></p>';
+    return $summary;
 }
 
 /**
