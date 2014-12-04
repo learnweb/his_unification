@@ -240,26 +240,26 @@ function get_or_create_support_user() {
 }
 
 function get_or_create_user($username, $email) {
-	global $DB, $CFG;
-	if (!empty($username) && ($usr = $DB->get_record('user', array('username'=>$username)))) {
-		if (empty($usr->email)) {
-			$usr->email = $email;
-		}
-		return $usr;
-	} elseif ($usr = $DB->get_record('user', array('email'=>$email))) {
-		return $usr;
-	} else {
-		$user['firstname'] = "";
-		$user['lastname'] = "";
-		$user['username'] = $username;
-		$user['email'] = $email;
-		$user['confirmed'] = false;
-		$user['mnethostid'] = $CFG->mnet_localhost_id;
-        $user['auth'] = 'ldap';
+    global $DB, $CFG;
+    if (!empty($username) && ($usr = $DB->get_record('user', array('username' => $username)))) {
+        if (empty($usr->email)) {
+            $usr->email = $email;
+        }
+        return $usr;
+    } elseif ($usr = $DB->get_record('user', array('email' => $email))) {
+        return $usr;
+    } else {
+        $user['firstname'] = "";
+        $user['lastname'] = "";
+        $user['username'] = $username;
+        $user['email'] = $email;
+        $user['confirmed'] = true; // if confirmation is neccessary, confirm-key is needed
+        $user['mnethostid'] = $CFG->mnet_localhost_id;
+        $user['auth'] = 'ldap'; // TODO default auth method should be configurable
         $user['lang'] = $CFG->lang;
-		$user['id'] = user_create_user($user);
-		return $DB->get_record('user', array('id'=>$user['id']));
-	}
+        $user['id'] = user_create_user($user);
+        return $DB->get_record('user', array('id' => $user['id']));
+    }
 }
 
 /**
