@@ -32,7 +32,7 @@ echo $OUTPUT->header();
 $courseid   = required_param('courseid', PARAM_INT);
 $acceptorid = get_course_acceptor($courseid);
 $files_backups = get_backup_files($acceptorid);
-$files_templates = get_template_files();
+$files_templates = array();
 $filetype  	= optional_param('filetype', null, PARAM_RAW);
 $fileid  	= optional_param('fileid', null, PARAM_RAW);
 $fileinfo	= null;

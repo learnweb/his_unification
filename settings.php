@@ -65,6 +65,8 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
         get_string('restore_old_courses', 'local_lsf_unification'), get_string('restore_old_courses_description', 'local_lsf_unification'), 1));
     $settings->add(new admin_setting_configcheckbox('local_lsf_unification/restore_templates',
         get_string('restore_templates', 'local_lsf_unification'), get_string('restore_templates_description', 'local_lsf_unification'), 1));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/restore_templates_category',
+        get_string('restore_templates_category', 'local_lsf_unification'), get_string('restore_templates_category_description', 'local_lsf_unification'), -1, PARAM_INT));
     $settings->add(new admin_setting_configcheckbox('local_lsf_unification/enable_enrol_ext_db',
             get_string('enable_enrol_ext_db', 'local_lsf_unification'), get_string('enable_enrol_ext_db_description', 'local_lsf_unification'), 0));
     

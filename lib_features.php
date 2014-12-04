@@ -183,48 +183,35 @@ function get_backup_files($additionalid = null) {
 /*
  * return an array of fileinfo-objects that lists template files
 */
-function get_template_files() {
+function get_template_courses() {
     global $DB, $USER;
-    //disable restore feature temporarily
-    $backuppath = get_config('backup','backup_auto_destination').'/templates';
     $result = array();
-    $files = array();
-    if (!($handle = opendir($backuppath))) return $result;
-    // read filetree
-    $filenames = array();
-    while (false !== ($entry = readdir($handle))) {
-        if ($entry != "." && $entry != ".." && is_dir($backuppath."/".$entry)) {
-            $handle2 = opendir($backuppath."/".$entry);
-            while (false !== ($entry2 = readdir($handle2))) {
-                $filenames[] = $entry."/".$entry2;
-            }
-        } else {
-            $filenames[] = $entry;
-        }
+    // retrieve main template category
+    $root = $DB->get_record("course_categories", array("id" => get_config('local_lsf_unification', 'restore_templates_category')));
+    if ($root===false) return $result;
+    $cats = array("" => $root->id);
+    $subcategories = $DB->get_records("course_categories", array("parent" => $root->id), 'sortorder ASC');
+    foreach ($subcategories as $sub) {
+        $cats[$sub->name] = $sub->id;
     }
-    // build file-info objects
-    foreach ($filenames as $entry) {
-        $matches = array();
-        if (preg_match('/^((.+)\/)?template(\d{1,})\.mbz$/mi',$entry,$matches)) {
-            $file = new stdClass();
-            $file->name = $entry;
-            $file->path = $backuppath;
-            $file->info = "no info available";
-            $file->category = isset($matches[2])?$matches[2]:"";
-            $txt_file = $file->path."/".substr($file->name,0,-3)."txt";
-            if (file_exists($txt_file)) {
-                $file->info = file_get_contents($txt_file);
-            }
-            $files[$entry] = $file;
+    // collect template courses
+    foreach ($cats as $catname => $catid) {
+        $templates = $DB->get_records("course", array("category" => $catid), 'sortorder ASC');
+        foreach ($templates as $template) {
+            $result[] = build_temp_course_info($template, $catname);
         }
-    }
-    closedir($handle);
-    //sort files and prepare output
-    ksort($files);
-    foreach ($files as $file) {
-        $result[md5($file->name."_".$USER->id)] = $file;
     }
     return $result;
+}
+
+function build_temp_course_info($crs, $cat) {
+    $course = new stdClass();
+    $course->courseid = $crs->id;
+    $course->name = $crs->fullname;
+    $course->info = $crs->summary;
+    $course->lastupdate = $crs->timemodified;
+    $course->category = $cat;
+    return $course;
 }
 
 /*

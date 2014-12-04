@@ -42,7 +42,6 @@ $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 echo $OUTPUT->header();
-
 if (!empty($requestid)) {
     if (($request = $DB->get_record("local_lsf_course", array("id" => $requestid))) && ($request->requeststate == 1)) {
         $veranstid = $request->veranstid;
@@ -108,7 +107,7 @@ function print_res_selection() {
         $backupfiles = get_backup_files($acceptorid);
     }
     if (get_config('local_lsf_unification', 'restore_templates')) {
-        $templatefiles = get_template_files();
+        $templatefiles = get_template_courses();
     }
     if (empty($backupfiles) && empty($templatefiles)) {
         print_final();
@@ -132,10 +131,9 @@ function print_res_selection() {
                     echo '<li style="list-style-image: url('.$OUTPUT->pix_url("t/collapsed")->out(true).')" id="reslistselector'.++$i.'"><a onclick="'."document.getElementById('reslist".($i)."').style.display=((document.getElementById('reslist".$i."').style.display == 'none') ? 'block' : 'none'); document.getElementById('reslistselector".($i)."').style.listStyleImage=((document.getElementById('reslist".$i."').style.display == 'none') ? 'url(".$OUTPUT->pix_url("t/collapsed")->out(true).")' : 'url(".$OUTPUT->pix_url("t/expanded")->out(true).")');".'" style="cursor:default">[<b>'.$name.'</b>]</a></b><ul id="reslist'.$i.'" style="display:none">';
                 }
                 foreach ($catfiles as $id => $fileinfo) {
-                    $lines = explode("\n", trim($fileinfo->info, " \t\r\n"),  2 );
-                    echo '<li style="list-style-image: url('.$OUTPUT->pix_url("i/navigationitem")->out(true).')"><a href="duplicate_course.php?courseid='.$courseid."&filetype=t&fileid=".$id.'">'.utf8_encode($lines[0])."</a>";
-                    if(count($lines) == 2)
-                        echo "<br/>".utf8_encode($lines[1]);
+                    echo '<li style="list-style-image: url('.$OUTPUT->pix_url("i/navigationitem")->out(true).')"><a href="duplicate_template.php?courseid='.$courseid."&templateid=".$id.'">'.$fileinfo->name."</a>";
+                    if(!empty($fileinfo->info))
+                        echo "<br/>".$fileinfo->info;
                     echo "</li>";
                 }
                 if (!empty($name)) echo "</ul></li>";
@@ -150,7 +148,7 @@ function print_res_selection() {
         if (get_config('local_lsf_unification', 'restore_old_courses') && !empty($backupfiles)) {
             echo "<b>".get_string('template_from_course','local_lsf_unification',$alternative_counter++)."</b><ul>";
             foreach ($backupfiles as $id => $fileinfo) {
-                echo "<li><a href='duplicate_course.php?courseid=".$courseid."&filetype=b&fileid=".$id."'>".$fileinfo->course->fullname." (".$fileinfo->datetime.")</a></li>";
+                echo '<li style="list-style-image: url('.$OUTPUT->pix_url("i/navigationitem")->out(true).')"'."><a href='duplicate_course.php?courseid=".$courseid."&filetype=b&fileid=".$id."'>".$fileinfo->course->fullname." (".$fileinfo->datetime.")</a></li>";
             }
             echo "</ul>";
         }
