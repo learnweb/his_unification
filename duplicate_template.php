@@ -58,8 +58,8 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
                 die("error ##2");
             }
             $context_tempalte = context_course::instance($courseid, MUST_EXIST);
-            // do backup
-            $bc = new backup_controller(backup::TYPE_1COURSE, $fileinfo->courseid, backup::FORMAT_MOODLE, backup::INTERACTIVE_NO, backup::MODE_GENERAL, $USER->id);
+            // do backup  //backup::MODE_SAMESITE better performance
+            $bc = new backup_controller(backup::TYPE_1COURSE, $fileinfo->courseid, backup::FORMAT_MOODLE, backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $USER->id);
             $bc->execute_plan();
             $results = $bc->get_results();
             $results['backup_destination']->copy_content_to($backupfile);
