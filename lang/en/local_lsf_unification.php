@@ -189,3 +189,6 @@ $string['eventcourse_imported'] = 'Course imported';
 $string['eventmatchingtable_updated'] = 'Matchingtable updated';  
 $string['eventcourse_duplicated'] = 'Course duplicated';  
 
+$string['restore_templates_category'] = 'Template Category';
+$string['restore_templates_category_description'] = 'Category ID that contains the template courses (one sublevel of categories allowed)';  
+
