@@ -40,19 +40,20 @@ $course = $DB->get_record('course', array("id"=>$courseid));
 if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification', 'duplication_timeframe')) {
     echo "<b>".get_string('duplication_timeframe_error','local_lsf_unification',get_config('local_lsf_unification', 'duplication_timeframe'))."</b><br>";
 } else {
-        if (!get_config('local_lsf_unification', 'restore_templates')) {
-            die("error #x");
-        }
-        // get Template
-        if (empty($templates[$templateid])) die("error #0");
-        $fileinfo = $templates[$templateid];
-        // create temp folder
-        $tmpdir = $CFG->tempdir . '/backup';
-        $foldername = "template_".$fileinfo->courseid."_".$fileinfo->lastupdate;
-        $pathname = $tmpdir.'/'.$foldername;
-        $backupfile = $pathname.".backup";
-        // create backup
-        if (!file_exists($backupfile)) {
+    if (!get_config('local_lsf_unification', 'restore_templates')) {
+        die("error #x");
+    }
+    // get Template
+    if (empty($templates[$templateid])) die("error #0");
+    $fileinfo = $templates[$templateid];
+    // create temp folder
+    $tmpdir = $CFG->tempdir . '/backup';
+    $foldername = "template_".$fileinfo->courseid."_".$fileinfo->lastupdate;
+    $pathname = $tmpdir.'/'.$foldername;
+    $backupfile = $pathname.".backup";
+    // create backup
+    if (!file_exists($backupfile)) {
+        try {
             // get role
             if (!enrol_try_internal_enrol($fileinfo->courseid, $USER->id, $creatorroleid)){
                 die("error ##2");
@@ -66,13 +67,19 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
             // cleanup backupcontroller and role
             $bc->destroy();
             unset($bc);
+            // final block is supported from php 5.5 onwards
+            role_unassign($creatorroleid, $USER->id, $context_tempalte->id);
+        } catch (Exception $e) {
+            // dump rights
             role_unassign($creatorroleid, $USER->id, $context_tempalte->id);
         }
-        // unpack backup
-        $foldername = restore_controller::get_tempdir_name($courseid, $USER->id);
-        $pathname = $tmpdir.'/'.$foldername;
-        lsf_unification_unzip($backupfile,$pathname);
-        // get rights
+    }
+    // unpack backup
+    $foldername = restore_controller::get_tempdir_name($courseid, $USER->id);
+    $pathname = $tmpdir.'/'.$foldername;
+    lsf_unification_unzip($backupfile,$pathname);
+    // get rights
+    try {
         $context = context_course::instance($courseid, MUST_EXIST);
         if (!enrol_try_internal_enrol($course->id, $USER->id, $creatorroleid)){
             die("error ##");
@@ -87,8 +94,12 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
                 'other' => $foldername
         ));
         $event->trigger();
+        // final block is supported from php 5.5 onwards
+        role_unassign($creatorroleid, $USER->id, $context->id);
+    } catch (Exception $e) {
         // dump rights
         role_unassign($creatorroleid, $USER->id, $context->id);
+    }
 }
 echo "<a href='request.php?courseid=".$courseid."&answer=7'>".get_string('continue')."</a><br>";
 
