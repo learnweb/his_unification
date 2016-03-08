@@ -184,7 +184,7 @@ function get_teachers_course_list($username, $longinfo = false) {
         $result->veranstid = $course->veranstid;
         $result->info = utf8_encode($course->titel) .
                  ($longinfo ? ("&nbsp;&nbsp;(" . $course->semestertxt .
-                 ((!empty($course->urlveranst)) ? (" , <a href='" . $course->urlveranst .
+                 ((!empty($course->urlveranst)) ? (", <a href='" . $course->urlveranst .
                  "'> KVV-Nr. " . $course->veranstnr . "</a>") : "") . ")") : "");
         $courselist[$course->veranstid] = $result;
     }
