@@ -52,7 +52,7 @@ $string['dbpass'] = 'Pass';
 $string['dbpass_description'] = 'PostgreDB-Password';
 $string['dbuser'] = 'User';
 $string['dbuser_description'] = 'PostgreDB-User';
-$string['db_not_available'] = "Die Import-Funktion ist zurzeit leider nicht verf&uuml;gbar. Bitte nutzen sie das regul&auml;re Beantragungsformular. (<a href='../../course/request.php'>Link</a>)";
+$string['db_not_available'] = "Die Import-Funktion ist zurzeit leider nicht verf&uuml;gbar. Bitte nutzen sie das <a href='../../course/request.php'>regul&auml;re Beantragungsformular</a> (<a href='../../course/request.php'>&rarr; Link</a>).";
 $string['defaultcategory'] = 'Standard Kategorie';
 $string['defaultcategory_description'] = 'Falls keine Kategorie eingetragen werden kann wird diese Kategorie angegeben';
 $string['max_import_age'] = 'Maximales Kurs-Alter';
@@ -77,7 +77,7 @@ $string['answer_goto_old_requestform'] = "Sie m&ouml;chten eine Kursbeantragung 
 
 
 $string['info_course_in_lsf_and_visible'] = '<p>Dass der gew&uuml;nschte Kurs nicht aufgelistet wird, kann folgende Ursachen haben:</p><ol><li>Es ist weniger als 24 Stunden her, dass die Veranstaltung in das HIS-LSF eingetragen wurde. Die Daten werden nur einmal t&auml;glich aus dem System &uuml;bernommen. Wenn kein weiterer Fehler vorliegt, warten Sie bitte bis morgen, dann sollte eine &Uuml;bernahme in das Learnweb funktionieren.</li><li>Die Kennung, mit der Sie im Learnweb angemeldet sind (Kennung: {$a}), ist keiner Person im HIS-LSF zugeordnet.<br /> Wenden Sie sich bitte an eine Person Ihres Fachbereichs, die Bearbeitungsrechte im HIS-LSF besitzt. Im Normalfall haben Sekretariate bzw. das Dekanat Bearbeitungsrechte im HIS-LSF. Ihr Profil im HIS-LSF muss bearbeitet werden (<strong>Person bearbeiten</strong>). In Registerkarte <strong>2</strong> muss der Bereich <strong>Login</strong> gew&auml;hlt werden, und im Feld <strong>Login</strong> Ihre ZIV-Nutzerkennung eingetragen werden (vgl. Abb.). Die &Auml;nderung wird erst am n&auml;chsten Tag wirksam.<p style="text-align: center;"><img alt="Datenbearbeiten" src="http://www.uni-muenster.de/LearnWeb/diverse/HIS-Person_bearbeiten.png" /></p></li></ol>';
-$string['info_goto_old_requestform'] = "Bitte nutzen Sie die manuelle Kursbeantragung um Ihren Kurs zu beantragen. (<a href='../../course/request.php'>Link</a>) Geben Sie bitte unbedingt einen Verweis auf den Kurs im HIS-LSF an (einen Link bzw. genaue Kursbezeichnung).<br/> Ihr Antrag wird vom Learnweb-Support schnellst m&ouml;glichst bearbeitet.";
+$string['info_goto_old_requestform'] = "Bitte nutzen Sie die <a href='../../course/request.php'>manuelle Kursbeantragung</a>, um Ihren Kurs zu beantragen (<a href='../../course/request.php'>&rarr; Link</a>). Geben Sie bitte unbedingt einen Verweis auf den Kurs im HIS-LSF an (einen Link bzw. genaue Kursbezeichnung).<br/> Ihr Antrag wird vom Learnweb-Support schnellst m&ouml;glichst bearbeitet.";
 
 $string['config_auto_update'] = "Automatische Aktualisierung";
 $string['config_auto_update_duration'] = "Neuanmeldungen&Abmeldungen zum Kurs (im HIS-LSF) ins Learnweb &uuml;bernehmen f&uuml;r";
