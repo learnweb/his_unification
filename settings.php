@@ -2,7 +2,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($hassiteconfig) { // needs this condition or there is error on login page
-    global $CFG;
+
     $settings = new admin_settingpage('local_lsf_unification', 'LSF Unification Config');
     $ADMIN->add('localplugins', $settings);
 
