@@ -16,6 +16,8 @@ $requestid = optional_param('requestid', null, PARAM_INT);
 
 if (!empty($answer) && !empty($requestid)) {
     $PAGE->set_url('/local/lsf_unification/request.php', array("answer" => $answer, "requestid" => $requestid));
+} else if (!empty($answer) && !empty($veranstid)) {
+    $PAGE->set_url('/local/lsf_unification/request.php', array("answer" => $answer, "veranstid" => $veranstid));
 } else {
     $PAGE->set_url('/local/lsf_unification/request.php');
 }
