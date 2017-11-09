@@ -102,7 +102,7 @@ $string['config_summary'] = "Summary";
 $string['config_summary_desc'] = "(Will be displayed in course-search)";
 
 $string['categoryinvalid'] = 'please choose a category from this selection';
-$string['email_error'] = 'The category wish wasn\'t sent. Please contact the support team manually. ('.$CFG->supportemail.')';
+$string['email_error'] = 'The category wish wasn\'t sent. Please contact the support team manually.';
 $string['email_success'] = 'Email regarding category wish sent.';
 $string['new_request'] = 'request another course';
 $string['noConnection'] = "A connection to LSF-Database couldn't be established. Please use the regular <a href='../../course/request.php'>formular</a>.";
