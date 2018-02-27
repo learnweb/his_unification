@@ -98,6 +98,8 @@ function send_support_mail($course, $text) {
     $params->d = $course->id;
     $params->e = $text;
     $content = get_string('email','local_lsf_unification',$params);
+    // TODO: Add the ad-hoc task.
+
     return email_to_user($supportuser, get_string('email_from','local_lsf_unification')." (by ".$USER->firstname." ".$USER->lastname.")", get_string('config_category_wish','local_lsf_unification'),$content);
 }
 
@@ -111,6 +113,8 @@ function send_course_request_mail($recipient_username, $course, $request_id) {
     $params->c = utf8_encode($course->titel);
     $params->d = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid='.$request_id;
     $content = get_string('email2','local_lsf_unification',$params);
+    // TODO: Add the ad-hoc task.
+
     return email_to_user($user,  get_string('email_from','local_lsf_unification')." (by ".$USER->firstname." ".$USER->lastname.")", get_string('email2_title','local_lsf_unification'),$content);
 }
 
@@ -127,6 +131,8 @@ function send_course_creation_mail($recipient, $course) {
     $params->c = utf8_encode($course->titel);
     $params->d = get_remote_creation_continue_link($course->veranstid);
     $content = get_string('email3','local_lsf_unification',$params);
+    // TODO: Add the ad-hoc task.
+
     return email_to_user($recipient,  get_string('email_from','local_lsf_unification')." (by ".$USER->firstname." ".$USER->lastname.")", get_string('email3_title','local_lsf_unification'),$content);
 }
 
@@ -137,6 +143,8 @@ function send_sorry_mail($recipient, $course) {
     $params->b = $CFG->wwwroot.'/user/view.php?id='.$USER->id;
     $params->c = utf8_encode($course->titel);
     $content = get_string('email4','local_lsf_unification',$params);
+    // TODO: Add the ad-hoc task.
+
     return email_to_user($recipient,  get_string('email_from','local_lsf_unification')." (by ".$USER->firstname." ".$USER->lastname.")", get_string('email4_title','local_lsf_unification'),$content);
 }
 
