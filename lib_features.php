@@ -98,9 +98,13 @@ function send_support_mail($course, $text) {
     $params->d = $course->id;
     $params->e = $text;
     $content = get_string('email','local_lsf_unification',$params);
-    // TODO: Add the ad-hoc task.
 
-    return email_to_user($supportuser, get_string('email_from','local_lsf_unification')." (by ".$USER->firstname." ".$USER->lastname.")", get_string('config_category_wish','local_lsf_unification'),$content);
+    $jsondata = json_encode(array('supportuserid' => $supportuser->id, 'userfirstname' => $USER->firstname,
+        'userlastname' => $USER->lastname, 'content' => $content));
+    $sendemail = new \local_lsf_unification\task\send_emails();
+    $sendemail->set_custom_data($jsondata);
+    \core\task\manager::queue_adhoc_task($sendemail);
+    return true;
 }
 
 function send_course_request_mail($recipient_username, $course, $request_id) {

@@ -25,6 +25,15 @@ namespace local_lsf_unification\task;
 
 class send_emails extends \core\task\adhoc_task {
     public function execute() {
-        // TODO: Implement execute() method.
+        $jsondata = $this->get_custom_data();
+        $data = json_decode($jsondata, true);
+
+        $supportuserid = $data['supportuserid'];
+        $supportuserarray = user_get_users_by_id(array($supportuserid => $supportuserid));
+        $supportuser = $supportuserarray[$supportuserid];
+
+        email_to_user($supportuser, get_string('email_from','local_lsf_unification')." 
+        (by ".$data['userfirstname']." ".$data['userlastname'].")",
+            get_string('config_category_wish','local_lsf_unification'), $data['content']);
     }
 }
