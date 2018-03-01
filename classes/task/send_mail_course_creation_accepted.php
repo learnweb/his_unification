@@ -29,12 +29,15 @@ require_once($CFG->dirroot . '/user/lib.php');
 
 /**
  * Class send_mail_course_creation_accepted
+ * (Task in moodle will be retried after 1 minute automatically when they throw an exception.
+ * See: https://docs.moodle.org/dev/Task_API#Failures )
  * @package local_lsf_unification\task
  */
 class send_mail_course_creation_accepted extends \core\task\adhoc_task {
     /**
      * Execute the ad-hoc task.
      * @throws \coding_exception
+     * @throws \moodle_exception
      */
     public function execute() {
         $jsondata = $this->get_custom_data();
@@ -42,14 +45,20 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
 
         $userid = $data['userid'];
         $userarray = user_get_users_by_id(array($userid => $userid));
+
+        // In case no recipient can be found the task is aborted and deleted.
         if (empty($userarray[$userid])) {
-            // TODO: discuss what is necessary to happen (log?)
+            exit;
         }
         $user = $userarray[$userid];
         $content = get_string('email3', 'local_lsf_unification', $data['params']);
 
-        email_to_user($user, get_string('email_from', 'local_lsf_unification')
+        $wassent = email_to_user($user, get_string('email_from', 'local_lsf_unification')
             ." (by ".$data['userfirstname']." ".$data['userlastname'].")",
             get_string('email3_title', 'local_lsf_unification'), $content);
+        if (!$wassent) {
+            throw new \moodle_exception(get_string('ad_hoc_task_failed',
+                'local_lsf_unification', 'send_mail_course_creation_accepted'));
+        }
     }
 }

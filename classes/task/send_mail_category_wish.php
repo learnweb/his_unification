@@ -28,12 +28,15 @@ require_once($CFG->dirroot . '/user/lib.php');
 
 /**
  * Class send_mail_category_wish
+ * (Task in moodle will be retried after 1 minute automatically when they throw an exception.
+ * See: https://docs.moodle.org/dev/Task_API#Failures )
  * @package local_lsf_unification\task
  */
 class send_mail_category_wish extends \core\task\adhoc_task {
     /**
      * Execute the ad-hoc task.
      * @throws \coding_exception
+     * @throws \moodle_exception
      */
     public function execute() {
         $jsondata = $this->get_custom_data();
@@ -41,14 +44,20 @@ class send_mail_category_wish extends \core\task\adhoc_task {
 
         $supportuserid = $data['userid'];
         $supportuserarray = user_get_users_by_id(array($supportuserid => $supportuserid));
+        // In case no recipient can be found the task is aborted and deleted.
         if (empty($supportuserarray[$supportuserid])) {
-            // TODO: discuss what is necessary to happen (log?)
+            exit;
         }
         $supportuser = $supportuserarray[$supportuserid];
         $content = get_string('email', 'local_lsf_unification', $data['params']);
 
-        email_to_user($supportuser, get_string('email_from', 'local_lsf_unification').
+        $wassent = email_to_user($supportuser, get_string('email_from', 'local_lsf_unification').
             " (by ".$data['userfirstname']." ".$data['userlastname'].")",
             get_string('config_category_wish', 'local_lsf_unification'), $content);
+
+        if (!$wassent) {
+            throw new \moodle_exception(get_string('ad_hoc_task_failed',
+                'local_lsf_unification', 'send_mail_category_wish'));
+        }
     }
 }

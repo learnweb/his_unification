@@ -152,6 +152,7 @@ $string['continue'] = 'Continue';
 $string['continue_with_empty_course'] = 'Leave the course blank and continue';
 
 $string['duplication_timeframe_error'] = 'Sorry but for safety reasons it is not allowed import course data from templates or backups more than {$a} hour(s) after course creation';
+$string['ad_hoc_task_failed'] = 'The ad_hoc task {$a} failed. It will be queued automatically and executed later again.';
 
 $string['add_features'] = 'Additional Features';
 $string['add_features_information'] = 'configure additional features here';
