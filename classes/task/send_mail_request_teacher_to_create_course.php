@@ -24,6 +24,8 @@
  */
 namespace local_lsf_unification\task;
 
+require_once ($CFG->dirroot . '/user/lib.php');
+
 /**
  * Class send_mail_request_teacher_to_create_course
  * @package local_lsf_unification\task
@@ -47,6 +49,6 @@ class send_mail_request_teacher_to_create_course extends \core\task\adhoc_task {
 
         email_to_user($user, get_string('email_from','local_lsf_unification')." 
         (by ".$data['userfirstname']." ".$data['userlastname'].")",
-            get_string('config_category_wish','local_lsf_unification'), $content);
+            get_string('email2_title','local_lsf_unification'), $content);
     }
 }

@@ -23,6 +23,8 @@
  */
 namespace local_lsf_unification\task;
 
+require_once ($CFG->dirroot . '/user/lib.php');
+
 /**
  * Class send_mail_category_wish
  * @package local_lsf_unification\task
@@ -36,7 +38,7 @@ class send_mail_category_wish extends \core\task\adhoc_task {
         $jsondata = $this->get_custom_data();
         $data = json_decode($jsondata, true);
 
-        $supportuserid = $data['supportuserid'];
+        $supportuserid = $data['userid'];
         $supportuserarray = user_get_users_by_id(array($supportuserid => $supportuserid));
         if (empty($supportuserarray[$supportuserid])) {
             // TODO: discuss what is necessary to happen (log?)
