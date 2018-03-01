@@ -22,8 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_lsf_unification\task;
+defined('MOODLE_INTERNAL') || die();
 
-require_once ($CFG->dirroot . '/user/lib.php');
+require_once($CFG->dirroot . '/user/lib.php');
 
 /**
  * Class send_mail_category_wish
@@ -44,10 +45,10 @@ class send_mail_category_wish extends \core\task\adhoc_task {
             // TODO: discuss what is necessary to happen (log?)
         }
         $supportuser = $supportuserarray[$supportuserid];
-        $content = get_string('email','local_lsf_unification',$data['params']);
+        $content = get_string('email', 'local_lsf_unification', $data['params']);
 
-        email_to_user($supportuser, get_string('email_from','local_lsf_unification')." 
-        (by ".$data['userfirstname']." ".$data['userlastname'].")",
-            get_string('config_category_wish','local_lsf_unification'), $content);
+        email_to_user($supportuser, get_string('email_from', 'local_lsf_unification').
+            " (by ".$data['userfirstname']." ".$data['userlastname'].")",
+            get_string('config_category_wish', 'local_lsf_unification'), $content);
     }
 }

@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Generator for the local_lsf_unification plugin.
  *
@@ -27,10 +29,10 @@ class local_lsf_unification_generator extends testing_data_generator {
      * @return stdClass
      */
     public function create_lsf_course() {
-       $course = new stdClass();
-       $course->titel = 'Some title';
-       $course->veranstid = 1;
-       return $course;
+        $course = new stdClass();
+        $course->titel = 'Some title';
+        $course->veranstid = 1;
+        return $course;
     }
     /**
      * Setting up the data for the different e-mail ad-hoc tasks.

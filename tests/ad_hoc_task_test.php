@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Test the ad_hoc tasks.
  *
@@ -64,10 +66,10 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
-        $content = "\n" . get_string('email','local_lsf_unification',$setupdata['params']) . "\n";
+        $content = "\n" . get_string('email', 'local_lsf_unification', $setupdata['params']) . "\n";
         $content = $this->trim_string($content);
 
-        // Assertions:
+        // Assertions.
         $this->assertEquals($content, $messagebody);
         $this->assertEquals($setupdata['recipientemail'], $message->to);
         // The phpunit build in function overwrithes where the email does come from.
@@ -94,9 +96,9 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
-        $content = get_string('email3','local_lsf_unification',$setupdata['params']);
+        $content = get_string('email3', 'local_lsf_unification', $setupdata['params']);
 
-        // Assertions:
+        // Assertions.
         $this->assertEquals($content, $messagebody);
         $this->assertEquals($setupdata['recipientemail'], $message->to);
         // The phpunit build in function overwrithes where the email does come from.
@@ -122,9 +124,9 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
-        $content = get_string('email4','local_lsf_unification',$setupdata['params']);
+        $content = get_string('email4', 'local_lsf_unification', $setupdata['params']);
 
-        // Assertions:
+        // Assertions.
         $this->assertEquals($content, $messagebody);
         $this->assertEquals($setupdata['recipientemail'], $message->to);
         // The phpunit build in function overwrithes where the email does come from.
@@ -150,9 +152,9 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
-        $content = get_string('email2','local_lsf_unification',$setupdata['params']);
+        $content = get_string('email2', 'local_lsf_unification', $setupdata['params']);
 
-        // Assertions:
+        // Assertions.
         $this->assertEquals($content, $messagebody);
         $this->assertEquals($setupdata['recipientemail'], $message->to);
         // The phpunit build in function overwrithes where the email does come from.

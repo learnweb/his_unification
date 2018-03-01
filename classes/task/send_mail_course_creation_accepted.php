@@ -23,8 +23,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_lsf_unification\task;
+defined('MOODLE_INTERNAL') || die();
 
-require_once ($CFG->dirroot . '/user/lib.php');
+require_once($CFG->dirroot . '/user/lib.php');
 
 /**
  * Class send_mail_course_creation_accepted
@@ -45,10 +46,10 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
             // TODO: discuss what is necessary to happen (log?)
         }
         $user = $userarray[$userid];
-        $content = get_string('email3','local_lsf_unification',$data['params']);
+        $content = get_string('email3', 'local_lsf_unification', $data['params']);
 
-        email_to_user($user, get_string('email_from','local_lsf_unification')." 
-        (by ".$data['userfirstname']." ".$data['userlastname'].")",
-            get_string('email3_title','local_lsf_unification'), $content);
+        email_to_user($user, get_string('email_from', 'local_lsf_unification')
+            ." (by ".$data['userfirstname']." ".$data['userlastname'].")",
+            get_string('email3_title', 'local_lsf_unification'), $content);
     }
 }
