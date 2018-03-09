@@ -102,7 +102,7 @@ $string['config_summary_desc'] = "(Wird in der Kurssuche dargestellt)";
 
 $string['categoryinvalid'] = 'Bitte eine Kategorie w&auml;hlen';
 $string['email_error'] = 'Der Kategorie-Umzugs-Wunsch konnte leider nicht automatisch versendet werden. Kontaktieren Sie den Support manuell! ('.$CFG->supportemail.')';
-$string['email_success'] = 'Email bzgl. des Kategorie-Wechsels an den Support gesendet.';
+$string['email_success'] = 'Eine Email bzgl. des Kategorie-Wechsels wird an den Support gesendet.';
 $string['new_request'] = 'Einen weiteren Kurs beantragen.';
 $string['noConnection'] = "Es konnte keine Verbindung zur LSF-Datenbank hergestellt werden. Bitte nutzen Sie das manuelle <a href='../../course/request.php'>Kursbeantragungs-Formular</a>.";
 $string['shortnamehint'] = 'Der Kurzname muss {$a} am Ende enthalten.';
@@ -134,7 +134,7 @@ $string['choose_teacher'] = 'Bitte geben Sie die Nutzerkennung des autorisierend
 $string['his_info'] = 'Bitte weisen Sie den Lehrenden an, <a href="request.php?answer=3">diesen Hinweisen zu folgen</a>, sodass seine HIS-LSF-Kurse mit seiner Nutzerkennung verkn&uuml;pft werden k&ouml;nnen.';
 $string['answer_course_in_lsf_but_invisible'] = 'Der zu beantragende Kurs befindet sich im HIS-LSF und der Kurs wird oben nicht angezeigt, obwohl der Nutzer mit der Kennung {$a} als Lehrender f&uuml;r den Kurs eingetragen ist.';
 $string['already_requested'] = 'Diesr Kurs wurde bereits angefragt. Der Lehrende muss erst die bestehende Anfrage beantworten, bevor Neue Anfragen get&auml;tigt werden k&ouml;nnen.';
-$string['request_sent'] = 'Die Anfrage wurde per Mail an den Lehrenden gesendet. Sie werden per Mail eine R&uuml;ckmeldung erhalten, sobald der Lehrende die Anfrage bearbeitet hat.';
+$string['request_sent'] = 'Die Anfrage wird per Mail an den Lehrenden gesendet. Sie werden per Mail eine R&uuml;ckmeldung erhalten, sobald der Lehrende die Anfrage bearbeitet hat.';
 $string['answer_sent'] = 'Vielen Dank f&uuml;r das Verarbeiten dieser Anfrage. Ihre Entscheidung wird dem Anfragenden automatisch per Email mitgeteilt.';
 
 $string['email_from'] = "HIS LSF Import";
