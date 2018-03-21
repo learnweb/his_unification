@@ -155,6 +155,8 @@ $string['continue'] = 'Fortfahren';
 $string['continue_with_empty_course'] = 'Mit einem leeren Kurs fortfahren';
 
 $string['duplication_timeframe_error'] = 'Aus Sicherheitsgr&uuml;nden ist es nicht erlaubt Kursdaten aus Musterkursen oder Kursbackups wiederherzustellen, falls die Kurserstellung mehr als {$a} Stunden zur&uuml;ckliegt.';
+$string['ad_hoc_task_failed'] = 'Der Adhoc-Task {$a} ist fehlgeschlagen. Er wird neu geplant und später erneut versucht.';
+
 
 $string['importcalendar'] = 'HISLSF Stundenplan';
 $string['importical'] = 'Stundenplan importieren';
