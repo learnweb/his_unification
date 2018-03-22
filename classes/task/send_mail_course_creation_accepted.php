@@ -40,10 +40,9 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
      * @throws \moodle_exception
      */
     public function execute() {
-        $jsondata = $this->get_custom_data();
-        $data = json_decode($jsondata, true);
+        $data = $this->get_custom_data();
 
-        $userid = $data['userid'];
+        $userid = $data->userid;
         $userarray = user_get_users_by_id(array($userid));
 
         // In case no recipient can be found the task is aborted and deleted.
@@ -51,10 +50,10 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
             exit;
         }
         $user = $userarray[$userid];
-        $content = get_string('email3', 'local_lsf_unification', $data['params']);
+        $content = get_string('email3', 'local_lsf_unification', $data->params);
 
         $wassent = email_to_user($user, get_string('email_from', 'local_lsf_unification')
-            ." (by ".$data['userfirstname']." ".$data['userlastname'].")",
+            ." (by ".$data->userfirstname." ".$data->userlastname.")",
             get_string('email3_title', 'local_lsf_unification'), $content);
         if (!$wassent) {
             throw new \moodle_exception(get_string('ad_hoc_task_failed',

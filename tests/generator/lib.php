@@ -41,7 +41,7 @@ class local_lsf_unification_generator extends testing_data_generator {
      * @param bool $answer Should the params include the link for a answer?
      * @return array Data structure for returning all necessary data for the assertions
      */
-    public function set_up_json_params($lsfcourse = true, $request = false, $answer = false) {
+    public function set_up_params($lsfcourse = true, $request = false, $answer = false) {
         global $CFG;
         $sender = $this->create_user();
         $recipient = $this->create_user();
@@ -68,9 +68,9 @@ class local_lsf_unification_generator extends testing_data_generator {
             $params->e = 'I want to change to Category xy';
         }
         $data['params'] = $params;
-        $jsondata = json_encode(array('userid' => $recipient->id, 'userfirstname' => $sender->firstname,
-            'userlastname' => $sender->lastname, 'params' => $params));
-        $data['jsondata'] = $jsondata;
+        $data = array('userid' => $recipient->id, 'userfirstname' => $sender->firstname,
+            'userlastname' => $sender->lastname, 'params' => $params);
+        $data['data'] = $data;
         $data['recipientemail'] = $recipient->email;
 
         return $data;

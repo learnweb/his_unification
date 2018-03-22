@@ -98,10 +98,10 @@ function send_support_mail($course, $text) {
     $params->d = $course->id;
     $params->e = $text;
 
-    $jsondata = json_encode(array('userid' => $supportuser->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'params' => $params));
+    $adhocdata = array('userid' => $supportuser->id, 'userfirstname' => $USER->firstname,
+        'userlastname' => $USER->lastname, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_category_wish();
-    $sendemail->set_custom_data($jsondata);
+    $sendemail->set_custom_data($adhocdata);
     \core\task\manager::queue_adhoc_task($sendemail);
     return true;
 }

@@ -56,8 +56,8 @@ class ad_hoc_task_test extends advanced_testcase {
     public function test_send_mail_category_wish() {
         $adhoctask = new \local_lsf_unification\task\send_mail_category_wish();
 
-        $setupdata = $this->generator->set_up_json_params(false);
-        $adhoctask->set_custom_data($setupdata['jsondata']);
+        $setupdata = $this->generator->set_up_params(false);
+        $adhoctask->set_custom_data($setupdata['data']);
         $adhoctask->execute();
         $messages = $this->sink->get_messages();
         $this->assertEquals(1, count($messages));
@@ -85,8 +85,8 @@ class ad_hoc_task_test extends advanced_testcase {
         global $CFG;
         $adhoctask = new \local_lsf_unification\task\send_mail_course_creation_accepted();
 
-        $setupdata = $this->generator->set_up_json_params(true, false, true);
-        $adhoctask->set_custom_data($setupdata['jsondata']);
+        $setupdata = $this->generator->set_up_params(true, false, true);
+        $adhoctask->set_custom_data($setupdata['data']);
 
         $adhoctask->execute();
         $messages = $this->sink->get_messages();
@@ -113,8 +113,8 @@ class ad_hoc_task_test extends advanced_testcase {
     public function test_send_mail_course_creation_declined() {
         $adhoctask = new \local_lsf_unification\task\send_mail_course_creation_declined();
 
-        $setupdata = $this->generator->set_up_json_params();
-        $adhoctask->set_custom_data($setupdata['jsondata']);
+        $setupdata = $this->generator->set_up_params();
+        $adhoctask->set_custom_data($setupdata['data']);
 
         $adhoctask->execute();
         $messages = $this->sink->get_messages();
@@ -141,8 +141,8 @@ class ad_hoc_task_test extends advanced_testcase {
     public function test_send_mail_request_teacher_to_create_course() {
         $adhoctask = new \local_lsf_unification\task\send_mail_request_teacher_to_create_course();
 
-        $setupdata = $this->generator->set_up_json_params(true, true);
-        $adhoctask->set_custom_data($setupdata['jsondata']);
+        $setupdata = $this->generator->set_up_params(true, true);
+        $adhoctask->set_custom_data($setupdata['data']);
 
         $adhoctask->execute();
         $messages = $this->sink->get_messages();

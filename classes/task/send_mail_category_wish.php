@@ -39,20 +39,19 @@ class send_mail_category_wish extends \core\task\adhoc_task {
      * @throws \moodle_exception
      */
     public function execute() {
-        $jsondata = $this->get_custom_data();
-        $data = json_decode($jsondata, true);
+        $data = $this->get_custom_data();
 
-        $supportuserid = $data['userid'];
+        $supportuserid = $data->userid;
         $supportuserarray = user_get_users_by_id(array($supportuserid));
         // In case no recipient can be found the task is aborted and deleted.
         if (empty($supportuserarray[$supportuserid])) {
             exit;
         }
         $supportuser = $supportuserarray[$supportuserid];
-        $content = get_string('email', 'local_lsf_unification', $data['params']);
+        $content = get_string('email', 'local_lsf_unification', $data->params);
 
         $wassent = email_to_user($supportuser, get_string('email_from', 'local_lsf_unification').
-            " (by ".$data['userfirstname']." ".$data['userlastname'].")",
+            " (by ".$data->userfirstname." ".$data->userlastname.")",
             get_string('config_category_wish', 'local_lsf_unification'), $content);
 
         if (!$wassent) {
