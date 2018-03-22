@@ -43,7 +43,7 @@ class send_mail_category_wish extends \core\task\adhoc_task {
         $data = json_decode($jsondata, true);
 
         $supportuserid = $data['userid'];
-        $supportuserarray = user_get_users_by_id(array($supportuserid => $supportuserid));
+        $supportuserarray = user_get_users_by_id(array($supportuserid));
         // In case no recipient can be found the task is aborted and deleted.
         if (empty($supportuserarray[$supportuserid])) {
             exit;

@@ -44,7 +44,7 @@ class send_mail_request_teacher_to_create_course extends \core\task\adhoc_task {
         $data = json_decode($jsondata, true);
 
         $userid = $data['userid'];
-        $userarray = user_get_users_by_id(array($userid => $userid));
+        $userarray = user_get_users_by_id(array($userid));
 
         // In case no recipient can be found the task is aborted and deleted.
         if (empty($userarray[$userid])) {
