@@ -45,7 +45,7 @@ class send_mail_category_wish extends \core\task\adhoc_task {
         $supportuserarray = user_get_users_by_id(array($supportuserid));
         // In case no recipient can be found the task is aborted and deleted.
         if (empty($supportuserarray[$supportuserid])) {
-            exit;
+            return;
         }
         $supportuser = $supportuserarray[$supportuserid];
         $content = get_string('email', 'local_lsf_unification', $data->params);

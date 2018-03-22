@@ -163,6 +163,23 @@ class ad_hoc_task_test extends advanced_testcase {
     }
 
     /**
+     * Test whether no message is send when the userid is not existing.
+     * @throws coding_exception
+     * @throws moodle_exception
+     */
+    public function test_no_user_ad_hoc_task() {
+        $adhoctask = new \local_lsf_unification\task\send_mail_category_wish();
+
+        $setupdata = $this->generator->set_up_params(false);
+        // Setting the userid to a number which is quiet likely not available.
+        $setupdata['data']['userid'] = 23456;
+        $adhoctask->set_custom_data($setupdata['data']);
+        $adhoctask->execute();
+        $messages = $this->sink->get_messages();
+        // Task is aborted therefore no messages is expected.
+        $this->assertEquals(0, count($messages));
+    }
+    /**
      * Trims all \n and \r characters from a string.
      * @param $string
      * @return string

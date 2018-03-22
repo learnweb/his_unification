@@ -48,7 +48,7 @@ class send_mail_course_creation_declined extends \core\task\adhoc_task {
 
         // In case no recipient can be found the task is aborted and deleted.
         if (empty($userarray[$userid])) {
-            exit;
+            return;
         }
         $user = $userarray[$userid];
 

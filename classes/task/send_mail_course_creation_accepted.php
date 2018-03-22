@@ -47,7 +47,7 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
 
         // In case no recipient can be found the task is aborted and deleted.
         if (empty($userarray[$userid])) {
-            exit;
+            return;
         }
         $user = $userarray[$userid];
         $content = get_string('email3', 'local_lsf_unification', $data->params);
