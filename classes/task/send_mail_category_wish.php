@@ -39,6 +39,7 @@ class send_mail_category_wish extends \core\task\adhoc_task {
      * @throws \moodle_exception
      */
     public function execute() {
+        /** @var \stdClass $data */
         $data = $this->get_custom_data();
 
         $supportuserid = $data->userid;
@@ -48,6 +49,10 @@ class send_mail_category_wish extends \core\task\adhoc_task {
             return;
         }
         $supportuser = $supportuserarray[$supportuserid];
+
+        // Expected params of $data->params are: a -> (string) firstname + lastname of user requesting a ...
+        // ...category change, b -> userid of user requesting a category change c-> the (string) coursefullname, ...
+        // ... d-> the courseid, and e-> the text entered by the user regarding the category wish.
         $content = get_string('email', 'local_lsf_unification', $data->params);
 
         $wassent = email_to_user($supportuser, get_string('email_from', 'local_lsf_unification').
