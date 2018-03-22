@@ -116,10 +116,10 @@ function send_course_request_mail($recipient_username, $course, $request_id) {
     $params->c = utf8_encode($course->titel);
     $params->d = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid='.$request_id;
 
-    $jsondata = json_encode(array('userid' => $user->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'params' => $params));
+    $data = array('userid' => $user->id, 'userfirstname' => $USER->firstname,
+        'userlastname' => $USER->lastname, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_request_teacher_to_create_course();
-    $sendemail->set_custom_data($jsondata);
+    $sendemail->set_custom_data($data);
     \core\task\manager::queue_adhoc_task($sendemail);
     return true;
 }
@@ -137,10 +137,10 @@ function send_course_creation_mail($recipient, $course) {
     $params->c = utf8_encode($course->titel);
     $params->d = get_remote_creation_continue_link($course->veranstid);
 
-    $jsondata = json_encode(array('userid' => $recipient->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'params' => $params));
+    $data = array('userid' => $recipient->id, 'userfirstname' => $USER->firstname,
+        'userlastname' => $USER->lastname, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_course_creation_accepted();
-    $sendemail->set_custom_data($jsondata);
+    $sendemail->set_custom_data($data);
     \core\task\manager::queue_adhoc_task($sendemail);
     return true;
 }
@@ -152,10 +152,10 @@ function send_sorry_mail($recipient, $course) {
     $params->b = $CFG->wwwroot.'/user/view.php?id='.$USER->id;
     $params->c = utf8_encode($course->titel);
 
-    $jsondata = json_encode(array('userid' => $recipient->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'params' => $params));
+    $data = array('userid' => $recipient->id, 'userfirstname' => $USER->firstname,
+        'userlastname' => $USER->lastname, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_course_creation_declined();
-    $sendemail->set_custom_data($jsondata);
+    $sendemail->set_custom_data($data);
     \core\task\manager::queue_adhoc_task($sendemail);
     return true;
 }
