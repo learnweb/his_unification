@@ -70,7 +70,7 @@ $string['notice'] = 'Im Normalfall &uuml;bernimmt Learnweb die Kursinformationen
 $string['question'] = "Bitte w&auml;hlen Sie die erste zutreffende Aussage:";
 $string['answer_course_found'] = "Der zu beantragende Kurs befindet sich in der nachfolgenden Liste:";
 $string['answer_course_in_lsf_and_visible'] = "Der zu beantragende Kurs befindet sich im HIS-LSF und Sie sind dort als Lehrende(r) eingetragen.";
-$string['answer_proxy_creation'] = "Der Kurs existiert im HIS-LSF und Sie m&ouml;chten im Auftrag eines dort eingetragenen Lehrenden diesen Kurs erstellen.";
+$string['answer_proxy_creation'] = "Der Kurs existiert im HIS-LSF und Sie m&ouml;chten im Auftrag einer/s dort eingetragenen Lehrenden diesen Kurs erstellen.";
 $string['answer_goto_old_requestform'] = "Sie m&ouml;chten eine Kursbeantragung ohne &Uuml;bernahme der Daten aus dem HIS-LSF vornehmen.";
 
 
@@ -102,7 +102,7 @@ $string['config_summary_desc'] = "(Wird in der Kurssuche dargestellt)";
 
 $string['categoryinvalid'] = 'Bitte eine Kategorie w&auml;hlen';
 $string['email_error'] = 'Der Kategorie-Umzugs-Wunsch konnte leider nicht automatisch versendet werden. Kontaktieren Sie den Support manuell! ('.$CFG->supportemail.')';
-$string['email_success'] = 'Email bzgl. des Kategorie-Wechsels an den Support gesendet.';
+$string['email_success'] = 'Eine Email bzgl. des Kategorie-Wechsels wird an den Support gesendet.';
 $string['new_request'] = 'Einen weiteren Kurs beantragen.';
 $string['noConnection'] = "Es konnte keine Verbindung zur LSF-Datenbank hergestellt werden. Bitte nutzen Sie das manuelle <a href='../../course/request.php'>Kursbeantragungs-Formular</a>.";
 $string['shortnamehint'] = 'Der Kurzname muss {$a} am Ende enthalten.';
@@ -112,7 +112,7 @@ $string['warning_cannot_enrol_nouser'] = "Person wurde nicht hinzugef&uuml;gt (k
 $string['warning_cannot_enrol_other'] = "Person wurde nicht hinzugef&uuml;gt";
 
 $string['next_steps'] = "N&auml;chste Schritte";
-$string['linktext_users'] = "Bearbeiten Sie die eingeschriebenen Lehrenden und Studenten ...";
+$string['linktext_users'] = "Bearbeiten Sie die eingeschriebenen Lehrenden und Studierenden ...";
 $string['linktext_course'] = "... oder gehen Sie direkt zum neu erstellten Kurs.";
 
 $string['course_duplication_question'] = 'Wollen Sie die Daten aus einem alten Learnweb-Kurs in den soeben erstellten Kurs kopieren? (Dies ist die einzige Gelegenheit dazu)';
@@ -130,11 +130,11 @@ $string['email'] = 'ABSENDER:
         NACHRICHT:
         {$a->e}';
 
-$string['choose_teacher'] = 'Bitte geben Sie die Nutzerkennung des autorisierenden Lehrenden an:';
-$string['his_info'] = 'Bitte weisen Sie den Lehrenden an, <a href="request.php?answer=3">diesen Hinweisen zu folgen</a>, sodass seine HIS-LSF-Kurse mit seiner Nutzerkennung verkn&uuml;pft werden k&ouml;nnen.';
-$string['answer_course_in_lsf_but_invisible'] = 'Der zu beantragende Kurs befindet sich im HIS-LSF und der Kurs wird oben nicht angezeigt, obwohl der Nutzer mit der Kennung {$a} als Lehrender f&uuml;r den Kurs eingetragen ist.';
-$string['already_requested'] = 'Diesr Kurs wurde bereits angefragt. Der Lehrende muss erst die bestehende Anfrage beantworten, bevor Neue Anfragen get&auml;tigt werden k&ouml;nnen.';
-$string['request_sent'] = 'Die Anfrage wurde per Mail an den Lehrenden gesendet. Sie werden per Mail eine R&uuml;ckmeldung erhalten, sobald der Lehrende die Anfrage bearbeitet hat.';
+$string['choose_teacher'] = 'Bitte geben Sie die Nutzerkennung der/s autorisierenden Lehrenden an:';
+$string['his_info'] = 'Bitte weisen Sie den/die Lehrende(n) an, <a href="request.php?answer=3">diesen Hinweisen zu folgen</a>, sodass seine/ihre HIS-LSF-Kurse mit seiner/ihrer Nutzerkennung verkn&uuml;pft werden k&ouml;nnen.';
+$string['answer_course_in_lsf_but_invisible'] = 'Der zu beantragende Kurs befindet sich im HIS-LSF und der Kurs wird oben nicht angezeigt, obwohl der Nutzer mit der Kennung {$a} als Lehrende(r) f&uuml;r den Kurs eingetragen ist.';
+$string['already_requested'] = 'Diesr Kurs wurde bereits angefragt. Der/die Lehrende muss erst die bestehende Anfrage beantworten, bevor neue Anfragen get&auml;tigt werden k&ouml;nnen.';
+$string['request_sent'] = 'Die Anfrage wird per Mail an den/die Lehrende(n) gesendet. Sie werden per Mail eine R&uuml;ckmeldung erhalten, sobald der/die Lehrende die Anfrage bearbeitet hat.';
 $string['answer_sent'] = 'Vielen Dank f&uuml;r das Verarbeiten dieser Anfrage. Ihre Entscheidung wird dem Anfragenden automatisch per Email mitgeteilt.';
 
 $string['email_from'] = "HIS LSF Import";
@@ -155,6 +155,8 @@ $string['continue'] = 'Fortfahren';
 $string['continue_with_empty_course'] = 'Mit einem leeren Kurs fortfahren';
 
 $string['duplication_timeframe_error'] = 'Aus Sicherheitsgr&uuml;nden ist es nicht erlaubt Kursdaten aus Musterkursen oder Kursbackups wiederherzustellen, falls die Kurserstellung mehr als {$a} Stunden zur&uuml;ckliegt.';
+$string['ad_hoc_task_failed'] = 'Der Adhoc-Task {$a} ist fehlgeschlagen. Er wird neu geplant und später erneut versucht.';
+
 
 $string['importcalendar'] = 'HISLSF Stundenplan';
 $string['importical'] = 'Stundenplan importieren';

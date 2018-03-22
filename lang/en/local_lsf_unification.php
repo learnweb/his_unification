@@ -103,7 +103,7 @@ $string['config_summary_desc'] = "(Will be displayed in course-search)";
 
 $string['categoryinvalid'] = 'please choose a category from this selection';
 $string['email_error'] = 'The category wish wasn\'t sent. Please contact the support team manually.';
-$string['email_success'] = 'Email regarding category wish sent.';
+$string['email_success'] = 'Email regarding category wish will be sent.';
 $string['new_request'] = 'request another course';
 $string['noConnection'] = "A connection to LSF-Database couldn't be established. Please use the regular <a href='../../course/request.php'>formular</a>.";
 $string['shortnamehint'] = 'shortname must contain {$a} at the end';
@@ -131,8 +131,8 @@ $string['choose_teacher'] = 'Please enter the username of the authorizing teache
 $string['his_info'] = 'Please inform your teacher to follow <a href="request.php?answer=3">this guide</a>, for the HIS-LSF courses to be matched to the username.';
 $string['answer_course_in_lsf_but_invisible'] = 'The course is not listed above, but exists on the HIS-LSF platform and {$a} is registered as a teacher for that course.';
 $string['already_requested'] = 'Sorry, this course was already requested and the teacher has to reply to this request before a new request can be issued';
-$string['request_sent'] = 'Request sent, please wait for an answer, that you will recieve via email.';
-$string['answer_sent'] = 'Thank you for processing this request, your decision is sent to the requester.';
+$string['request_sent'] = 'The request will be sent, please wait for an answer, that you will recieve via email.';
+$string['answer_sent'] = 'Thank you for processing this request, your decision will be sent to the requester.';
 
 $string['email_from'] = "HIS LSF Import";
 $string['email2_title'] = "Course Creation Request";
@@ -152,6 +152,7 @@ $string['continue'] = 'Continue';
 $string['continue_with_empty_course'] = 'Leave the course blank and continue';
 
 $string['duplication_timeframe_error'] = 'Sorry but for safety reasons it is not allowed import course data from templates or backups more than {$a} hour(s) after course creation';
+$string['ad_hoc_task_failed'] = 'The ad hoc task {$a} failed. It will be queued automatically and executed later again.';
 
 $string['add_features'] = 'Additional Features';
 $string['add_features_information'] = 'configure additional features here';
@@ -186,6 +187,5 @@ $string['icalurl'] = 'ICal URL';
 $string['icalurl_description'] = 'URL that points to the HisLSF Ical Export (the list of relevant event ids will be dynamically appended)';
 
 $string['eventcourse_imported'] = 'Course imported';
-$string['eventmatchingtable_updated'] = 'Matchingtable updated';  
-$string['eventcourse_duplicated'] = 'Course duplicated';  
-
+$string['eventmatchingtable_updated'] = 'Matchingtable updated';
+$string['eventcourse_duplicated'] = 'Course duplicated';
