@@ -189,3 +189,19 @@ $string['icalurl_description'] = 'URL that points to the HisLSF Ical Export (the
 $string['eventcourse_imported'] = 'Course imported';
 $string['eventmatchingtable_updated'] = 'Matchingtable updated';
 $string['eventcourse_duplicated'] = 'Course duplicated';
+
+// Privacy API
+$string['privacy:metadata:local_lsf_unification:veranstid'] = 'Identifier for the event from the HisLSF system';
+$string['privacy:metadata:local_lsf_unification:mdlid'] = 'Identifier for the event from the moodle instance';
+$string['privacy:metadata:local_lsf_unification:timestamp'] = 'Timestamp when the course was imported';
+$string['privacy:metadata:local_lsf_unification:requeststate'] = 'Request state of the course';
+$string['privacy:metadata:local_lsf_unification:requesterid'] = 'Identifier of the Person who requested the course';
+$string['privacy:metadata:local_lsf_unification:acceptorid'] = 'Identifier of the Person who accepted the course creation';
+
+$string['privacy:metadata:local_lsf_unification:ueid'] = 'Identifier from the HisLSF system of the responsible person for a category';
+$string['privacy:metadata:local_lsf_unification:mdlid'] = 'Identifier of the course category in Moodle';
+$string['privacy:metadata:local_lsf_unification:origin'] = 'Identifier of the course category in the HisLSF system';
+$string['privacy:metadata:local_lsf_unification:parent'] = 'Identifier of the parent category from the HisLSF system';
+$string['privacy:metadata:local_lsf_unification:txt'] = 'Name of the Course Category from the HisLSF system';
+$string['privacy:metadata:local_lsf_unification:txt2'] = 'Full Name of the Course Category from the HisLSF system';
+$string['privacy:metadata:local_lsf_unification:timestamp'] = 'Timestamp the category was imported';
