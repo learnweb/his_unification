@@ -28,14 +28,20 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Privacy Subsystem for lsf_unification implementing metadata\provider.
- *
+ * Remark: this Plugin does not need to provide a export to external sources since data from the HisLSF system
+ * is only read not exported
  * @copyright  2018 Nina Herrmann
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 use core_privacy\local\metadata\collection;
-class provider implements \core_privacy\local\metadata\provider {
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\context;
+use core_privacy\local\request\contextlist;
+
+class provider implements \core_privacy\local\metadata\provider, \core_privacy\local\request\plugin\provider {
     use \core_privacy\local\legacy_polyfill;
-    public static function _get_metadata(collection $collection) {
+
+    public static function _get_metadata($collection) {
         // The mod uses files and grades.
         $collection->add_database_table(
             'local_lsf_course',
@@ -63,7 +69,64 @@ class provider implements \core_privacy\local\metadata\provider {
            ],
             'privacy:metadata:local_lsf_unification'
         );
-
         return $collection;
+    }
+    /**
+     * Get the list of contexts that contain user information for the specified user.
+     *
+     * @param   int           $userid       The user to search.
+     * @return  contextlist   $contextlist  The list of contexts used in this plugin.
+     */
+    /**
+     * Get the list of contexts that contain user information for the specified user.
+     * @param    int            $userid               The user to search.
+     * @return   contextlist    $contextlist          The list of contexts used in this plugin.
+     * @throws \dml_exception
+     */
+    public static function _get_contexts_for_userid($userid) {
+        global $DB;
+        $contextlist = new contextlist();
+        // In case the user is not a teacher we can return null for the course_category table.
+        $histeacherid = get_teachers_pid($userid);
+        if (!empty($histeacherid)) {
+            $params = [
+                'modname'           => 'lsf_unification',
+                'contextlevel'      => CONTEXT_CATEGORY,
+                'ueid'  => $histeacherid,
+            ];
+            $sql = "SELECT c.id
+                 FROM {context} c
+           INNER JOIN {course_categories} co ON co.id = c.instanceid AND c.contextlevel = :contextlevel
+           LEFT JOIN {local_lsf_category} lsfc ON lsfc.mdlid = co.id WHERE (
+                lsfc.ueid        = :hisuserid
+                )
+        ";
+            $contextlist->add_from_sql($sql, $params);
+        }
+
+        try {
+            $hasrequest = $DB->get_record('local_lsf_course', array('requesterid' => $userid));
+        } catch (dml_missing_record_exception $e) {}
+        try {
+            $hasaccepted = $DB->get_record('local_lsf_course', array('acceptorid' => $userid));
+        } catch (dml_missing_record_exception $e) {}
+        if (!empty($hasrequest) || !empty($hasaccepted) ) {
+            // System_context is the only way since declined courses do not belong to a course or a category in Moodle.
+            // Therefore course_context or category_context can not be used.
+            $contextlist->add_system_context();
+        }
+        return $contextlist;
+    }
+
+    public static function _export_user_data($contextlist) {
+        // TODO: Implement export_user_data() method.
+    }
+
+    public static function _delete_data_for_all_users_in_context($context) {
+        // TODO: Implement delete_data_for_all_users_in_context() method.
+    }
+
+    public static function _delete_data_for_user($contextlist) {
+        // TODO: Implement delete_data_for_user() method.
     }
 }
