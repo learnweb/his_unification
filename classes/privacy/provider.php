@@ -33,10 +33,9 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2018 Nina Herrmann
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+use \core_privacy\local\request\contextlist;
+use core_privacy\local\request\writer;
 use core_privacy\local\metadata\collection;
-use core_privacy\local\request\approved_contextlist;
-use core_privacy\local\request\context;
-use core_privacy\local\request\contextlist;
 
 class provider implements \core_privacy\local\metadata\provider, \core_privacy\local\request\plugin\provider {
     use \core_privacy\local\legacy_polyfill;
@@ -73,12 +72,6 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
     }
     /**
      * Get the list of contexts that contain user information for the specified user.
-     *
-     * @param   int           $userid       The user to search.
-     * @return  contextlist   $contextlist  The list of contexts used in this plugin.
-     */
-    /**
-     * Get the list of contexts that contain user information for the specified user.
      * @param    int            $userid               The user to search.
      * @return   contextlist    $contextlist          The list of contexts used in this plugin.
      * @throws \dml_exception
@@ -91,7 +84,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         if (!empty($histeacherid)) {
             $params = [
                 'modname'           => 'lsf_unification',
-                'contextlevel'      => CONTEXT_CATEGORY,
+                'contextlevel'      => CONTEXT_COURSECAT,
                 'ueid'  => $histeacherid,
             ];
             $sql = "SELECT c.id
@@ -118,8 +111,84 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         return $contextlist;
     }
 
+    /**
+     * Export the user data to a given context.
+     * @param $contextlist
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public static function _export_user_data($contextlist) {
-        // TODO: Implement export_user_data() method.
+        global $DB;
+        $contextused = $contextlist->get_contexts();
+        if (empty($contextused)) {
+            return;
+        }
+        $context = \context_user::instance($contextlist->get_user()->id);
+        $user = $contextlist->get_user();
+        if (in_array(CONTEXT_SYSTEM, $contextused)) {
+            try {
+                $requestedcourses = $DB->get_records('local_lsf_course', array('requesterid' => $user->id));
+                if (!empty($requestedcourses)) {
+                    foreach ($requestedcourses as $r => $requestedcourse) {
+                        $status = '';
+                        switch ($requestedcourse->requeststate) {
+                            case 0 : $status = "is declined"; break;
+                            case 1 : $status = "is waiting"; break;
+                            case 2 : $status = "is accepted"; break;
+                        }
+                        try {
+                            $course = $DB->get_record('course', array('id' => $requestedcourse->mdlid));
+                            writer::with_context($context)->export_data([get_string('privacy:local_lsf_unification:requester_of_category',
+                                'local_lsf_unification', array('coursename' => $course->fullname,
+                                    'timestamp'=> date('m/d/Y H:i:s', $requestedcourse->timestamp), 'status' => $status))],
+                                $requestedcourse);
+                        } catch (\dml_missing_record_exception $e) {
+                            writer::with_context($context)->export_data([get_string('privacy:local_lsf_unification:requester_of_category:notexist',
+                                'local_lsf_unification', array('timestamp'=> date('m/d/Y H:i:s', $requestedcourse->timestamp)))],
+                                $requestedcourse);
+                        }
+
+                    }
+                }
+            } catch (dml_missing_record_exception $e) {}
+            try {
+                $acceptedcourses = $DB->get_records('local_lsf_course', array('acceptorid' => $user->id));
+                if (!empty($acceptedcourses)) {
+                    foreach ($acceptedcourses as $r => $acceptedcourse) {
+                        $status = '';
+                        switch ($acceptedcourse->requeststate) {
+                            case 0 : $status = "declined"; break;
+                            case 1 : $status = "should manage"; break;
+                            case 2 : $status = "accepted"; break;
+                        }
+                        try {
+                            $course = $DB->get_record('course', array('id' => $acceptedcourse->mdlid));
+                            writer::with_context($context)->export_data([get_string('privacy:local_lsf_unification:acceptor_of_category',
+                                'local_lsf_unification', array('coursename' => $course->fullname,
+                                    'timestamp'=> date('m/d/Y H:i:s', $acceptedcourse->timestamp), 'status' => $status))],
+                                (object) $acceptedcourse);
+                        } catch (\dml_missing_record_exception $e) {
+                            writer::with_context($context)->export_data([get_string('privacy:local_lsf_unification:acceptor_of_category:notexist',
+                                'local_lsf_unification', array('timestamp'=> date('m/d/Y H:i:s', $acceptedcourse->timestamp)))],
+                                (object) $acceptedcourse);
+                        }
+                    }
+                }
+            } catch (dml_missing_record_exception $e) {}
+        }
+        // Check whether the current user manages a category.
+        if (in_array(CONTEXT_COURSECAT, $contextused)) {
+            $histeacherid = get_teachers_pid($user->id);
+            $categorymanager = $DB->get_records('local_lsf_category', array('ueid' => $histeacherid));
+            if ($categorymanager != null) {
+                foreach ($categorymanager as $c => $acceptedcourse) {
+                    writer::with_context($context)->export_data([get_string('privacy:local_lsf_unification:manager_of_category',
+                        'local_lsf_unification', array('categoryname' => $acceptedcourse->txt2,
+                            'timestamp'=> date('m/d/Y H:i:s', $acceptedcourse->timestamp)))],
+                        (object) $categorymanager);
+                }
+            }
+        }
     }
 
     public static function _delete_data_for_all_users_in_context($context) {

@@ -205,3 +205,9 @@ $string['privacy:metadata:local_lsf_unification:parent'] = 'Identifier of the pa
 $string['privacy:metadata:local_lsf_unification:txt'] = 'Name of the Course Category from the HisLSF system';
 $string['privacy:metadata:local_lsf_unification:txt2'] = 'Full Name of the Course Category from the HisLSF system';
 $string['privacy:metadata:local_lsf_unification:timestamp'] = 'Timestamp the category was imported';
+
+$string['privacy:local_lsf_unification:manager_of_category'] = 'You are manager of the category {$a->categoryname} since {$a->timestamp}';
+$string['privacy:local_lsf_unification:requester_of_category'] = 'You requested a course {$a->coursename} at {$a->timestamp}. The course {$a->status}';
+$string['privacy:local_lsf_unification:requester_of_category:notexist'] = 'You requested a course which currently does not exist, for this reason the name can not be displayed. The course {$a->status}. The entry was lastly updated at {$a->timestamp}.';
+$string['privacy:local_lsf_unification:acceptor_of_category'] = 'You are listed for the course {$a->coursename} as the person who {$a->status} the course. This entry was lastly updated on the {$a->timestamp}';
+$string['privacy:local_lsf_unification:acceptor_of_category:notexist'] = 'You are listed for a course as the person who {$a->status} the course. This entry was lastly updated on the {$a->timestamp}';
