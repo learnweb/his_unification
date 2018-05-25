@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace lsf_unification\privacy;
+namespace local_lsf_unification\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -33,14 +33,16 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2018 Nina Herrmann
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use \core_privacy\local\request\contextlist;
+
 use core_privacy\local\request\writer;
 use core_privacy\local\metadata\collection;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\contextlist;
 
 class provider implements \core_privacy\local\metadata\provider, \core_privacy\local\request\plugin\provider {
     use \core_privacy\local\legacy_polyfill;
 
-    public static function _get_metadata($collection) {
+    public static function _get_metadata($collection)  {
         // The mod uses files and grades.
         $collection->add_database_table(
             'local_lsf_course',
@@ -55,19 +57,6 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
             ],
             'privacy:metadata:local_lsf_unification'
         );
-        $collection->add_database_table(
-            'local_lsf_category',
-            [
-                'ueid' => 'privacy:metadata:local_lsf_unification:ueid',
-                'mdlid' => 'privacy:metadata:local_lsf_unification:mdlid',
-                'origin' => 'privacy:metadata:local_lsf_unification:origin',
-                'parent' => 'privacy:metadata:local_lsf_unification:parent',
-                'txt' => 'privacy:metadata:local_lsf_unification:txt',
-                'txt2' => 'privacy:metadata:local_lsf_unification:txt2',
-                'timestamp' => 'privacy:metadata:local_lsf_unification:timestamp'
-           ],
-            'privacy:metadata:local_lsf_unification'
-        );
         return $collection;
     }
     /**
@@ -79,123 +68,103 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
     public static function _get_contexts_for_userid($userid) {
         global $DB;
         $contextlist = new contextlist();
-        // In case the user is not a teacher we can return null for the course_category table.
-        $histeacherid = get_teachers_pid($userid);
-        if (!empty($histeacherid)) {
-            $params = [
-                'modname'           => 'lsf_unification',
-                'contextlevel'      => CONTEXT_COURSECAT,
-                'ueid'  => $histeacherid,
-            ];
-            $sql = "SELECT c.id
-                 FROM {context} c
-           INNER JOIN {course_categories} co ON co.id = c.instanceid AND c.contextlevel = :contextlevel
-           LEFT JOIN {local_lsf_category} lsfc ON lsfc.mdlid = co.id WHERE (
-                lsfc.ueid        = :hisuserid
-                )
-        ";
-            $contextlist->add_from_sql($sql, $params);
-        }
 
-        try {
-            $hasrequest = $DB->get_record('local_lsf_course', array('requesterid' => $userid));
-        } catch (dml_missing_record_exception $e) {}
-        try {
-            $hasaccepted = $DB->get_record('local_lsf_course', array('acceptorid' => $userid));
-        } catch (dml_missing_record_exception $e) {}
-        if (!empty($hasrequest) || !empty($hasaccepted) ) {
-            // System_context is the only way since declined courses do not belong to a course or a category in Moodle.
+        $sql = "SELECT *
+                  FROM {local_lsf_course}
+                 WHERE (requesterid = :userid OR 
+                 acceptorid = :userid)";
+        $contextparams['userid'] = $userid;
+        $requests = $DB->get_recordset_sql($sql, $contextparams);
+
+        if (!empty($requests)) {
+            // user_context is the only way since declined courses do not belong to a course or a category in Moodle.
             // Therefore course_context or category_context can not be used.
-            $contextlist->add_system_context();
+            $contextlist->add_user_context($userid);
         }
+        $contextlist->add_user_context($userid);
+
         return $contextlist;
     }
 
     /**
      * Export the user data to a given context.
      * @param $contextlist
-     * @throws \coding_exception
-     * @throws \dml_exception
      */
-    public static function _export_user_data($contextlist) {
+    public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
-        $contextused = $contextlist->get_contexts();
-        if (empty($contextused)) {
-            return;
-        }
-        $context = \context_user::instance($contextlist->get_user()->id);
         $user = $contextlist->get_user();
-        if (in_array(CONTEXT_SYSTEM, $contextused)) {
-            try {
-                $requestedcourses = $DB->get_records('local_lsf_course', array('requesterid' => $user->id));
-                if (!empty($requestedcourses)) {
-                    foreach ($requestedcourses as $r => $requestedcourse) {
-                        $status = '';
-                        switch ($requestedcourse->requeststate) {
-                            case 0 : $status = "is declined"; break;
-                            case 1 : $status = "is waiting"; break;
-                            case 2 : $status = "is accepted"; break;
-                        }
-                        try {
-                            $course = $DB->get_record('course', array('id' => $requestedcourse->mdlid));
-                            writer::with_context($context)->export_data([get_string('privacy:local_lsf_unification:requester_of_category',
-                                'local_lsf_unification', array('coursename' => $course->fullname,
-                                    'timestamp'=> date('m/d/Y H:i:s', $requestedcourse->timestamp), 'status' => $status))],
-                                $requestedcourse);
-                        } catch (\dml_missing_record_exception $e) {
-                            writer::with_context($context)->export_data([get_string('privacy:local_lsf_unification:requester_of_category:notexist',
-                                'local_lsf_unification', array('timestamp'=> date('m/d/Y H:i:s', $requestedcourse->timestamp)))],
-                                $requestedcourse);
-                        }
+        // Minimal example which does not work. -- I tried both contexts.
+        $context = \context_user::instance($contextlist->get_user()->id, MUST_EXIST);
+        $context = \context_system::instance();
+        $subcontext = [
+            get_string('pluginname', 'local_lsf_unification')
+        ];
+        $dummydata = (object)['dummy' => 'data'];
+        writer::with_context($context)->export_data($subcontext, $dummydata);
+        /*$contexts = $contextlist->get_contexts();
 
-                    }
-                }
-            } catch (dml_missing_record_exception $e) {}
-            try {
-                $acceptedcourses = $DB->get_records('local_lsf_course', array('acceptorid' => $user->id));
-                if (!empty($acceptedcourses)) {
-                    foreach ($acceptedcourses as $r => $acceptedcourse) {
-                        $status = '';
-                        switch ($acceptedcourse->requeststate) {
-                            case 0 : $status = "declined"; break;
-                            case 1 : $status = "should manage"; break;
-                            case 2 : $status = "accepted"; break;
-                        }
-                        try {
-                            $course = $DB->get_record('course', array('id' => $acceptedcourse->mdlid));
-                            writer::with_context($context)->export_data([get_string('privacy:local_lsf_unification:acceptor_of_category',
-                                'local_lsf_unification', array('coursename' => $course->fullname,
-                                    'timestamp'=> date('m/d/Y H:i:s', $acceptedcourse->timestamp), 'status' => $status))],
-                                (object) $acceptedcourse);
-                        } catch (\dml_missing_record_exception $e) {
-                            writer::with_context($context)->export_data([get_string('privacy:local_lsf_unification:acceptor_of_category:notexist',
-                                'local_lsf_unification', array('timestamp'=> date('m/d/Y H:i:s', $acceptedcourse->timestamp)))],
-                                (object) $acceptedcourse);
-                        }
-                    }
-                }
-            } catch (dml_missing_record_exception $e) {}
-        }
-        // Check whether the current user manages a category.
-        if (in_array(CONTEXT_COURSECAT, $contextused)) {
-            $histeacherid = get_teachers_pid($user->id);
-            $categorymanager = $DB->get_records('local_lsf_category', array('ueid' => $histeacherid));
-            if ($categorymanager != null) {
-                foreach ($categorymanager as $c => $acceptedcourse) {
-                    writer::with_context($context)->export_data([get_string('privacy:local_lsf_unification:manager_of_category',
-                        'local_lsf_unification', array('categoryname' => $acceptedcourse->txt2,
-                            'timestamp'=> date('m/d/Y H:i:s', $acceptedcourse->timestamp)))],
-                        (object) $categorymanager);
-                }
+        // Get all contextids used.
+        $contextidsused = $contextlist->get_contextids();
+        $sql = "SELECT *
+                  FROM {local_lsf_course}
+                 WHERE (requesterid = :userid)";
+        $contextparams['userid'] = $contextlist->get_user()->id;*/
+
+        /*$coursesrequested = $DB->get_recordset_sql($sql, $contextparams);
+        $sql = "SELECT *
+                  FROM {local_lsf_course}
+                 WHERE ( acceptorid = :userid)";
+        $coursesaccepted = $DB->get_recordset_sql($sql, $contextparams);
+        foreach ($coursesrequested as $courserequest) {
+            $status = '';
+            switch ($courserequest->requeststate) {
+                case 0 : $status = "is declined or not requested"; break;
+                case 1 : $status = "is waiting"; break;
+                case 2 : $status = "is granted"; break;
             }
+
+            $data = (object)[
+                'timestamp'=> date('m/d/Y H:i:s', $courserequest->timestamp),
+                'type' => 'requested',
+                'username' => $user->username,
+                'status' => $status
+            ];
+            $contextdatatowrite[] = $data;
         }
+        foreach ($coursesaccepted as $courserequest) {
+            $status = '';
+            switch ($courserequest->requeststate) {
+                case 0 : $status = "is declined or not requested"; break;
+                case 1 : $status = "is waiting"; break;
+                case 2 : $status = "is granted"; break;
+            }
+
+            $data = (object)[
+                'timestamp'=> date('m/d/Y H:i:s', $courserequest->timestamp),
+                'type' => 'reponsible to accept or decline',
+                'username' => $user->username,
+                'status' => $status
+            ];
+            $contextdatatowrite[] = $data;
+        }
+        $subcontext = [
+            get_string('pluginname', 'local_lsf_unification')
+        ];
+        $dummydata = (object)['dummy' => 'data'];
+        writer::with_context($context)->export_data($subcontext, $dummydata);*/
     }
 
     public static function _delete_data_for_all_users_in_context($context) {
-        // TODO: Implement delete_data_for_all_users_in_context() method.
+        global $DB;
+        if (!$context instanceof \context_user) {
+            return;
+        }
     }
 
     public static function _delete_data_for_user($contextlist) {
-        // TODO: Implement delete_data_for_user() method.
+        global $DB;
+        $user = $contextlist->get_user();
+        $DB->delete_records("local_lsf_course", array('acceptorid' => $user->id));
+        $DB->delete_records("local_lsf_course", array('requestorid' => $user->id));
     }
 }

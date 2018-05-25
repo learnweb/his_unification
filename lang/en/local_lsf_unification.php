@@ -198,16 +198,6 @@ $string['privacy:metadata:local_lsf_unification:requeststate'] = 'Request state 
 $string['privacy:metadata:local_lsf_unification:requesterid'] = 'Identifier of the Person who requested the course';
 $string['privacy:metadata:local_lsf_unification:acceptorid'] = 'Identifier of the Person who accepted the course creation';
 
-$string['privacy:metadata:local_lsf_unification:ueid'] = 'Identifier from the HisLSF system of the responsible person for a category';
-$string['privacy:metadata:local_lsf_unification:mdlid'] = 'Identifier of the course category in Moodle';
-$string['privacy:metadata:local_lsf_unification:origin'] = 'Identifier of the course category in the HisLSF system';
-$string['privacy:metadata:local_lsf_unification:parent'] = 'Identifier of the parent category from the HisLSF system';
-$string['privacy:metadata:local_lsf_unification:txt'] = 'Name of the Course Category from the HisLSF system';
-$string['privacy:metadata:local_lsf_unification:txt2'] = 'Full Name of the Course Category from the HisLSF system';
-$string['privacy:metadata:local_lsf_unification:timestamp'] = 'Timestamp the category was imported';
-
-$string['privacy:local_lsf_unification:manager_of_category'] = 'You are manager of the category {$a->categoryname} since {$a->timestamp}';
-$string['privacy:local_lsf_unification:requester_of_category'] = 'You requested a course {$a->coursename} at {$a->timestamp}. The course {$a->status}';
-$string['privacy:local_lsf_unification:requester_of_category:notexist'] = 'You requested a course which currently does not exist, for this reason the name can not be displayed. The course {$a->status}. The entry was lastly updated at {$a->timestamp}.';
-$string['privacy:local_lsf_unification:acceptor_of_category'] = 'You are listed for the course {$a->coursename} as the person who {$a->status} the course. This entry was lastly updated on the {$a->timestamp}';
-$string['privacy:local_lsf_unification:acceptor_of_category:notexist'] = 'You are listed for a course as the person who {$a->status} the course. This entry was lastly updated on the {$a->timestamp}';
+$string['privacy:local_lsf_unification:requester'] = 'The request for a course was saved.';
+$string['Request'] = 'Request';
+$string['privacy:local_lsf_unification:acceptor'] = 'The answer for the request of a course was saved.';
