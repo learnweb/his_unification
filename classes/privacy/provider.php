@@ -91,7 +91,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * Export the user data to a given context.
      * @param $contextlist
      */
-    public static function export_user_data(approved_contextlist $contextlist) {
+    public static function _export_user_data(approved_contextlist $contextlist) {
         global $DB;
         $user = $contextlist->get_user();
         // Minimal example which does not work. -- I tried both contexts.
