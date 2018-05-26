@@ -71,9 +71,10 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
 
         $sql = "SELECT *
                   FROM {local_lsf_course}
-                 WHERE (requesterid = :userid OR 
-                 acceptorid = :userid)";
-        $contextparams['userid'] = $userid;
+                 WHERE (requesterid = :requesterid OR 
+                 acceptorid = :acceptorid)";
+        $contextparams['requesterid'] = $userid;
+        $contextparams['acceptorid'] = $userid;
         $requests = $DB->get_recordset_sql($sql, $contextparams);
 
         if (!empty($requests)) {
