@@ -175,4 +175,4 @@ $string['privacy:metadata:local_lsf_unification:requesterid'] = 'ID der Person d
 $string['privacy:metadata:local_lsf_unification:acceptorid'] = 'ID der Person die den Kurs akzeptiert hat';
 
 $string['privacy:local_lsf_unification:requester'] = 'Die Anfrage f&uuml;r einen Kurs wurde gespeichert.';
-$string['privacy:local_lsf_unification:acceptor'] = 'Die R&uuml;ckmeldung f&uuml;r einen Kurs wurde gespeichert.';
+$string['privacy:local_lsf_unification:acceptor'] = 'Ein Verantwortlicher f&uuml;r die R&uuml;ckmeldung zu einem Kurs wurde gespeichert.';

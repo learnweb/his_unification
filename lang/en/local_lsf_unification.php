@@ -199,5 +199,4 @@ $string['privacy:metadata:local_lsf_unification:requesterid'] = 'Identifier of t
 $string['privacy:metadata:local_lsf_unification:acceptorid'] = 'Identifier of the Person who accepted the course creation';
 
 $string['privacy:local_lsf_unification:requester'] = 'The request for a course was saved.';
-$string['Request'] = 'Request';
-$string['privacy:local_lsf_unification:acceptor'] = 'The answer for the request of a course was saved.';
+$string['privacy:local_lsf_unification:acceptor'] = 'A User was saved as the responsible person to answer the request of a course.';
