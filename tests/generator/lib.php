@@ -36,29 +36,32 @@ class local_lsf_unification_generator extends testing_data_generator {
     }
     /**
      * Setting up the data for the different e-mail ad-hoc tasks.
+     * The nested arrays look aweful but are later necessary to pass the data to the adhoc-task.
      * @param bool $lsfcourse Is a lsf course required (otherwise normal course)?
      * @param bool $request Should the params include the link for a request?
      * @param bool $answer Should the params include the link for a answer?
      * @return array Data structure for returning all necessary data for the assertions
      */
     public function set_up_params($lsfcourse = true, $request = false, $answer = false) {
-        global $CFG;
+        global $CFG, $USER;
         $sender = $this->create_user();
         $recipient = $this->create_user();
 
         $data = array();
         $params = new stdClass();
         $params->a = $sender->firstname." ".$sender->lastname;
+        $data = array('userid' => $recipient->id, 'userfirstname' => $sender->firstname,
+            'userlastname' => $sender->lastname, 'params' => $params);
+        $data['data'] = $data;
+        $data['recipientemail'] = $recipient->email;
 
         if ($lsfcourse) {
             $course = $this->create_lsf_course();
-            $params->b = $CFG->wwwroot.'/user/view.php?id='.$sender->id;
+            $data['data']['globaluserid'] = $sender->id;
             $params->c = utf8_encode($course->titel);
+            $data['data']['veranstid'] = $course->veranstid;
             if ($request) {
-                $params->d = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid=1';
-            }
-            if ($answer) {
-                $params->d = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid=' . $course->veranstid;
+                $data['data']['requestid'] = '1';
             }
         } else {
             $course = $this->create_course();
@@ -68,10 +71,6 @@ class local_lsf_unification_generator extends testing_data_generator {
             $params->e = 'I want to change to Category xy';
         }
         $data['params'] = $params;
-        $data = array('userid' => $recipient->id, 'userfirstname' => $sender->firstname,
-            'userlastname' => $sender->lastname, 'params' => $params);
-        $data['data'] = $data;
-        $data['recipientemail'] = $recipient->email;
 
         return $data;
     }

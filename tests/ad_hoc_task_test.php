@@ -96,6 +96,8 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
+        $setupdata['params']->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid=' . $setupdata['data']['veranstid'];
+        $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id=' . $setupdata['data']['globaluserid'];
         $content = get_string('email3', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
@@ -111,6 +113,7 @@ class ad_hoc_task_test extends advanced_testcase {
      * @throws coding_exception
      */
     public function test_send_mail_course_creation_declined() {
+        global $CFG;
         $adhoctask = new \local_lsf_unification\task\send_mail_course_creation_declined();
 
         $setupdata = $this->generator->set_up_params();
@@ -124,6 +127,7 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
+        $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id='. $setupdata['data']['globaluserid'];
         $content = get_string('email4', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
@@ -139,6 +143,7 @@ class ad_hoc_task_test extends advanced_testcase {
      * @throws coding_exception
      */
     public function test_send_mail_request_teacher_to_create_course() {
+        global $CFG;
         $adhoctask = new \local_lsf_unification\task\send_mail_request_teacher_to_create_course();
 
         $setupdata = $this->generator->set_up_params(true, true);
@@ -152,6 +157,8 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
+        $setupdata['params']->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid=' . $setupdata['data']['requestid'];
+        $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id=' . $setupdata['data']['globaluserid'];
         $content = get_string('email2', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
