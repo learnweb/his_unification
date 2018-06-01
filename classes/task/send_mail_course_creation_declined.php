@@ -41,6 +41,7 @@ class send_mail_course_creation_declined extends \core\task\adhoc_task {
      * @throws \moodle_exception
      */
     public function execute() {
+        global $CFG;
         /** @var \stdClass $data */
         $data = $this->get_custom_data();
 
@@ -52,6 +53,7 @@ class send_mail_course_creation_declined extends \core\task\adhoc_task {
             return;
         }
         $user = $userarray[$userid];
+        $data->params->url = $CFG->wwwroot.'/user/view.php?id='. $data->globaluserid;
         // Expected params of $data->params are: a -> (string) firstname b-> (string) lastname of user deciding whether
         // ... course is created, and c-> the (string) coursename.
         $content = get_string('email4', 'local_lsf_unification', $data->params);

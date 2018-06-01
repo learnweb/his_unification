@@ -40,6 +40,7 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
      * @throws \moodle_exception
      */
     public function execute() {
+        global $CFG;
         $data = $this->get_custom_data();
 
         $userid = $data->userid;
@@ -50,6 +51,8 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
             return;
         }
         $user = $userarray[$userid];
+        $data->params->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid=' . $data->veranstid;
+        $data->params->userurl = $CFG->wwwroot.'/user/view.php?id=' . $data->globaluserid;
         // Expected params of $data->params are: a -> (string) firstname b-> (string) lastname of user deciding ...
         // ... whether course is created, and c-> the (string) coursename.
         $content = get_string('email3', 'local_lsf_unification', $data->params);
