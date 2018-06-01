@@ -195,8 +195,8 @@ $string['privacy:metadata:local_lsf_unification:veranstid'] = 'Identifier for th
 $string['privacy:metadata:local_lsf_unification:mdlid'] = 'Identifier for the event from the moodle instance';
 $string['privacy:metadata:local_lsf_unification:timestamp'] = 'Timestamp when the course was imported';
 $string['privacy:metadata:local_lsf_unification:requeststate'] = 'Request state of the course';
-$string['privacy:metadata:local_lsf_unification:requesterid'] = 'Identifier of the Person who requested the course';
-$string['privacy:metadata:local_lsf_unification:acceptorid'] = 'Identifier of the Person who accepted the course creation';
+$string['privacy:metadata:local_lsf_unification:requesterid'] = 'Identifier of the person who requested the course';
+$string['privacy:metadata:local_lsf_unification:acceptorid'] = 'Identifier of the person who accepted the course creation';
 
 $string['privacy:local_lsf_unification:requester'] = 'The request for a course was saved.';
-$string['privacy:local_lsf_unification:acceptor'] = 'A User was saved as the responsible person to answer the request of a course.';
+$string['privacy:local_lsf_unification:acceptor'] = 'A course request was accepted or declined.';
