@@ -189,3 +189,14 @@ $string['icalurl_description'] = 'URL that points to the HisLSF Ical Export (the
 $string['eventcourse_imported'] = 'Course imported';
 $string['eventmatchingtable_updated'] = 'Matchingtable updated';
 $string['eventcourse_duplicated'] = 'Course duplicated';
+
+// Privacy API
+$string['privacy:metadata:local_lsf_unification:veranstid'] = 'Identifier for the event from the HISLSF system';
+$string['privacy:metadata:local_lsf_unification:mdlid'] = 'Identifier for the event from the moodle instance';
+$string['privacy:metadata:local_lsf_unification:timestamp'] = 'Timestamp when the course was imported';
+$string['privacy:metadata:local_lsf_unification:requeststate'] = 'Request state of the course';
+$string['privacy:metadata:local_lsf_unification:requesterid'] = 'Identifier of the person who requested the course';
+$string['privacy:metadata:local_lsf_unification:acceptorid'] = 'Identifier of the person who accepted the course creation';
+
+$string['privacy:local_lsf_unification:requester'] = 'The request for a course was saved.';
+$string['privacy:local_lsf_unification:acceptor'] = 'A course request was accepted or declined.';
