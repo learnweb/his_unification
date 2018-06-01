@@ -54,8 +54,11 @@ class send_mail_request_teacher_to_create_course extends \core\task\adhoc_task {
         $user = $userarray[$userid];
         $data->params->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid=' . $data->requestid;
         $data->params->userurl = $CFG->wwwroot.'/user/view.php?id=' . $data->globaluserid;
-        // Expected params of $data->params are:: a-> (string) firstname b-> (string) lastname of user who requested ...
-        // ... course, c-> the (string) coursename, and d-> the (moodle_url)link for accepting request.
+        // Expected params of $data->params are:
+        // A) a-> (string) firstname,
+        // B) userurl-> (string) url to the user profile page of the requesting user,
+        // C) c-> the (string) coursename, and
+        // D) requesturl-> the (moodle_url)link for managing the request.
         $content = get_string('email2', 'local_lsf_unification', $data->params);
 
         $wassent = email_to_user($user, get_string('email_from', 'local_lsf_unification').

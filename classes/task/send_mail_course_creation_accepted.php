@@ -53,8 +53,11 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
         $user = $userarray[$userid];
         $data->params->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid=' . $data->veranstid;
         $data->params->userurl = $CFG->wwwroot.'/user/view.php?id=' . $data->globaluserid;
-        // Expected params of $data->params are: a -> (string) firstname b-> (string) lastname of user deciding ...
-        // ... whether course is created, and c-> the (string) coursename.
+        // Expected params of $data->params are:
+        // A) a -> (string) firstname,
+        // B) userurl-> (string) the url to the user page,
+        // C) c-> the (string) coursename, and
+        // D) requesturl-> the url to answer the request.
         $content = get_string('email3', 'local_lsf_unification', $data->params);
 
         $wassent = email_to_user($user, get_string('email_from', 'local_lsf_unification')

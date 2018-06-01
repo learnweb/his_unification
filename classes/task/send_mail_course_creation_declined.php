@@ -53,9 +53,11 @@ class send_mail_course_creation_declined extends \core\task\adhoc_task {
             return;
         }
         $user = $userarray[$userid];
-        $data->params->url = $CFG->wwwroot.'/user/view.php?id='. $data->globaluserid;
-        // Expected params of $data->params are: a -> (string) firstname b-> (string) lastname of user deciding whether
-        // ... course is created, and c-> the (string) coursename.
+        $data->params->userurl = $CFG->wwwroot.'/user/view.php?id='. $data->globaluserid;
+        // Expected params of $data->params are:
+        // A) a -> (string) firstname of the user,
+        // B) userurl-> (string) URL to the profile page of the user who declined the request, and
+        // C) c-> the (string) coursename.
         $content = get_string('email4', 'local_lsf_unification', $data->params);
 
         $wassent = email_to_user($user, get_string('email_from', 'local_lsf_unification').
