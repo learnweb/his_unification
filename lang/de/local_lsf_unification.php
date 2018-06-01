@@ -167,9 +167,9 @@ $string['eventcourse_imported'] = 'Kurs importiert';
 $string['eventmatchingtable_updated'] = 'Matchingtable ge&auml;ndert';
 $string['eventcourse_duplicated'] = 'Kursinhalte dupliziert';
 // Privacy API
-$string['privacy:metadata:local_lsf_unification:veranstid'] = 'ID der Veranstaltung im HisLSF System';
+$string['privacy:metadata:local_lsf_unification:veranstid'] = 'ID der Veranstaltung im HISLSF System';
 $string['privacy:metadata:local_lsf_unification:mdlid'] = 'ID der Veranstaltung im Moodle System';
-$string['privacy:metadata:local_lsf_unification:timestamp'] = 'Zeitpunkt yu dem der Kurs importiert wurde';
+$string['privacy:metadata:local_lsf_unification:timestamp'] = 'Zeitpunkt zu dem der Kurs importiert wurde';
 $string['privacy:metadata:local_lsf_unification:requeststate'] = 'Status der Kursanfrage';
 $string['privacy:metadata:local_lsf_unification:requesterid'] = 'ID der Person die den Kurs angefragt hat';
 $string['privacy:metadata:local_lsf_unification:acceptorid'] = 'ID der Person die den Kurs akzeptiert hat';

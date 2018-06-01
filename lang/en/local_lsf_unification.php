@@ -191,7 +191,7 @@ $string['eventmatchingtable_updated'] = 'Matchingtable updated';
 $string['eventcourse_duplicated'] = 'Course duplicated';
 
 // Privacy API
-$string['privacy:metadata:local_lsf_unification:veranstid'] = 'Identifier for the event from the HisLSF system';
+$string['privacy:metadata:local_lsf_unification:veranstid'] = 'Identifier for the event from the HISLSF system';
 $string['privacy:metadata:local_lsf_unification:mdlid'] = 'Identifier for the event from the moodle instance';
 $string['privacy:metadata:local_lsf_unification:timestamp'] = 'Timestamp when the course was imported';
 $string['privacy:metadata:local_lsf_unification:requeststate'] = 'Request state of the course';
