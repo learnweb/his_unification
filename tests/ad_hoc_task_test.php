@@ -98,7 +98,8 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
-        $setupdata['params']->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid=' . $setupdata['veranstid'];
+        $setupdata['params']->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid=' .
+            $setupdata['veranstid'];
         $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id=' . $setupdata['acceptorid'];
         $content = get_string('email3', 'local_lsf_unification', $setupdata['params']);
 
@@ -163,7 +164,8 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
-        $setupdata['params']->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid=' . $setupdata['requestid'];
+        $setupdata['params']->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid=' .
+            $setupdata['requestid'];
         $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id=' . $setupdata['requesterid'];
         $content = get_string('email2', 'local_lsf_unification', $setupdata['params']);
 

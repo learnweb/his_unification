@@ -87,6 +87,7 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
  *
  * @param $course
  * @param $text
+ * @return bool
  */
 function send_support_mail($course, $text) {
     global $USER;
@@ -106,16 +107,23 @@ function send_support_mail($course, $text) {
     return true;
 }
 
-function send_course_request_mail($recipient_username, $course, $request_id) {
+/**
+ * Queues an adhoc task to send a request for a course creation.
+ * @param $recipientusername
+ * @param $course
+ * @param $requestid
+ * @return bool
+ */
+function send_course_request_mail($recipientusername, $course, $requestid) {
     global $USER;
-    $email = username_to_mail($recipient_username);
-    $user = get_or_create_user($recipient_username, $email);
+    $email = username_to_mail($recipientusername);
+    $user = get_or_create_user($recipientusername, $email);
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
     $params->c = utf8_encode($course->titel);
 
     $data = array('recipientid' => $user->id, 'requesterid' => $USER->id, 'requesterfirstname' => $USER->firstname,
-        'requesterlastname' => $USER->lastname, 'requestid' => $request_id, 'params' => $params);
+        'requesterlastname' => $USER->lastname, 'requestid' => $requestid, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_request_teacher_to_create_course();
     $sendemail->set_custom_data($data);
     \core\task\manager::queue_adhoc_task($sendemail);
@@ -127,6 +135,12 @@ function get_remote_creation_continue_link($veranstid) {
     return $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid='.$veranstid;
 }
 
+/**
+ * Queues an adhoc task to send a mail that a requested course was accepted.
+ * @param $recipient
+ * @param $course
+ * @return bool
+ */
 function send_course_creation_mail($recipient, $course) {
     global $USER;
     $params = new stdClass();
@@ -141,6 +155,12 @@ function send_course_creation_mail($recipient, $course) {
     return true;
 }
 
+/**
+ * Queues an adhoc task to send a mail that a requested course was declined.
+ * @param $recipient
+ * @param $course
+ * @return bool
+ */
 function send_sorry_mail($recipient, $course) {
     global $USER;
     $params = new stdClass();

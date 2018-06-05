@@ -60,7 +60,6 @@ class local_lsf_unification_generator extends testing_data_generator {
             $data['requesterlastname'] = $sender->lastname;
         }
 
-        // In case we have a categorywish
         $params = new stdClass();
         $params->a = $sender->firstname." ".$sender->lastname;
         if (!$categorywish) {
