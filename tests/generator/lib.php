@@ -37,9 +37,9 @@ class local_lsf_unification_generator extends testing_data_generator {
     /**
      * Setting up the data for the different e-mail ad-hoc tasks.
      * The nested arrays look aweful but are later necessary to pass the data to the adhoc-task.
-     * @param bool $lsfcourse Is a lsf course required (otherwise normal course)?
-     * @param bool $request Should the params include the link for a request?
-     * @param bool $answer Should the params include the link for a answer?
+     * @param bool $categorywish Is the mail a category wish?
+     * @param bool $request Should the params include the link for the answer of a request?
+     * @param bool $answer Is the message the answer to a request?
      * @return array Data structure for returning all necessary data for the assertions
      */
     public function set_up_params($categorywish = true, $request = false, $answer = false) {

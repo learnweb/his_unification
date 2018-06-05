@@ -52,6 +52,7 @@ class ad_hoc_task_test extends advanced_testcase {
     /**
      * Test the ad hoc task for sending mails to the support for changing the category.
      * @throws coding_exception
+     * @throws moodle_exception
      */
     public function test_send_mail_category_wish() {
         $adhoctask = new \local_lsf_unification\task\send_mail_category_wish();
@@ -80,6 +81,7 @@ class ad_hoc_task_test extends advanced_testcase {
     /**
      * Test the ad hoc task for sending mails that course was created.
      * @throws coding_exception
+     * @throws moodle_exception
      */
     public function test_send_mail_course_creation_accepted() {
         global $CFG;
@@ -108,9 +110,11 @@ class ad_hoc_task_test extends advanced_testcase {
         $this->assertEquals('Course Creation Request accepted', $message->subject);
     }
 
+
     /**
      * Test the ad hoc task for sending mails that the creation of a course was declined.
      * @throws coding_exception
+     * @throws moodle_exception
      */
     public function test_send_mail_course_creation_declined() {
         global $CFG;
@@ -138,9 +142,11 @@ class ad_hoc_task_test extends advanced_testcase {
         $this->assertEquals('Course Creation Request declined', $message->subject);
     }
 
+
     /**
      * Test the ad hoc task for sending mails to request a teacher whether a course should be created.
      * @throws coding_exception
+     * @throws moodle_exception
      */
     public function test_send_mail_request_teacher_to_create_course() {
         global $CFG;
