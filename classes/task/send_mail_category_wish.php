@@ -42,7 +42,7 @@ class send_mail_category_wish extends \core\task\adhoc_task {
         /** @var \stdClass $data */
         $data = $this->get_custom_data();
 
-        $supportuserid = $data->userid;
+        $supportuserid = $data->supportuserid;
         $supportuserarray = user_get_users_by_id(array($supportuserid));
         // In case no recipient can be found the task is aborted and deleted.
         if (empty($supportuserarray[$supportuserid])) {
@@ -59,7 +59,7 @@ class send_mail_category_wish extends \core\task\adhoc_task {
         $content = get_string('email', 'local_lsf_unification', $data->params);
 
         $wassent = email_to_user($supportuser, get_string('email_from', 'local_lsf_unification').
-            " (by ".$data->userfirstname." ".$data->userlastname.")",
+            " (by ".$data->requesterfirstname." ".$data->requesterlastname.")",
             get_string('config_category_wish', 'local_lsf_unification'), $content);
 
         if (!$wassent) {

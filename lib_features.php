@@ -98,8 +98,8 @@ function send_support_mail($course, $text) {
     $params->d = $course->id;
     $params->e = $text;
 
-    $adhocdata = array('userid' => $supportuser->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'params' => $params);
+    $adhocdata = array('supportuserid' => $supportuser->id, 'requesterfirstname' => $USER->firstname,
+        'requesterlastname' => $USER->lastname, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_category_wish();
     $sendemail->set_custom_data($adhocdata);
     \core\task\manager::queue_adhoc_task($sendemail);
@@ -114,8 +114,8 @@ function send_course_request_mail($recipient_username, $course, $request_id) {
     $params->a = $USER->firstname." ".$USER->lastname;
     $params->c = utf8_encode($course->titel);
 
-    $data = array('userid' => $user->id, 'globaluserid' => $USER->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'requestid' => $request_id, 'params' => $params);
+    $data = array('recipientid' => $user->id, 'requesterid' => $USER->id, 'requesterfirstname' => $USER->firstname,
+        'requesterlastname' => $USER->lastname, 'requestid' => $request_id, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_request_teacher_to_create_course();
     $sendemail->set_custom_data($data);
     \core\task\manager::queue_adhoc_task($sendemail);
@@ -133,8 +133,8 @@ function send_course_creation_mail($recipient, $course) {
     $params->a = $USER->firstname." ".$USER->lastname;
     $params->c = utf8_encode($course->titel);
 
-    $data = array('userid' => $recipient->id, 'globaluserid' => $USER->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'veranstid' => $course->veranstid, 'params' => $params);
+    $data = array('recipientid' => $recipient->id, 'acceptorid' => $USER->id, 'acceptorfirstname' => $USER->firstname,
+        'acceptorlastname' => $USER->lastname, 'veranstid' => $course->veranstid, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_course_creation_accepted();
     $sendemail->set_custom_data($data);
     \core\task\manager::queue_adhoc_task($sendemail);
@@ -147,8 +147,8 @@ function send_sorry_mail($recipient, $course) {
     $params->a = $USER->firstname." ".$USER->lastname;
     $params->c = utf8_encode($course->titel);
 
-    $data = array('userid' => $recipient->id, 'globaluserid' => $USER->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'params' => $params);
+    $data = array('recipientid' => $recipient->id, 'acceptorid' => $USER->id, 'acceptorfirstname' => $USER->firstname,
+        'acceptorlastname' => $USER->lastname, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_course_creation_declined();
     $sendemail->set_custom_data($data);
     \core\task\manager::queue_adhoc_task($sendemail);
