@@ -42,37 +42,47 @@ class local_lsf_unification_generator extends testing_data_generator {
      * @param bool $answer Should the params include the link for a answer?
      * @return array Data structure for returning all necessary data for the assertions
      */
-    public function set_up_params($lsfcourse = true, $request = false, $answer = false) {
-        global $CFG, $USER;
+    public function set_up_params($categorywish = true, $request = false, $answer = false) {
         $sender = $this->create_user();
         $recipient = $this->create_user();
 
         $data = array();
+        // In case the request is an anwer we call the param acceptor else requester.
+        if ($answer && !$categorywish) {
+            $data['acceptorid'] = $sender->id;
+            $data['acceptorfirstname'] = $sender->firstname;
+            $data['acceptorlastname'] = $sender->lastname;
+        } else {
+            if (!$categorywish) {
+                $data['requesterid'] = $sender->id;
+            }
+            $data['requesterfirstname'] = $sender->firstname;
+            $data['requesterlastname'] = $sender->lastname;
+        }
+
+        // In case we have a categorywish
         $params = new stdClass();
         $params->a = $sender->firstname." ".$sender->lastname;
-        $data = array('userid' => $recipient->id, 'userfirstname' => $sender->firstname,
-            'userlastname' => $sender->lastname, 'params' => $params);
-        $data['data'] = $data;
-        $data['recipientemail'] = $recipient->email;
-
-        if ($lsfcourse) {
+        if (!$categorywish) {
+            $data['recipientid'] = $recipient->id;
             $course = $this->create_lsf_course();
-            $data['data']['globaluserid'] = $sender->id;
             $params->c = utf8_encode($course->titel);
-            $data['data']['veranstid'] = $course->veranstid;
+            $data['veranstid'] = $course->veranstid;
             if ($request) {
-                $data['data']['requestid'] = '1';
+                $data['requestid'] = '1';
             }
         } else {
+            // A category wish always goes to the supportuser. We do not create a specific user for the supportuser ...
+            // But the naming is different.
+            $data['supportuserid'] = $recipient->id;
             $course = $this->create_course();
             $params->b = $sender->id;
             $params->c = utf8_encode($course->fullname);
             $params->d = $course->id;
             $params->e = 'I want to change to Category xy';
         }
+        $data['recipientemail'] = $recipient->email;
         $data['params'] = $params;
-
         return $data;
     }
-
 }
