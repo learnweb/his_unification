@@ -36,44 +36,52 @@ class local_lsf_unification_generator extends testing_data_generator {
     }
     /**
      * Setting up the data for the different e-mail ad-hoc tasks.
-     * @param bool $lsfcourse Is a lsf course required (otherwise normal course)?
-     * @param bool $request Should the params include the link for a request?
-     * @param bool $answer Should the params include the link for a answer?
+     * The nested arrays look aweful but are later necessary to pass the data to the adhoc-task.
+     * @param bool $categorywish Is the mail a category wish?
+     * @param bool $request Should the params include the link for the answer of a request?
+     * @param bool $answer Is the message the answer to a request?
      * @return array Data structure for returning all necessary data for the assertions
      */
-    public function set_up_params($lsfcourse = true, $request = false, $answer = false) {
-        global $CFG;
+    public function set_up_params($categorywish = true, $request = false, $answer = false) {
         $sender = $this->create_user();
         $recipient = $this->create_user();
 
         $data = array();
+        // In case the request is an anwer we call the param acceptor else requester.
+        if ($answer && !$categorywish) {
+            $data['acceptorid'] = $sender->id;
+            $data['acceptorfirstname'] = $sender->firstname;
+            $data['acceptorlastname'] = $sender->lastname;
+        } else {
+            if (!$categorywish) {
+                $data['requesterid'] = $sender->id;
+            }
+            $data['requesterfirstname'] = $sender->firstname;
+            $data['requesterlastname'] = $sender->lastname;
+        }
+
         $params = new stdClass();
         $params->a = $sender->firstname." ".$sender->lastname;
-
-        if ($lsfcourse) {
+        if (!$categorywish) {
+            $data['recipientid'] = $recipient->id;
             $course = $this->create_lsf_course();
-            $params->b = $CFG->wwwroot.'/user/view.php?id='.$sender->id;
             $params->c = utf8_encode($course->titel);
+            $data['veranstid'] = $course->veranstid;
             if ($request) {
-                $params->d = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid=1';
-            }
-            if ($answer) {
-                $params->d = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid=' . $course->veranstid;
+                $data['requestid'] = '1';
             }
         } else {
+            // A category wish always goes to the supportuser. We do not create a specific user for the supportuser ...
+            // But the naming is different.
+            $data['supportuserid'] = $recipient->id;
             $course = $this->create_course();
             $params->b = $sender->id;
             $params->c = utf8_encode($course->fullname);
             $params->d = $course->id;
             $params->e = 'I want to change to Category xy';
         }
-        $data['params'] = $params;
-        $data = array('userid' => $recipient->id, 'userfirstname' => $sender->firstname,
-            'userlastname' => $sender->lastname, 'params' => $params);
-        $data['data'] = $data;
         $data['recipientemail'] = $recipient->email;
-
+        $data['params'] = $params;
         return $data;
     }
-
 }

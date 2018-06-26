@@ -87,6 +87,7 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
  *
  * @param $course
  * @param $text
+ * @return bool
  */
 function send_support_mail($course, $text) {
     global $USER;
@@ -98,26 +99,31 @@ function send_support_mail($course, $text) {
     $params->d = $course->id;
     $params->e = $text;
 
-    $adhocdata = array('userid' => $supportuser->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'params' => $params);
+    $adhocdata = array('supportuserid' => $supportuser->id, 'requesterfirstname' => $USER->firstname,
+        'requesterlastname' => $USER->lastname, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_category_wish();
     $sendemail->set_custom_data($adhocdata);
     \core\task\manager::queue_adhoc_task($sendemail);
     return true;
 }
 
-function send_course_request_mail($recipient_username, $course, $request_id) {
-    global $USER, $CFG;
-    $email = username_to_mail($recipient_username);
-    $user = get_or_create_user($recipient_username, $email);
+/**
+ * Queues an adhoc task to send a request for a course creation.
+ * @param $recipientusername
+ * @param $course
+ * @param $requestid
+ * @return bool
+ */
+function send_course_request_mail($recipientusername, $course, $requestid) {
+    global $USER;
+    $email = username_to_mail($recipientusername);
+    $user = get_or_create_user($recipientusername, $email);
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
-    $params->b = $CFG->wwwroot.'/user/view.php?id='.$USER->id;
     $params->c = utf8_encode($course->titel);
-    $params->d = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid='.$request_id;
 
-    $data = array('userid' => $user->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'params' => $params);
+    $data = array('recipientid' => $user->id, 'requesterid' => $USER->id, 'requesterfirstname' => $USER->firstname,
+        'requesterlastname' => $USER->lastname, 'requestid' => $requestid, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_request_teacher_to_create_course();
     $sendemail->set_custom_data($data);
     \core\task\manager::queue_adhoc_task($sendemail);
@@ -129,31 +135,40 @@ function get_remote_creation_continue_link($veranstid) {
     return $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid='.$veranstid;
 }
 
+/**
+ * Queues an adhoc task to send a mail that a requested course was accepted.
+ * @param $recipient
+ * @param $course
+ * @return bool
+ */
 function send_course_creation_mail($recipient, $course) {
-    global $USER, $CFG;
+    global $USER;
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
-    $params->b = $CFG->wwwroot.'/user/view.php?id='.$USER->id;
     $params->c = utf8_encode($course->titel);
-    $params->d = get_remote_creation_continue_link($course->veranstid);
 
-    $data = array('userid' => $recipient->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'params' => $params);
+    $data = array('recipientid' => $recipient->id, 'acceptorid' => $USER->id, 'acceptorfirstname' => $USER->firstname,
+        'acceptorlastname' => $USER->lastname, 'veranstid' => $course->veranstid, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_course_creation_accepted();
     $sendemail->set_custom_data($data);
     \core\task\manager::queue_adhoc_task($sendemail);
     return true;
 }
 
+/**
+ * Queues an adhoc task to send a mail that a requested course was declined.
+ * @param $recipient
+ * @param $course
+ * @return bool
+ */
 function send_sorry_mail($recipient, $course) {
-    global $USER, $CFG;
+    global $USER;
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
-    $params->b = $CFG->wwwroot.'/user/view.php?id='.$USER->id;
     $params->c = utf8_encode($course->titel);
 
-    $data = array('userid' => $recipient->id, 'userfirstname' => $USER->firstname,
-        'userlastname' => $USER->lastname, 'params' => $params);
+    $data = array('recipientid' => $recipient->id, 'acceptorid' => $USER->id, 'acceptorfirstname' => $USER->firstname,
+        'acceptorlastname' => $USER->lastname, 'params' => $params);
     $sendemail = new \local_lsf_unification\task\send_mail_course_creation_declined();
     $sendemail->set_custom_data($data);
     \core\task\manager::queue_adhoc_task($sendemail);

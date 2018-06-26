@@ -40,23 +40,29 @@ class send_mail_request_teacher_to_create_course extends \core\task\adhoc_task {
      * @throws \moodle_exception
      */
     public function execute() {
+        global $CFG;
         /** @var \stdClass $data */
         $data = $this->get_custom_data();
 
-        $userid = $data->userid;
-        $userarray = user_get_users_by_id(array($userid));
+        $recipientid = $data->recipientid;
+        $userarray = user_get_users_by_id(array($recipientid));
 
         // In case no recipient can be found the task is aborted and deleted.
-        if (empty($userarray[$userid])) {
+        if (empty($userarray[$recipientid])) {
             return;
         }
-        $user = $userarray[$userid];
-        // Expected params of $data->params are:: a-> (string) firstname b-> (string) lastname of user who requested ...
-        // ... course, c-> the (string) coursename, and d-> the (moodle_url)link for accepting request.
+        $user = $userarray[$recipientid];
+        $data->params->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid=' . $data->requestid;
+        $data->params->userurl = $CFG->wwwroot.'/user/view.php?id=' . $data->requesterid;
+        // Expected params of $data->params are:
+        // A) a-> (string) firstname,
+        // B) userurl-> (string) url to the user profile page of the requesting user,
+        // C) c-> the (string) coursename, and
+        // D) requesturl-> the (moodle_url)link for managing the request.
         $content = get_string('email2', 'local_lsf_unification', $data->params);
 
         $wassent = email_to_user($user, get_string('email_from', 'local_lsf_unification').
-            " (by ".$data->userfirstname." ".$data->userlastname.")",
+            " (by ".$data->requesterfirstname." ".$data->requesterlastname.")",
             get_string('email2_title', 'local_lsf_unification'), $content);
 
         if (!$wassent) {

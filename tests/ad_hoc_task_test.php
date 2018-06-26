@@ -52,12 +52,13 @@ class ad_hoc_task_test extends advanced_testcase {
     /**
      * Test the ad hoc task for sending mails to the support for changing the category.
      * @throws coding_exception
+     * @throws moodle_exception
      */
     public function test_send_mail_category_wish() {
         $adhoctask = new \local_lsf_unification\task\send_mail_category_wish();
 
-        $setupdata = $this->generator->set_up_params(false);
-        $adhoctask->set_custom_data($setupdata['data']);
+        $setupdata = $this->generator->set_up_params(true);
+        $adhoctask->set_custom_data($setupdata);
         $adhoctask->execute();
         $messages = $this->sink->get_messages();
         $this->assertEquals(1, count($messages));
@@ -80,13 +81,14 @@ class ad_hoc_task_test extends advanced_testcase {
     /**
      * Test the ad hoc task for sending mails that course was created.
      * @throws coding_exception
+     * @throws moodle_exception
      */
     public function test_send_mail_course_creation_accepted() {
         global $CFG;
         $adhoctask = new \local_lsf_unification\task\send_mail_course_creation_accepted();
+        $setupdata = $this->generator->set_up_params(false, false, true);
 
-        $setupdata = $this->generator->set_up_params(true, false, true);
-        $adhoctask->set_custom_data($setupdata['data']);
+        $adhoctask->set_custom_data($setupdata);
 
         $adhoctask->execute();
         $messages = $this->sink->get_messages();
@@ -96,6 +98,9 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
+        $setupdata['params']->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid=' .
+            $setupdata['veranstid'];
+        $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id=' . $setupdata['acceptorid'];
         $content = get_string('email3', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
@@ -106,15 +111,18 @@ class ad_hoc_task_test extends advanced_testcase {
         $this->assertEquals('Course Creation Request accepted', $message->subject);
     }
 
+
     /**
      * Test the ad hoc task for sending mails that the creation of a course was declined.
      * @throws coding_exception
+     * @throws moodle_exception
      */
     public function test_send_mail_course_creation_declined() {
+        global $CFG;
         $adhoctask = new \local_lsf_unification\task\send_mail_course_creation_declined();
 
-        $setupdata = $this->generator->set_up_params();
-        $adhoctask->set_custom_data($setupdata['data']);
+        $setupdata = $this->generator->set_up_params(false, false, true);
+        $adhoctask->set_custom_data($setupdata);
 
         $adhoctask->execute();
         $messages = $this->sink->get_messages();
@@ -124,6 +132,7 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
+        $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id='. $setupdata['acceptorid'];
         $content = get_string('email4', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
@@ -134,15 +143,18 @@ class ad_hoc_task_test extends advanced_testcase {
         $this->assertEquals('Course Creation Request declined', $message->subject);
     }
 
+
     /**
      * Test the ad hoc task for sending mails to request a teacher whether a course should be created.
      * @throws coding_exception
+     * @throws moodle_exception
      */
     public function test_send_mail_request_teacher_to_create_course() {
+        global $CFG;
         $adhoctask = new \local_lsf_unification\task\send_mail_request_teacher_to_create_course();
 
-        $setupdata = $this->generator->set_up_params(true, true);
-        $adhoctask->set_custom_data($setupdata['data']);
+        $setupdata = $this->generator->set_up_params(false, true);
+        $adhoctask->set_custom_data($setupdata);
 
         $adhoctask->execute();
         $messages = $this->sink->get_messages();
@@ -152,6 +164,9 @@ class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
+        $setupdata['params']->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid=' .
+            $setupdata['requestid'];
+        $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id=' . $setupdata['requesterid'];
         $content = get_string('email2', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
@@ -170,10 +185,10 @@ class ad_hoc_task_test extends advanced_testcase {
     public function test_no_user_ad_hoc_task() {
         $adhoctask = new \local_lsf_unification\task\send_mail_category_wish();
 
-        $setupdata = $this->generator->set_up_params(false);
+        $setupdata = $this->generator->set_up_params(true);
         // Setting the userid to a number which is quiet likely not available.
-        $setupdata['data']['userid'] = 23456;
-        $adhoctask->set_custom_data($setupdata['data']);
+        $setupdata['supportuserid'] = 23456;
+        $adhoctask->set_custom_data($setupdata);
         $adhoctask->execute();
         $messages = $this->sink->get_messages();
         // Task is aborted therefore no messages is expected.

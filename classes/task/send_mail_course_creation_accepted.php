@@ -26,6 +26,7 @@ namespace local_lsf_unification\task;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/user/lib.php');
+require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 
 /**
  * Class send_mail_course_creation_accepted
@@ -40,22 +41,28 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
      * @throws \moodle_exception
      */
     public function execute() {
+        global $CFG;
         $data = $this->get_custom_data();
 
-        $userid = $data->userid;
-        $userarray = user_get_users_by_id(array($userid));
+        $recipientid = $data->recipientid;
+        $userarray = user_get_users_by_id(array($recipientid));
 
         // In case no recipient can be found the task is aborted and deleted.
-        if (empty($userarray[$userid])) {
+        if (empty($userarray[$recipientid])) {
             return;
         }
-        $user = $userarray[$userid];
-        // Expected params of $data->params are: a -> (string) firstname b-> (string) lastname of user deciding ...
-        // ... whether course is created, and c-> the (string) coursename.
+        $user = $userarray[$recipientid];
+        $data->params->requesturl = get_remote_creation_continue_link($data->veranstid);
+        $data->params->userurl = $CFG->wwwroot.'/user/view.php?id=' . $data->acceptorid;
+        // Expected params of $data->params are:
+        // A) a -> (string) firstname,
+        // B) userurl-> (string) the url to the user page,
+        // C) c-> the (string) coursename, and
+        // D) requesturl-> the url to answer the request.
         $content = get_string('email3', 'local_lsf_unification', $data->params);
 
         $wassent = email_to_user($user, get_string('email_from', 'local_lsf_unification')
-            ." (by ".$data->userfirstname." ".$data->userlastname.")",
+            ." (by ".$data->acceptorfirstname." ".$data->acceptorlastname.")",
             get_string('email3_title', 'local_lsf_unification'), $content);
         if (!$wassent) {
             throw new \moodle_exception(get_string('ad_hoc_task_failed',
