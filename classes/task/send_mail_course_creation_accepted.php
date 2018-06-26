@@ -26,6 +26,7 @@ namespace local_lsf_unification\task;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/user/lib.php');
+require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 
 /**
  * Class send_mail_course_creation_accepted
@@ -51,7 +52,7 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
             return;
         }
         $user = $userarray[$recipientid];
-        $data->params->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid=' . $data->veranstid;
+        $data->params->requesturl = get_remote_creation_continue_link($data->veranstid);
         $data->params->userurl = $CFG->wwwroot.'/user/view.php?id=' . $data->acceptorid;
         // Expected params of $data->params are:
         // A) a -> (string) firstname,
