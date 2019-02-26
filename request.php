@@ -152,11 +152,9 @@ function print_res_selection() {
         if (get_config('local_lsf_unification', 'restore_old_courses') && !empty($backupfiles)) {
             echo "<b>" . get_string('template_from_course', 'local_lsf_unification', $alternative_counter++) . "</b><ul>";
             // Sortiere die Backups alphabetisch.
-            if (getSSONo() == 1 && $_SERVER['HTTP_X_TRUSTED_REMOTE_USER'] === 't_reis06') {
-                uasort($backupfiles, function ($a, $b) {
-                    return strcmp($a->course->fullname, $b->course->fullname);
-                });
-            }
+            uasort($backupfiles, function ($a, $b) {
+                return strcmp($a->course->fullname, $b->course->fullname);
+            });
             foreach ($backupfiles as $id => $fileinfo) {
                 echo "<li><a href='duplicate_course.php?courseid=" . $courseid . "&filetype=b&fileid=" . $id . "'>" . $fileinfo->course->fullname . " (" . $fileinfo->datetime . ")</a></li>";
             }
