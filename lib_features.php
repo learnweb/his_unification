@@ -36,6 +36,8 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
     $course = get_default_course($fullname, $veranstid, $summary, $shortname);
     $course->category = empty($category)?(find_or_create_category("HISLSF",null)->id):($category);
     $course->startdate = $startdate;
+    // TODO: In future versions, better use `create_course()` in course/lib.php instead of several of the following lines.
+    $numsections = isset($course->numsections) ? $course->numsections : 0;
     $course->id = $DB->insert_record('course', $course);
     if ($course->id == false)
         throw new moodle_exception('course not created: '.$DB->get_last_error());
@@ -44,11 +46,13 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
     $context = context_course::instance($course->id);
     // setup default blocks
     blocks_add_default_course_blocks($course);
-    $section = new stdClass();
-    $section->course        = $course->id;   // Create a default section.
-    $section->section       = 0;
-    $section->summaryformat = FORMAT_HTML;
-    $DB->insert_record('course_sections', $section);
+    // Create default section and initial sections if specified (unless they've already been created earlier).
+    // We do not want to call course_create_sections_if_missing() because to avoid creating course cache.
+    $existingsections = $DB->get_fieldset_sql('SELECT section from {course_sections} WHERE course = ?', [$course->id]);
+    $newsections = array_diff(range(0, $numsections), $existingsections);
+    foreach ($newsections as $sectionnum) {
+        course_create_section($course->id, $sectionnum, true);
+    }
 
     // enable enrollment
     enable_manual_enrolment($course);
