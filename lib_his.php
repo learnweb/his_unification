@@ -181,6 +181,9 @@ function get_course_by_veranstid($veranstid) {
 }
 
 function get_veranstids_by_teacher($pid) {
+    if ($pid == null) {
+        return array();
+    }
     global $pgDB;
     $q = pg_query($pgDB->connection,
             "SELECT veranstid FROM " . HIS_PERSONAL_VERANST .
