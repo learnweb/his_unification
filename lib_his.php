@@ -153,25 +153,31 @@ function get_courses_by_veranstids($veranstids) {
                      ") AND " . "(CURRENT_DATE - CAST(veranst.zeitstempel AS date)) < " .
                      get_config('local_lsf_unification', 'max_import_age') .
                      "order by semester,titel;");
-    $result_list = array();
+    $returnlist = array();
     while ($course = pg_fetch_object($q)) {
-        $result = new stdClass();
-        $result->veranstid = $course->veranstid;
-        $result->veranstnr = $course->veranstnr;
-        $result->semester = $course->semester;
-        $result->semestertxt = $course->semestertxt;
-        $result->veranstaltungsart = $course->veranstaltungsart;
-        $result->titel = $course->titel;
-        $result->urlveranst = $course->urlveranst;
-        $result_list[$course->veranstid] = $result;
+        $returnlist[$course->veranstid] = refinecourse($course);
     }
-    return $result_list;
+    return refinecourse($q);
+}
+
+function refinecourse ($course) {
+    $result = new stdClass();
+    $result->veranstid = $course->veranstid;
+    $result->veranstnr = $course->veranstnr;
+    $result->semester = $course->semester;
+    $result->semestertxt = $course->semestertxt;
+    $result->veranstaltungsart = $course->veranstaltungsart;
+    $result->titel = $course->titel;
+    $result->urlveranst = $course->urlveranst;
+    return $result;
 }
 
 function get_course_by_veranstid($veranstid) {
-    $result = get_courses_by_veranstids(array($veranstid
-    ));
-    return $result[$veranstid];
+    global $pgDB;
+    $q = pg_query($pgDB->connection,
+                  "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst FROM ".
+                  HIS_VERANSTALTUNG . " as veranst where veranstid = $veranstid;");
+    return refinecourse(pg_fetch_object($q));
 }
 
 function get_veranstids_by_teacher($pid) {
