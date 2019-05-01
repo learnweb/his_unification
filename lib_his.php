@@ -238,8 +238,11 @@ function get_teachers_course_list($username, $longinfo = false) {
  * @return $is_valid
  */
 function is_course_of_teacher($veranstid, $username) {
-    $courses = get_teachers_course_list($username, false, true);
-    return !empty($courses[$veranstid]);
+    global $pgDB;
+    $pid = get_teachers_pid($username);
+    $q = pg_query($pgDB->connection,
+        "SELECT $pid in (SELECT pid FROM learnweb_personal_veranst WHERE veranstid = $veranstid) as isteacher");
+    return pg_fetch_assoc($q)['isteacher'] == "t";
 }
 
 /**
