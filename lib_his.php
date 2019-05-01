@@ -157,7 +157,7 @@ function get_courses_by_veranstids($veranstids) {
     while ($course = pg_fetch_object($q)) {
         $returnlist[$course->veranstid] = refinecourse($course);
     }
-    return refinecourse($q);
+    return $returnlist;
 }
 
 function refinecourse ($course) {
