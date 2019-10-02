@@ -197,7 +197,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         if ($context->contextlevel == CONTEXT_USER ) {
             $userid = $context->instanceid;
             $DB->delete_records("local_lsf_course", array('acceptorid' => $userid));
-            $DB->delete_records("local_lsf_course", array('requestorid' => $userid));
+            $DB->delete_records("local_lsf_course", array('requesterid' => $userid));
         }
     }
 
@@ -222,7 +222,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
 
             $userid = $context->instanceid;
             $DB->delete_records("local_lsf_course", array('acceptorid' => $userid));
-            $DB->delete_records("local_lsf_course", array('requestorid' => $userid));
+            $DB->delete_records("local_lsf_course", array('requesterid' => $userid));
         }
     }
 }
