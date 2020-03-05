@@ -218,11 +218,152 @@ function print_coursecreation() {
                 $result['warnings'] .= (send_support_mail($result['course'], $data->category_wish) ? ("\n" . get_string('email_success', 'local_lsf_unification')) : ("\n" . get_string('email_error', 'local_lsf_unification')));
             }
         }
+        // If neccessary update customfield.
+        if (!empty($data->current_semester)) {
+            update_customfield_semester($data, $courseid);
+        }
         echo (!empty($result["warnings"])) ? ("<p>" . $OUTPUT->box("<b>" . get_string('warnings', 'local_lsf_unification') . "</b><br>" . "<pre>" . $result["warnings"] . "<pre>") . "</p>") : "";
         print_res_selection($result["course"]->id);
     } else {
         $editform->display();
     }
+}
+
+/**
+ * Updates or insert the customfield in the 'customfield_data' table.
+ * @param $data mixed mformdata
+ * @param $courseid int ID of the current course
+ */
+function update_customfield_semester($data, $courseid){
+    global $DB;
+    $customfield = $DB->get_record('customfield_field', array('name' =>  'Semester', 'type' => 'select'));
+    $customfieldcontroller = \customfield_date\field_controller::create($customfield->id);
+    $configdata = $customfieldcontroller->get('configdata');
+    $semesterinarray = explode("\n", $configdata['options']);
+    if (in_array($data->current_semester, $semesterinarray)){
+        $previouscustomfield = $DB->get_record('customfield_data', array('instanceid' => $courseid));
+        $numericalrepresentation = calculate_customfieldnumber_from_string($data->current_semester);
+        // In case we have data for a previous field update in case it changed.
+        if ($DB->get_record('customfield_data', array('instanceid' => $courseid))) {
+            if (!$previouscustomfield->value == $numericalrepresentation) {
+                $previouscustomfield->value == $numericalrepresentation;
+                $DB->update_record('customfield_data', $previouscustomfield);
+            }
+        } else {
+            // Otherwise create an object and insert it into table.
+            $context = $DB->get_record('context', array('contextlevel' => CONTEXT_COURSE, 'instanceid' => $courseid));
+            $currenttimestamp = time();
+            $dataobject = (object) [
+                'fieldid' => $customfield->id,
+                'instanceid' => $courseid,
+                'intvalue' => $numericalrepresentation,
+                'value' => $numericalrepresentation,
+                'valueformat' => 0,
+                'timecreated' => $currenttimestamp,
+                'timemodified' => $currenttimestamp,
+                'contextid' => $context->id
+            ];
+            $DB->insert_record('customfield_data', $dataobject);
+        }
+    }
+}
+
+/**
+ * @param $current_semester_string
+ * @return int
+ */
+function calculate_customfieldnumber_from_string($current_semester_string){
+    $numericalrepresentation = 0;
+    switch($current_semester_string) {
+        case 'WS20/21':
+            $numericalrepresentation = 29;
+            break;
+        case 'SS20':
+            $numericalrepresentation = 28;
+            break;
+        case 'WS19/20':
+            $numericalrepresentation = 27;
+            break;
+        case 'SS19':
+            $numericalrepresentation = 26;
+            break;
+        case 'WS18/19':
+            $numericalrepresentation = 25;
+            break;
+        case 'SS18':
+            $numericalrepresentation = 24;
+            break;
+        case 'WS17/18':
+            $numericalrepresentation = 23;
+            break;
+        case 'SS17':
+            $numericalrepresentation = 22;
+            break;
+        case 'WS16/17':
+            $numericalrepresentation = 21;
+            break;
+        case 'SS16':
+            $numericalrepresentation = 20;
+            break;
+        case 'WS15/16':
+            $numericalrepresentation = 19;
+            break;
+        case 'SS15':
+            $numericalrepresentation = 18;
+            break;
+        case 'WS14/15':
+            $numericalrepresentation = 17;
+            break;
+        case 'SS14':
+            $numericalrepresentation = 16;
+            break;
+        case 'WS13/14':
+            $numericalrepresentation = 15;
+            break;
+        case 'SS13':
+            $numericalrepresentation = 14;
+            break;
+        case 'WS12/13':
+            $numericalrepresentation = 13;
+            break;
+        case 'SS12':
+            $numericalrepresentation = 12;
+            break;
+        case 'WS11/12':
+            $numericalrepresentation = 11;
+            break;
+        case 'SS11':
+            $numericalrepresentation = 10;
+            break;
+        case 'WS10/11':
+            $numericalrepresentation = 9;
+            break;
+        case 'SS10':
+            $numericalrepresentation = 8;
+            break;
+        case 'WS09/10':
+            $numericalrepresentation = 7;
+            break;
+        case 'SS09':
+            $numericalrepresentation = 6;
+            break;
+        case 'WS08/09':
+            $numericalrepresentation = 5;
+            break;
+        case 'SS08':
+            $numericalrepresentation = 4;
+            break;
+        case 'WS07/08':
+            $numericalrepresentation = 3;
+            break;
+        case 'SS07':
+            $numericalrepresentation = 2;
+            break;
+        case 'No Semester':
+            $numericalrepresentation = 1;
+            break;
+    }
+    return $numericalrepresentation;
 }
 
 function print_request_handler() {
