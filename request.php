@@ -5,6 +5,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 //require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
+require_once($CFG->dirroot . '/local/lsf_unification/handle_customfield_semester.php');
 
 $veranstid = optional_param('veranstid', null, PARAM_INT);
 $questionsanswered = optional_param('questionsanswered', null, PARAM_INT);
