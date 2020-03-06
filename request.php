@@ -131,11 +131,11 @@ function print_res_selection() {
             echo "<b>" . get_string('pre_template', 'local_lsf_unification', $alternative_counter++) . '</b><ul style="list-style-type:none">';
             foreach ($cats as $name => $catfiles) {
                 if (!empty($name)) {
-                    echo '<li style="list-style-image: url(' . $OUTPUT->pix_url("t/collapsed")->out(true) . ')" id="reslistselector' . ++$i . '"><a onclick="' . "document.getElementById('reslist" . ($i) . "').style.display=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'block' : 'none'); document.getElementById('reslistselector" . ($i) . "').style.listStyleImage=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'url(" . $OUTPUT->pix_url("t/collapsed")->out(true) . ")' : 'url(" . $OUTPUT->pix_url("t/expanded")->out(true) . ")');" . '" style="cursor:default">[<b>' . $name . '</b>]</a></b><ul id="reslist' . $i . '" style="display:none">';
+                    echo '<li style="list-style-image: url(' . $OUTPUT->image_url("t/collapsed")->out(true) . ')" id="reslistselector' . ++$i . '"><a onclick="' . "document.getElementById('reslist" . ($i) . "').style.display=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'block' : 'none'); document.getElementById('reslistselector" . ($i) . "').style.listStyleImage=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'url(" . $OUTPUT->pix_url("t/collapsed")->out(true) . ")' : 'url(" . $OUTPUT->pix_url("t/expanded")->out(true) . ")');" . '" style="cursor:default">[<b>' . $name . '</b>]</a></b><ul id="reslist' . $i . '" style="display:none">';
                 }
                 foreach ($catfiles as $id => $fileinfo) {
                     $lines = explode("\n", trim($fileinfo->info, " \t\r\n"), 2);
-                    echo '<li style="list-style-image: url(' . $OUTPUT->pix_url("i/navigationitem")->out(true) . ')"><a href="duplicate_course.php?courseid=' . $courseid . "&filetype=t&fileid=" . $id . '">' . utf8_encode($lines[0]) . "</a>";
+                    echo '<li style="list-style-image: url(' . $OUTPUT->image_url("i/navigationitem")->out(true) . ')"><a href="duplicate_course.php?courseid=' . $courseid . "&filetype=t&fileid=" . $id . '">' . utf8_encode($lines[0]) . "</a>";
                     if (count($lines) == 2)
                         echo "<br/>" . utf8_encode($lines[1]);
                     echo "</li>";
