@@ -5,6 +5,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 //require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
+require_once($CFG->dirroot . '/lib/outputlib.php');
 require_once($CFG->dirroot . '/local/lsf_unification/handle_customfield_semester.php');
 
 $veranstid = optional_param('veranstid', null, PARAM_INT);
@@ -132,7 +133,7 @@ function print_res_selection() {
             echo "<b>" . get_string('pre_template', 'local_lsf_unification', $alternative_counter++) . '</b><ul style="list-style-type:none">';
             foreach ($cats as $name => $catfiles) {
                 if (!empty($name)) {
-                    echo '<li style="list-style-image: url(' . $OUTPUT->image_url("t/collapsed")->out(true) . ')" id="reslistselector' . ++$i . '"><a onclick="' . "document.getElementById('reslist" . ($i) . "').style.display=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'block' : 'none'); document.getElementById('reslistselector" . ($i) . "').style.listStyleImage=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'url(" . $OUTPUT->pix_url("t/collapsed")->out(true) . ")' : 'url(" . $OUTPUT->pix_url("t/expanded")->out(true) . ")');" . '" style="cursor:default">[<b>' . $name . '</b>]</a></b><ul id="reslist' . $i . '" style="display:none">';
+                    echo '<li style="list-style-image: url(' . $OUTPUT->image_url("t/collapsed")->out(true) . ')" id="reslistselector' . ++$i . '"><a onclick="' . "document.getElementById('reslist" . ($i) . "').style.display=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'block' : 'none'); document.getElementById('reslistselector" . ($i) . "').style.listStyleImage=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'url(" . $OUTPUT->image_url("t/collapsed")->out(true) . ")' : 'url(" . $OUTPUT->image_url("t/expanded")->out(true) . ")');" . '" style="cursor:default">[<b>' . $name . '</b>]</a></b><ul id="reslist' . $i . '" style="display:none">';
                 }
                 foreach ($catfiles as $id => $fileinfo) {
                     $lines = explode("\n", trim($fileinfo->info, " \t\r\n"), 2);
@@ -197,7 +198,7 @@ function print_remote_creation() {
 }
 
 function print_coursecreation() {
-    global $CFG, $USER, $OUTPUT, $answer, $teachername, $veranstid, $courseid;
+    global $CFG, $USER, $DB, $OUTPUT, $answer, $teachername, $veranstid, $courseid;
     $editform = new lsf_course_request_form(NULL, array('veranstid' => $veranstid));
     if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
         // dbenrolment enrolment can only be enabled if it is globally enabled
@@ -219,8 +220,10 @@ function print_coursecreation() {
                 $result['warnings'] .= (send_support_mail($result['course'], $data->category_wish) ? ("\n" . get_string('email_success', 'local_lsf_unification')) : ("\n" . get_string('email_error', 'local_lsf_unification')));
             }
         }
-        // If neccessary update customfield.
-        update_customfield_semester($data->current_semester, $courseid);
+        // Update customfield.
+        if ($DB->get_record('customfield_field', array('name' => 'Semester', 'type' => 'select'))) {
+            update_customfield_semester($data->current_semester, $courseid);
+        }
 
         echo (!empty($result["warnings"])) ? ("<p>" . $OUTPUT->box("<b>" . get_string('warnings', 'local_lsf_unification') . "</b><br>" . "<pre>" . $result["warnings"] . "<pre>") . "</p>") : "";
         print_res_selection($result["course"]->id);
