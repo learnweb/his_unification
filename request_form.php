@@ -99,18 +99,18 @@ class lsf_course_request_form extends moodleform {
         $mform->setType('enrolment_key', PARAM_RAW);
 
         $semesterstring = 'Semester';
-        $customfield = $DB->get_record('customfield_field', array('name' =>  $semesterstring, 'type' => 'select'))
+        $customfield = $DB->get_record('customfield_field', array('name' =>  $semesterstring, 'type' => 'select'));
         if ($DB->get_record('customfield_field', array('name' => 'Semester', 'type' => 'select'))) {
             $customfieldcontroller = \customfield_date\field_controller::create($customfield->id);
             $configdata = $customfieldcontroller->get('configdata');
             $semesterinarray = explode("\n", $configdata['options']);
             $mform->addElement('header', $semesterstring, $semesterstring);
             $mform->addElement('select', 'current_semester', $semesterstring, $semesterinarray);
-            $mform->addRule('current_semester', get_string('config_course_semester_missing','local_lsf_unification'),
+            $mform->addRule('current_semester', get_string('config_course_semester_missing', 'local_lsf_unification'),
                 'required', null, 'client');
+            $mform->setDefault('current_semester', 27);
             $mform->setExpanded($semesterstring);
         }
-
 
         $this->add_action_buttons();
 
