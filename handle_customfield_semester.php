@@ -36,11 +36,11 @@ function update_customfield_semester($currentsemester, $courseid){
     $semesterinarray = explode("\n", $configdata['options']);
     if (array_key_exists($currentsemester, $semesterinarray)){
         $previouscustomfield = $DB->get_record('customfield_data', array('instanceid' => $courseid));
-        $numericalrepresentation = $currentsemester;
+        $numericalrepresentation = $currentsemester + 1;
         // In case we have data for a previous field update in case it changed.
         if ($DB->get_record('customfield_data', array('instanceid' => $courseid))) {
             if (!$previouscustomfield->value == $numericalrepresentation) {
-                $previouscustomfield->value == $numericalrepresentation;
+                $previouscustomfield->value = $numericalrepresentation;
                 $DB->update_record('customfield_data', $previouscustomfield);
             }
         } else {

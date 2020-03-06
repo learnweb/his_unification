@@ -219,12 +219,8 @@ function print_coursecreation() {
             }
         }
         // If neccessary update customfield.
-        if (!empty($data->current_semester)) {
-            update_customfield_semester($data->current_semester, $courseid);
-        } else {
-            // Set SS20 as default.
-            update_customfield_semester(27, $courseid);
-        }
+        update_customfield_semester($data->current_semester, $courseid);
+
         echo (!empty($result["warnings"])) ? ("<p>" . $OUTPUT->box("<b>" . get_string('warnings', 'local_lsf_unification') . "</b><br>" . "<pre>" . $result["warnings"] . "<pre>") . "</p>") : "";
         print_res_selection($result["course"]->id);
     } else {
