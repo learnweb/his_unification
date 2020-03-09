@@ -36,24 +36,25 @@ function update_customfield_semester($currentsemester, $courseid){
     $customfieldcontroller = \customfield_date\field_controller::create($customfield->id);
     $configdata = $customfieldcontroller->get('configdata');
     $semesterinarray = explode("\n", $configdata['options']);
+    $context = context_course::instance($courseid);
+
     if (array_key_exists($currentsemester, $semesterinarray)){
-        $previouscustomfield = $DB->get_record('customfield_data', array('instanceid' => $courseid));
+        $previouscustomfield = $DB->get_record('customfield_data', array('instanceid' => $courseid, 'fieldid' => $customfield->id));
         $numericalrepresentation = $currentsemester + 1;
         // In case we have data for a previous field update in case it changed.
-        if ($DB->get_record('customfield_data', array('instanceid' => $courseid))) {
+        if ($previouscustomfield) {
             if (!$previouscustomfield->value == $numericalrepresentation) {
                 $previouscustomfield->value = $numericalrepresentation;
                 $DB->update_record('customfield_data', $previouscustomfield);
             }
         } else {
             // Otherwise create an object and insert it into table.
-            $context = $DB->get_record('context', array('contextlevel' => CONTEXT_COURSE, 'instanceid' => $courseid));
             $currenttimestamp = time();
             $dataobject = (object) [
                 'fieldid' => $customfield->id,
                 'instanceid' => $courseid,
                 'intvalue' => $numericalrepresentation,
-                'value' => $numericalrepresentation,
+                'value' => strval($numericalrepresentation),
                 'valueformat' => 0,
                 'timecreated' => $currenttimestamp,
                 'timemodified' => $currenttimestamp,
@@ -63,13 +64,13 @@ function update_customfield_semester($currentsemester, $courseid){
         }
     } else {
         // The key does not exist in the available choices so we will make it a no semester course.
-        $context = $DB->get_record('context', array('contextlevel' => CONTEXT_COURSE, 'instanceid' => $courseid));
+        $nosemester = 1;
         $currenttimestamp = time();
         $dataobject = (object) [
             'fieldid' => $customfield->id,
             'instanceid' => $courseid,
-            'intvalue' => 1,
-            'value' => 1,
+            'intvalue' => $nosemester,
+            'value' => strval($nosemester),
             'valueformat' => 0,
             'timecreated' => $currenttimestamp,
             'timemodified' => $currenttimestamp,
