@@ -6,7 +6,6 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
 require_once($CFG->dirroot . '/lib/outputlib.php');
-require_once($CFG->dirroot . '/local/lsf_unification/handle_customfield_semester.php');
 
 $veranstid = optional_param('veranstid', null, PARAM_INT);
 $questionsanswered = optional_param('questionsanswered', null, PARAM_INT);
@@ -221,8 +220,13 @@ function print_coursecreation() {
             }
         }
         // Update customfield.
-        if ($DB->get_record('customfield_field', array('name' => 'Semester', 'type' => 'select'))) {
-            update_customfield_semester($data->current_semester, $courseid);
+        $coursecontext = \context_course::instance($courseid);
+        if ($field = $DB->get_record('customfield_field', array('shortname' => 'semester', 'type' => 'semester'))) {
+            $fieldcontroller = \core_customfield\field_controller::create($field->id);
+            $datacontroller = \core_customfield\data_controller::create(0, null, $fieldcontroller);
+            $datacontroller->set('instanceid', $courseid);
+            $datacontroller->set('contextid', $coursecontext->id);
+            $datacontroller->instance_form_save($data);
         }
 
         echo (!empty($result["warnings"])) ? ("<p>" . $OUTPUT->box("<b>" . get_string('warnings', 'local_lsf_unification') . "</b><br>" . "<pre>" . $result["warnings"] . "<pre>") . "</p>") : "";

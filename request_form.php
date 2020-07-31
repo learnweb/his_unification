@@ -98,18 +98,16 @@ class lsf_course_request_form extends moodleform {
         $mform->addHelpButton('category_wish', 'config_category_wish','local_lsf_unification');
         $mform->setType('enrolment_key', PARAM_RAW);
 
-        $semesterstring = 'Semester';
-        $customfield = $DB->get_record('customfield_field', array('name' =>  $semesterstring, 'type' => 'select'));
-        if ($DB->get_record('customfield_field', array('name' => 'Semester', 'type' => 'select'))) {
-            $customfieldcontroller = \customfield_date\field_controller::create($customfield->id);
-            $configdata = $customfieldcontroller->get('configdata');
-            $semesterinarray = explode("\n", $configdata['options']);
-            $mform->addElement('header', $semesterstring, $semesterstring);
-            $mform->addElement('select', 'current_semester', $semesterstring, $semesterinarray);
-            $mform->addRule('current_semester', get_string('config_course_semester_missing', 'local_lsf_unification'),
-                'required', null, 'client');
-            $mform->setDefault('current_semester', 27);
-            $mform->setExpanded($semesterstring);
+        $mform->addElement('header','semesterheader', get_string('config_course_semester', 'local_lsf_unification'));
+
+        $semesterfieldname = 'semester';
+        if ($field = $DB->get_record('customfield_field', array('shortname' => $semesterfieldname, 'type' => 'semester'))) {
+            $fieldcontroller = \core_customfield\field_controller::create($field->id);
+            $datacontroller = \core_customfield\data_controller::create(0, null, $fieldcontroller);
+            $datacontroller->instance_form_definition($mform);
+
+            $mform->setDefault('customfield_' . $shortname, 27);
+            // TODO default <=> lsf data!
         }
 
         $this->add_action_buttons();
