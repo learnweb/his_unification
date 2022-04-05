@@ -74,6 +74,28 @@ function print_first_overview() {
     echo "<tr><td>&nbsp;</td><td><input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></td></tr></table></form>";
 }
 
+function print_first_overview_sap() {
+    global $USER;
+    $courselist = "<ul>";
+    foreach (get_teachers_course_list_sap($USER->username, true) as $course) {
+        if (!course_exists($course->veranstid)) {
+            $courselist .= "<li>" . $course->info . "</li>";
+        }
+    }
+    $courselist .= "</ul>";
+    echo "<p>" . get_string('notice', 'local_lsf_unification') . "</p>";
+    echo "<form name='input' action='request.php' method='post'><table><tr><td colspan='2'><b>" . get_string('question', 'local_lsf_unification') . "</b>";
+    echo "</td></tr>";
+    echo ($courselist != "<ul></ul>") ? ("<tr><td style='vertical-align:top;'><input type='radio' name='answer' id='answer1' value='1'></td><td><label for='answer1'>" . get_string('answer_course_found', 'local_lsf_unification') . "" . $courselist . "</label></td></tr>") : "";
+
+    echo "<tr><td><input type='radio' name='answer' id='answer3' value='3'></td><td><label for='answer3'>" . get_string('answer_course_in_lsf_and_visible', 'local_lsf_unification') . "</label></td></tr>";
+    if (get_config('local_lsf_unification', 'remote_creation')) {
+        echo "<tr><td><input type='radio' name='answer' id='answer11' value='11'></td><td><label for='answer11'>" . get_string('answer_proxy_creation', 'local_lsf_unification') . "</label></td></tr>";
+    }
+    echo "<tr><td><input type='radio' name='answer' id='answer6' value='6'></td><td><label for='answer6'>" . get_string('answer_goto_old_requestform', 'local_lsf_unification') . "</label></td></tr>";
+    echo "<tr><td>&nbsp;</td><td><input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></td></tr></table></form>";
+}
+
 function print_helptext($t, $s = null) {
     echo "<u>" . get_string('answer_' . $t, 'local_lsf_unification') . "</u><br>" . get_string('info_' . $t, 'local_lsf_unification', $s, true);
     echo "<br><a href='request.php'>" . get_string('back', 'local_lsf_unification') . "</a>";
@@ -293,7 +315,13 @@ if (establish_secondary_DB_connection() === true) {
         print_request_handler(); // Remote Course Creation Request Handler
     }
     close_secondary_DB_connection();
+
 } else {
     echo get_string('db_not_available', 'local_lsf_unification');
+}
+if(establish_secondary_DB_connection_sap() === true) {
+    print_first_overview_sap();
+} else {
+    echo "could not establish sap connection";
 }
 echo $OUTPUT->footer();

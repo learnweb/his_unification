@@ -45,6 +45,25 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
         get_string('max_import_age', 'local_lsf_unification'), get_string('max_import_age_description', 'local_lsf_unification'),
         365, PARAM_INT));
 
+    $settings->add(new admin_setting_configtext('local_lsf_unification/dbhost_sap',
+        get_string('dbhost', 'local_lsf_unification'), get_string('dbhost_description', 'local_lsf_unification'),
+        '', PARAM_RAW));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/dbport_sap',
+        get_string('dbport', 'local_lsf_unification'), get_string('dbport_description', 'local_lsf_unification'),
+        '', PARAM_RAW));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/dbuser_sap',
+        get_string('dbuser', 'local_lsf_unification'), get_string('dbuser_description', 'local_lsf_unification'),
+        '', PARAM_RAW));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/dbpass_sap',
+        get_string('dbpass', 'local_lsf_unification'), get_string('dbpass_description', 'local_lsf_unification'),
+        '', PARAM_RAW));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/dbname_sap',
+        get_string('dbname', 'local_lsf_unification'), get_string('dbname_description', 'local_lsf_unification'),
+        '', PARAM_RAW));
+    $settings->add(new admin_setting_configtext('local_lsf_unification/max_import_age_sap',
+        get_string('max_import_age', 'local_lsf_unification'), get_string('max_import_age_description', 'local_lsf_unification'),
+        365, PARAM_INT));
+
     if (!empty($CFG->creatornewroleid)) {
         $settings->add(new admin_setting_configtext('local_lsf_unification/roleid_teacher',
             get_string('roleid_teacher', 'local_lsf_unification'), get_string('roleid_teacher_description', 'local_lsf_unification'),
