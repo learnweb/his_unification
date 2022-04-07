@@ -4,6 +4,7 @@
 require_once(dirname(__FILE__) . '/../../config.php');
 //require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
+require_once($CFG->dirroot . '/local/lsf_unification/lib_sap.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
 require_once($CFG->dirroot . '/lib/outputlib.php');
 
@@ -122,6 +123,7 @@ function print_coursetable($teacher, $appendix = "") {
 function print_final() {
     global $OUTPUT, $CFG, $courseid;
     echo $OUTPUT->box("<b>" . get_string('next_steps', 'local_lsf_unification') . ":</b><br><a href='" . $CFG->wwwroot . "/user/index.php?id=" . ($courseid) . "'>" . get_string('linktext_users', 'local_lsf_unification') . "</a><br>
+    <a href='" . $CFG->wwwroot . "/backup/import.php?id=" . ($courseid) . "'>" . get_string('linktext_content', 'local_lsf_unification') . "</a><br>
     <a href='" . $CFG->wwwroot . "/course/view.php?id=" . ($courseid) . "'>" . get_string('linktext_course', 'local_lsf_unification') . "</a><br>&nbsp;");
 }
 
