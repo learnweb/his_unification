@@ -7,6 +7,7 @@ require_once ($CFG->dirroot . '/local/lsf_unification/class_pg_lite_sap.php');
 
 define("SAP_GRUPPE",            "public.ovv_e_title");
 define("SAP_GRUPPE_V",          "public.ovv_e_klvl");
+define("SAP_V_GRUPPE",          "public.ovv_klvl_e");
 define("SAP_GRUPPE_P",          "public.ovv_e_p");
 define("SAP_VERANST",           "public.ovv_klvl_title");
 define("SAP_VERANST_DETAILS",   "public.ovv_klvl_periods");
@@ -104,9 +105,11 @@ function gen_url($course) {
     // TODO make url param, better way to get objid?.
     $baseurl = 'https://service.uni-muenster.de/sap/bc/ui5_ui5/nvias/ccatalog/index.html#/details/' . $course->peryr . '/' . $course->perid . '/';
     $q = pg_query($pgDB->connection,
-            "select objid, otype from " . SAP_GRUPPE_V ." where objid_klvl =" . $course->objid);
-    $group = pg_fetch_object($q);
-    return $baseurl . $group->otype . "/" . $group->objid;
+            "select objid_e, otype_e from " . SAP_V_GRUPPE ." where objid =" . $course->objid);
+    
+$group = pg_fetch_object($q);
+    var_dump($group);
+    return $baseurl . $group->otype_e . "/" . $group->objid_e;
 }
 /**
  * creates a list of courses assigned to a teacher
