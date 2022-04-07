@@ -102,10 +102,11 @@ function username_to_mail_sap($username) {
 function gen_url($course) {
     global $pgDB;
     // TODO make url param, better way to get objid?.
-    $baseurl = 'https://service.uni-muenster.de/sap/bc/ui5_ui5/nvias/ccatalog/index.html#/details/' . $course->peryr . '/' . $course->perid . '/E/';
+    $baseurl = 'https://service.uni-muenster.de/sap/bc/ui5_ui5/nvias/ccatalog/index.html#/details/' . $course->peryr . '/' . $course->perid . '/';
     $q = pg_query($pgDB->connection,
-            "select objid from " . SAP_GRUPPE_P ." where stext ='" . $course->stext . "'");
-    return $baseurl . pg_fetch_object($q)->objid;
+            "select objid, otype from " . SAP_GRUPPE_V ." where objid_klvl =" . $course->objid);
+    $group = pg_fetch_object($q);
+    return $baseurl . $group->otype . "/" . $group->objid;
 }
 /**
  * creates a list of courses assigned to a teacher
@@ -129,7 +130,7 @@ function get_teachers_course_list_sap($username, $longinfo = false) {
         $result = new stdClass();
 	$url = gen_url($course);
         $result->veranstid = $course->objid;
-        $result->info = ($course->stext) . " (" . ($course->perid == 1? "SoSe " : "WiSe ") . $course->peryr . ",<a target='_blank' href=" . $url . "> Link - " . $course->objid . "</a>" . ")"; 
+        $result->info = ($course->stext) . " (" . ($course->perid == 1? "SoSe " : "WiSe ") . $course->peryr . ",<a target='_blank' href=" . $url . "> Link - " . $course->objid . "</a>" . ")";
         // TODO URL und Optional - beschreibung, früher shorttext oder so.
         $courselist[$course->short] = $result;
     }
