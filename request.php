@@ -14,6 +14,7 @@ $courseid = optional_param('courseid', 1, PARAM_INT);
 $teachername = optional_param('teachername', "", PARAM_ALPHANUMEXT);
 $accept = optional_param('accept', null, PARAM_INT);
 $answer = optional_param('answer', null, PARAM_INT);
+$answer_sap = optional_param('answer_sap', false, PARAM_BOOL);
 $requestid = optional_param('requestid', null, PARAM_INT);
 
 if (!empty($answer) && !empty($requestid)) {
@@ -85,15 +86,14 @@ function print_first_overview_sap() {
     }
     $courselist .= "</ul>";
     echo "<p>" . get_string('notice', 'local_lsf_unification') . "</p>";
-    echo "<form name='input' action='request.php' method='post'><table><tr><td colspan='2'><b>" . get_string('question', 'local_lsf_unification') . "</b>";
+    echo "<form name='input_sap' action='request.php' method='post'><table><tr><td colspan='2'><b>" . get_string('question', 'local_lsf_unification') . "</b>";
     echo "</td></tr>";
-    echo ($courselist != "<ul></ul>") ? ("<tr><td style='vertical-align:top;'><input type='radio' name='answer' id='answer1' value='1'></td><td><label for='answer1'>" . get_string('answer_course_found', 'local_lsf_unification') . "" . $courselist . "</label></td></tr>") : "";
+    echo ($courselist != "<ul></ul>") ? ("<tr><td style='vertical-align:top;'><input type='radio' name='answer_sap' id='answer1_sap' value='true'></td><td><label for='answer1'>" . get_string('answer_course_found', 'local_lsf_unification') . "" . $courselist . "</label></td></tr>") : "";
 
-    echo "<tr><td><input type='radio' name='answer' id='answer3' value='3'></td><td><label for='answer3'>" . get_string('answer_course_in_lsf_and_visible', 'local_lsf_unification') . "</label></td></tr>";
+    //echo "<tr><td><input type='radio' name='answer_sap' id='answer3_sap' value='3'></td><td><label for='answer3_sap'>" . get_string('answer_course_in_lsf_and_visible', 'local_lsf_unification') . "</label></td></tr>";
     if (get_config('local_lsf_unification', 'remote_creation')) {
-        echo "<tr><td><input type='radio' name='answer' id='answer11' value='11'></td><td><label for='answer11'>" . get_string('answer_proxy_creation', 'local_lsf_unification') . "</label></td></tr>";
+        echo "<tr><td><input type='radio' name='answer_sap' id='answer11_sap' value='11'></td><td><label for='answer11_sap'>" . get_string('answer_proxy_creation', 'local_lsf_unification') . "</label></td></tr>";
     }
-    echo "<tr><td><input type='radio' name='answer' id='answer6' value='6'></td><td><label for='answer6'>" . get_string('answer_goto_old_requestform', 'local_lsf_unification') . "</label></td></tr>";
     echo "<tr><td>&nbsp;</td><td><input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></td></tr></table></form>";
 }
 
@@ -102,21 +102,27 @@ function print_helptext($t, $s = null) {
     echo "<br><a href='request.php'>" . get_string('back', 'local_lsf_unification') . "</a>";
 }
 
-function print_courseselection() {
+function print_courseselection($sap=false) {
     global $USER, $answer;
     echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='" . $answer . "'>";
-    print_coursetable($USER->username);
+    print_coursetable($USER->username, $sap);
     echo "<input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></form>";
     echo "<br><a href='request.php'>" . get_string('back', 'local_lsf_unification') . "</a>";
 }
 
-function print_coursetable($teacher, $appendix = "") {
+function print_coursetable($teacher, $sap=false, $appendix = "") {
     echo "<table><tr><td colspan='2'><b>" . get_string('choose_course', 'local_lsf_unification') . "</b></td></tr>";
-    foreach (get_teachers_course_list($teacher, true) as $course) {
+    if($sap) {
+        $courselist = get_teachers_course_list_sap($teacher, true);
+    } else {
+        $courselist = get_teachers_course_list($teacher, true);
+    }
+    foreach ($courselist as $course) {
         if (!course_exists($course->veranstid)) {
             echo "<tr><td><input type='radio' name='veranstid' id='veranstid_" . ($course->veranstid) . "' value='" . ($course->veranstid) . "'></td><td><label for='veranstid_" . ($course->veranstid) . "'>" . ($course->info) . "</label></td></tr>";
         }
     }
+
     echo $appendix . "</table>";
 }
 
@@ -322,7 +328,13 @@ if (establish_secondary_DB_connection() === true) {
     echo get_string('db_not_available', 'local_lsf_unification');
 }
 if(establish_secondary_DB_connection_sap() === true) {
-    print_first_overview_sap();
+    if (!$answer_sap) {
+        print_first_overview_sap(); // Task Selection
+    } elseif ($answer_sap) {
+        if (empty($veranstid)) {
+            print_courseselection(true); //
+        }
+    }
 } else {
     echo "could not establish sap connection";
 }
