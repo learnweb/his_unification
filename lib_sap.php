@@ -100,13 +100,49 @@ function username_to_mail_sap($username) {
     return $username . "@uni-muenster.de";
 }
 
+function get_courses_by_veranstids_sap($veranstids) {
+    global $pgDB;
+
+    // if veranstids is empty, no need to make a db request. return empty list
+    if (empty($veranstids))
+        return array();
+
+    $veranstids_string = implode(',', $veranstids);
+    // funfact cast(begda as date) - xxx subtracts days from a given yyyy-mm-dd format.
+    $q = pg_query($pgDB->connection,
+        "SELECT v.objid, d.peryr, d.perid, d.category, v.tabnr, v.tabseqnr, v.tline
+        FROM " .
+        SAP_VERANST . " as v JOIN" . SAP_VERANST_DETAILS . " as d on v.objid = d.objid
+                     where v.objid in (" . $veranstids_string .
+        ") AND " . "(CURRENT_DATE - CAST(v.begda AS date)) < " .
+        get_config('local_lsf_unification', 'max_import_age_sap') .
+        "order by v.begda,v.tline;");
+    $result_list = array();
+    while ($course = pg_fetch_object($q)) {
+        $result = new stdClass();
+        $result->veranstid = $course->objid;
+        $result->semester = $course->peryr . $course->perid[-1];
+        if($course->perid[-1] === "1"){
+            $semester = "SoSe";
+        } else if($course->perid[-1] === "2") {
+            $semester = "WiSe";
+        }
+        $result->semestertxt = $semester . " " . $course->peryr;
+        $result->veranstaltungsart = $course->category;
+        $result->titel = $course->tline;
+        //$result->urlveranst = $course->urlveranst; TODO
+        $result_list[$course->veranstid] = $result;
+    }
+    return $result_list;
+}
+
 function gen_url($course) {
     global $pgDB;
     // TODO make url param, better way to get objid?.
     $baseurl = 'https://service.uni-muenster.de/sap/bc/ui5_ui5/nvias/ccatalog/index.html#/details/' . $course->peryr . '/' . $course->perid . '/';
     $q = pg_query($pgDB->connection,
             "select objid_e, otype_e from " . SAP_V_GRUPPE ." where objid =" . $course->objid);
-    
+
 $group = pg_fetch_object($q);
     //var_dump($group);
     return $baseurl . $group->otype_e . "/" . $group->objid_e;
