@@ -108,7 +108,7 @@ function gen_url($course) {
             "select objid_e, otype_e from " . SAP_V_GRUPPE ." where objid =" . $course->objid);
     
 $group = pg_fetch_object($q);
-    var_dump($group);
+    //var_dump($group);
     return $baseurl . $group->otype_e . "/" . $group->objid_e;
 }
 /**

@@ -103,8 +103,12 @@ function print_helptext($t, $s = null) {
 }
 
 function print_courseselection($sap=false) {
-    global $USER, $answer;
-    echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='" . $answer . "'>";
+    global $USER, $answer, $answer_sap;
+    if($sap) {
+        echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer_sap' value='" . $answer_sap . "'>";
+    } else {
+        echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='" . $answer . "'>";
+    }
     print_coursetable($USER->username, $sap);
     echo "<input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></form>";
     echo "<br><a href='request.php'>" . get_string('back', 'local_lsf_unification') . "</a>";
@@ -118,6 +122,7 @@ function print_coursetable($teacher, $sap=false, $appendix = "") {
         $courselist = get_teachers_course_list($teacher, true);
     }
     foreach ($courselist as $course) {
+	var_dump($course->veranstid);
         if (!course_exists($course->veranstid)) {
             echo "<tr><td><input type='radio' name='veranstid' id='veranstid_" . ($course->veranstid) . "' value='" . ($course->veranstid) . "'></td><td><label for='veranstid_" . ($course->veranstid) . "'>" . ($course->info) . "</label></td></tr>";
         }
@@ -334,8 +339,14 @@ if(establish_secondary_DB_connection_sap() === true) {
     } elseif ($answer_sap) {
         if (empty($veranstid)) {
             print_courseselection(true); //
-        }
+        } else {
+var_dump("in else");
+              // if (is_course_of_teacher_sap($veranstid, $USER)) { // Validate veranstid, user
+                   print_coursecreation(); // Request neccessary details and create course
+              // }
+            }
     }
+    close_secondary_DB_connection_sap();
 } else {
     echo "could not establish sap connection";
 }
