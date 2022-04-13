@@ -233,7 +233,7 @@ function get_teachers_of_course_sap($veranstid) {
  * @param $veranstid idnumber/veranstid
  * @return $fullname
  */
-function get_default_fullname($lsf_course) {
+function get_default_fullname_sap($lsf_course) {
     $personen = "";
     foreach (get_teachers_of_course_sap($lsf_course->veranstid) as $person) {
         $personen .= ", " . trim($person->vorname) . " " . trim($person->nachname);
@@ -248,7 +248,7 @@ function get_default_fullname($lsf_course) {
  * @param $veranstid idnumber/veranstid
  * @return $shortname
  */
-function get_default_shortname($lsf_course, $long = false) {
+function get_default_shortname_sap($lsf_course, $long = false) {
     global $DB;
     $i = "";
     foreach (explode(" ", $lsf_course->titel) as $word) {
@@ -270,7 +270,7 @@ function get_default_shortname($lsf_course, $long = false) {
  * @param $veranstid idnumber/veranstid
  * @return $summary
  */
-function get_default_summary($lsf_course) {
+function get_default_summary_sap($lsf_course) {
     global $pgDB;
     $summary = '';
     $q = pg_query($pgDB->connection,
@@ -293,7 +293,7 @@ function get_default_summary($lsf_course) {
  * @param $veranstid idnumber/veranstid
  * @return $startdate
  */
-function get_default_startdate($lsf_course) {
+function get_default_startdate_sap($lsf_course) {
     $semester = $lsf_course->semester . '';
     $year = substr($semester, 0, 4);
     $month = (substr($semester, -1) == "1") ? 4 : 10;

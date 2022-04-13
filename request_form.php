@@ -37,13 +37,21 @@ class lsf_course_request_form extends moodleform {
         $mform->addHelpButton('fullname', 'fullnamecourse');
         $mform->addRule('fullname', get_string('missingfullname'), 'required', null, 'client');
         $mform->setType('fullname', PARAM_MULTILANG);
-        $mform->setDefault('fullname', get_default_fullname($lsf_course));
+        if ($sap){
+            $mform->setDefault('fullname', get_default_fullname_sap($lsf_course));
+        } else {
+            $mform->setDefault('fullname', get_default_fullname($lsf_course));
+        }
 
         $mform->addElement('text', 'shortname', get_string('shortnamecourse'), 'maxlength="100" size="30"');
         $mform->addHelpButton('shortname', 'shortnamecourse');
         $mform->addRule('shortname', get_string('missingshortname'), 'required', null, 'client');
         $mform->setType('shortname', PARAM_MULTILANG);
-        $mform->setDefault('shortname', get_default_shortname($lsf_course));
+        if ($sap){
+            $mform->setDefault('shortname', get_default_shortname_sap($lsf_course));
+        } else {
+            $mform->setDefault('shortname', get_default_shortname($lsf_course));
+        }
         $mform->addElement('html', '<i>'.get_string('shortnamehint', 'local_lsf_unification', shortname_hint($lsf_course)).'</i>');
 
         $mform->addElement('text','idnumber', get_string('idnumbercourse'),'maxlength="100"  size="10"');
@@ -54,11 +62,19 @@ class lsf_course_request_form extends moodleform {
 
         $mform->addElement('hidden', 'summary', null);
         $mform->setType('summary', PARAM_RAW);
-        $mform->setConstant('summary', get_default_summary($lsf_course));
+        if ($sap){
+
+        } else {
+            $mform->setDefault('fullname', get_default_summary($lsf_course));
+        }
 
         $mform->addElement('date_selector', 'startdate', get_string('startdate'));
         $mform->addHelpButton('startdate', 'startdate');
-        $mform->setDefault('startdate', get_default_startdate($lsf_course));
+        if ($sap){
+            $mform->setDefault('startdate', get_default_startdate_sap($lsf_course));
+        } else {
+            $mform->setDefault('startdate', get_default_startdate($lsf_course));
+        }
 
         $mform->addElement('header','enrol', get_string('config_enrol', 'local_lsf_unification'));
         $mform->setExpanded('enrol');
