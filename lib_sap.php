@@ -121,6 +121,8 @@ function get_courses_by_veranstids_sap($veranstids) {
     while ($course = pg_fetch_object($q)) {
         $result = new stdClass();
         $result->veranstid = $course->objid;
+        $result->peryr = $course->peryr;
+        $result->perid = $course->perid;
         $result->semester = $course->peryr . $course->perid[-1];
         if($course->perid[-1] === "1"){
             $semester = "SoSe";
@@ -129,7 +131,7 @@ function get_courses_by_veranstids_sap($veranstids) {
         }
         $result->semestertxt = $semester . " " . $course->peryr;
         $result->veranstaltungsart = $course->category;
-        $result->titel = get_klvl_title($course->objid, $course->peryr, $course->perid);
+        $result->titel = get_klvl_title($course->objid, $course->peryr, $course->perid, SAP_VER_PO);
         //$result->urlveranst = $course->urlveranst; TODO
         $result_list[$course->objid] = $result;
     }
@@ -169,7 +171,7 @@ function get_teachers_course_list_sap($username, $longinfo = false) {
         $result = new stdClass();
 	$url = gen_url($course);
         $result->veranstid = $course->objid;
-        $result->info = get_klvl_title($course->objid, $course->peryr, $course->perid) . " (" . ($course->perid == 1? "SoSe " : "WiSe ") . $course->peryr . ",<a target='_blank' href=" . $url . "> Link - " . $course->objid . "</a>" . ")";
+        $result->info = get_klvl_title($course->objid, $course->peryr, $course->perid, SAP_VER_PO) . " (" . ($course->perid == 1? "SoSe " : "WiSe ") . $course->peryr . ",<a target='_blank' href=" . $url . "> Link - " . $course->objid . "</a>" . ")";
         // TODO URL und Optional - beschreibung, früher shorttext oder so.
         $courselist[$course->short] = $result;
     }
@@ -271,18 +273,9 @@ function get_default_shortname_sap($lsf_course, $long = false) {
  * @return $summary
  */
 function get_default_summary_sap($lsf_course) {
-    global $pgDB;
-    $summary = '';
-    $q = pg_query($pgDB->connection,
-        "SELECT kommentar FROM " . HIS_VERANST_KOMMENTAR . " WHERE veranstid = '" .
-        $lsf_course->veranstid . "'");
-    while ($sum_object = pg_fetch_object($q)) {
-        if (!empty($sum_object->kommentar) && strpos($summary, $sum_object->kommentar) === false) {
-            $summary .= '<p>' . $sum_object->kommentar . '</p>';
-        }
-    }
-    $summary = utf8_encode($summary) . '<p><a href="' . $lsf_course->urlveranst .
-        '">Kurs im HIS-LSF</a></p>';
+    $summary = '<p>' . get_klvl_title($lsf_course->veranstid, $lsf_course->peryr, $lsf_course->perid, SAP_VERANST_KOMMENTAR) . '</p>';
+    $summary = utf8_encode($summary) . '<p><a href="' . gen_url($lsf_course) .
+        '">Kurs in SAP</a></p>';
     return $summary;
 }
 
@@ -310,10 +303,10 @@ function semester_endda($peryr, $perid) {
     else return ($peryr + 1)."-03-31";
 }
 
-function get_klvl_title($kid, $peryr, $perid) {
+function get_klvl_title($kid, $peryr, $perid, $table) {
     GLOBAL $pgDB;
     $debug = false;
-    $q = "select tabnr, tline, begda, endda from " . SAP_VERANST . " where objid = '$kid' and peryr = '$peryr' and perid = '$perid' order by tabnr, tabseqnr";
+    $q = "select tabnr, tline, begda, endda from " . $table . " where objid = '$kid' and peryr = '$peryr' and perid = '$perid' order by tabnr, tabseqnr";
     $rows = pg_query($pgDB->connection, $q);
     $title = "";
     $lines = array();

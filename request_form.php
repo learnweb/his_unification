@@ -60,12 +60,12 @@ class lsf_course_request_form extends moodleform {
         $mform->hardFreeze('idnumber');
         $mform->setConstant('idnumber', $veranstid);
 
-        $mform->addElement('hidden', 'summary', null);
+        $mform->addElement('textarea', 'summary', null);
         $mform->setType('summary', PARAM_RAW);
         if ($sap){
-
+            $mform->setDefault('summary', get_default_summary_sap($lsf_course));
         } else {
-            $mform->setDefault('fullname', get_default_summary($lsf_course));
+            $mform->setDefault('summary', get_default_summary($lsf_course));
         }
 
         $mform->addElement('date_selector', 'startdate', get_string('startdate'));
