@@ -169,7 +169,7 @@ function get_teachers_course_list_sap($username, $longinfo = false) {
         $result = new stdClass();
 	$url = gen_url($course);
         $result->veranstid = $course->objid;
-        $result->info = ($course->stext) . " (" . ($course->perid == 1? "SoSe " : "WiSe ") . $course->peryr . ",<a target='_blank' href=" . $url . "> Link - " . $course->objid . "</a>" . ")";
+        $result->info = get_klvl_title($course->objid, $course->peryr, $course->perid) . " (" . ($course->perid == 1? "SoSe " : "WiSe ") . $course->peryr . ",<a target='_blank' href=" . $url . "> Link - " . $course->objid . "</a>" . ")";
         // TODO URL und Optional - beschreibung, früher shorttext oder so.
         $courselist[$course->short] = $result;
     }
@@ -212,8 +212,8 @@ function get_teachers_of_course_sap($veranstid) {
     // get personal info
     $result = array();
     $q2 = pg_query($pgDB->connection,
-        "SELECT vorname, nachname, login, sapid FROM " . SAP_PERSONAL . " as p JOIN " .
-        SAP_PERSONAL_LOGIN. " as l on p.sapid = l.sapid WHERE sapid IN (" .
+        "SELECT p.vorname, p.nachname, l.login, p.sapid FROM " . SAP_PERSONAL . " as p JOIN " .
+        SAP_PERSONAL_LOGIN. " as l on p.sapid = l.sapid WHERE p.sapid IN (" .
         $pidstring . ")");
     while ($person = pg_fetch_object($q2)) {
         $result[$person->sapid] = $person;

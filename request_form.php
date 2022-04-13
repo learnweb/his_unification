@@ -130,7 +130,7 @@ class lsf_course_request_form extends moodleform {
             $datacontroller = \core_customfield\data_controller::create(0, null, $fieldcontroller);
             $datacontroller->instance_form_definition($mform);
 
-            $mform->setDefault('customfield_' . $shortname, 27);
+            $mform->setDefault('customfield_' . $shortname, 27); // TODO
             // TODO default <=> lsf data!
         }
 
