@@ -8,7 +8,7 @@ require_once($CFG->dirroot . '/local/lsf_unification/lib_sap.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
 require_once($CFG->dirroot . '/lib/outputlib.php');
 
-$veranstid = optional_param('veranstid', null, PARAM_INT);
+$veranstid = optional_param('veranstid', null, PARAM_ALPHANUM);
 $questionsanswered = optional_param('questionsanswered', null, PARAM_INT);
 $courseid = optional_param('courseid', 1, PARAM_INT);
 $teachername = optional_param('teachername', "", PARAM_ALPHANUMEXT);
@@ -232,8 +232,8 @@ function print_remote_creation() {
 }
 
 function print_coursecreation() {
-    global $CFG, $USER, $DB, $OUTPUT, $answer, $teachername, $veranstid, $courseid;
-    $editform = new lsf_course_request_form(NULL, array('veranstid' => $veranstid));
+    global $CFG, $USER, $DB, $OUTPUT, $answer_sap, $teachername, $veranstid, $courseid;
+    $editform = new lsf_course_request_form(NULL, array('veranstid' => $veranstid, 'sap' => $answer_sap));
     if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
         // dbenrolment enrolment can only be enabled if it is globally enabled
         $ext_enabled_global = get_config('local_lsf_unification', 'enable_enrol_ext_db') == true;
@@ -340,7 +340,7 @@ if(establish_secondary_DB_connection_sap() === true) {
         if (empty($veranstid)) {
             print_courseselection(true); //
         } else {
-var_dump("in else");
+            var_dump("in else");
               // if (is_course_of_teacher_sap($veranstid, $USER)) { // Validate veranstid, user
                    print_coursecreation(); // Request neccessary details and create course
               // }

@@ -15,8 +15,13 @@ class lsf_course_request_form extends moodleform {
         $mform    = $this->_form;
 
         $veranstid = $this->_customdata['veranstid']; // this contains the data of this form
+        $sap = $this->_customdata['sap'];
         $this->veranstid = $veranstid;
-        $lsf_course = get_course_by_veranstid($veranstid);
+        if ($sap){
+            $lsf_course = get_course_by_veranstid_sap($veranstid);
+        } else {
+            $lsf_course = get_course_by_veranstid($veranstid);
+        }
         $this->lsf_course = $lsf_course;
 
         $mform->addElement('header','general', get_string('general', 'form'));
@@ -61,12 +66,12 @@ class lsf_course_request_form extends moodleform {
             $mform->addElement('advcheckbox', 'dbenrolment', get_string('config_dbenrolment', 'local_lsf_unification'), '', array('group' => 1), array(0, 1));
             $mform->addHelpButton('dbenrolment', 'config_dbenrolment', 'local_lsf_unification');
             $mform->setDefault('dbenrolment', 0);
-            
+
             $mform->addElement('advcheckbox', 'selfenrolment', get_string('config_selfenrolment', 'local_lsf_unification'), '', array('group' => 2), array(0,1));
             $mform->setDefault('selfenrolment', 1);
             $mform->addHelpButton('selfenrolment', 'config_selfenrolment', 'local_lsf_unification');
         }
-        
+
         $mform->addElement('passwordunmask','enrolment_key', get_string('config_enrolment_key','local_lsf_unification'),'maxlength="100"  size="10"');
         $mform->setType('enrolment_key', PARAM_RAW);
         $mform->addHelpButton('enrolment_key', 'config_enrolment_key','local_lsf_unification');
@@ -87,12 +92,15 @@ class lsf_course_request_form extends moodleform {
 
         $mform->addElement('header','categoryheader', get_string('config_category', 'local_lsf_unification'));
 
-        $choices = get_courses_categories($veranstid);
-        $choices = add_path_description($choices);
-        $choices[-1] = "";
-        $select = $mform->addElement('select', 'category', get_string('config_category','local_lsf_unification'), $choices);
-        $mform->addRule('category', '', 'required');
-        $mform->setDefault('category', -1);
+        if(!$sap){
+            $choices = get_courses_categories($veranstid);
+            $choices = add_path_description($choices);
+            $choices[-1] = "";
+            $select = $mform->addElement('select', 'category', get_string('config_category','local_lsf_unification'), $choices);
+            $mform->addRule('category', '', 'required');
+            $mform->setDefault('category', -1);
+        }
+
 
         $mform->addElement('textarea','category_wish', get_string('config_category_wish','local_lsf_unification'),'');
         $mform->addHelpButton('category_wish', 'config_category_wish','local_lsf_unification');
@@ -140,10 +148,10 @@ class lsf_course_request_form extends moodleform {
             $errors['shortname']= get_string('shortnameinvalid', 'local_lsf_unification', shortname_hint($this->lsf_course));
         }
 
-        $categories = get_courses_categories($this->veranstid, false);
+        /*$categories = get_courses_categories($this->veranstid, false);
         if (empty($data['category']) || !isset($categories[$data['category']])) {
             $errors['category']= get_string('categoryinvalid', 'local_lsf_unification');
-        }
+        }*/
 
         return $errors;
     }
