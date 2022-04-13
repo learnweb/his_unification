@@ -129,7 +129,7 @@ function get_courses_by_veranstids_sap($veranstids) {
         }
         $result->semestertxt = $semester . " " . $course->peryr;
         $result->veranstaltungsart = $course->category;
-        $result->titel = $course->tline;
+        $result->titel = get_klvl_title($course->objid, $course->peryr, $course->perid);
         //$result->urlveranst = $course->urlveranst; TODO
         $result_list[$course->veranstid] = $result;
     }
@@ -187,5 +187,153 @@ function get_teachers_course_list_sap($username, $longinfo = false) {
 function is_course_of_teacher_sap($veranstid, $username) {
     $courses = get_teachers_course_list_sap($username, false, true);
     return !empty($courses[$veranstid]);
+}
+
+/**
+ * get_teachers_of_course returns the teacher objects of a course sorted by their relevance
+ *
+ * @param $veranstid idnumber/veranstid
+ * @return $sortedresult sorted array of teacher objects
+ */
+function get_teachers_of_course_sap($veranstid) {
+    global $pgDB;
+    // get sorted (by relevance) pids of teachers
+    $pidstring = "";
+    $pids = array();
+    $q1 = pg_query($pgDB->connection,
+        "SELECT DISTINCT sapid FROM " . SAP_VER_PO . " WHERE objid = " .
+        $veranstid);
+    while ($person = pg_fetch_object($q1)) {
+        $pidstring .= (empty($pidstring) ? "" : ",") . $person->sapid;
+        $pids[] = $person->sapid;
+    }
+    if (empty($pids))
+        return array();
+    // get personal info
+    $result = array();
+    $q2 = pg_query($pgDB->connection,
+        "SELECT vorname, nachname, login, sapid FROM " . SAP_PERSONAL . " as p JOIN " .
+        SAP_PERSONAL_LOGIN. " as l on p.sapid = l.sapid WHERE sapid IN (" .
+        $pidstring . ")");
+    while ($person = pg_fetch_object($q2)) {
+        $result[$person->sapid] = $person;
+    }
+    // sort by relevance
+    $sortedresult = array();
+    foreach ($pids as $pid) {
+        $sortedresult[] = $result[$pid];
+    }
+    return $sortedresult;
+}
+
+/**
+ * returns the default fullname according to a given veranstid
+ * get_default_fullname is a required function for the lsf_unification plugin
+ *
+ * @param $veranstid idnumber/veranstid
+ * @return $fullname
+ */
+function get_default_fullname($lsf_course) {
+    $personen = "";
+    foreach (get_teachers_of_course_sap($lsf_course->veranstid) as $person) {
+        $personen .= ", " . trim($person->vorname) . " " . trim($person->nachname);
+    }
+    return utf8_encode(($lsf_course->titel) . " " . trim($lsf_course->semestertxt) . $personen);
+}
+
+/**
+ * returns the default shortname according to a given veranstid
+ * get_default_shortname is a required function for the lsf_unification plugin
+ *
+ * @param $veranstid idnumber/veranstid
+ * @return $shortname
+ */
+function get_default_shortname($lsf_course, $long = false) {
+    global $DB;
+    $i = "";
+    foreach (explode(" ", $lsf_course->titel) as $word) {
+        $i .= strtoupper($word[0]) . (($long && !empty($word[1])) ? $word[1] : "");
+    }
+    $name = utf8_encode(
+        $i . "-" . substr($lsf_course->semester, 0, 4) . "_" . substr($lsf_course->semester, -1));
+    if (!$long && $DB->record_exists('course', array('shortname' => $name
+        ))) {
+        return get_default_shortname($lsf_course, true);
+    }
+    return $name;
+}
+
+/**
+ * returns the default summary according to a given veranstid
+ * get_default_summary is a required function for the lsf_unification plugin
+ *
+ * @param $veranstid idnumber/veranstid
+ * @return $summary
+ */
+function get_default_summary($lsf_course) {
+    global $pgDB;
+    $summary = '';
+    $q = pg_query($pgDB->connection,
+        "SELECT kommentar FROM " . HIS_VERANST_KOMMENTAR . " WHERE veranstid = '" .
+        $lsf_course->veranstid . "'");
+    while ($sum_object = pg_fetch_object($q)) {
+        if (!empty($sum_object->kommentar) && strpos($summary, $sum_object->kommentar) === false) {
+            $summary .= '<p>' . $sum_object->kommentar . '</p>';
+        }
+    }
+    $summary = utf8_encode($summary) . '<p><a href="' . $lsf_course->urlveranst .
+        '">Kurs im HIS-LSF</a></p>';
+    return $summary;
+}
+
+/**
+ * returns the default startdate according to a given veranstid
+ * get_default_startdate is a required function for the lsf_unification plugin
+ *
+ * @param $veranstid idnumber/veranstid
+ * @return $startdate
+ */
+function get_default_startdate($lsf_course) {
+    $semester = $lsf_course->semester . '';
+    $year = substr($semester, 0, 4);
+    $month = (substr($semester, -1) == "1") ? 4 : 10;
+    return mktime(0, 0, 0, $month, 1, $year);
+}
+
+function semester_begda($peryr, $perid) {
+    if ($perid == "001") return "$peryr"."-04-01";
+    else return "$peryr"."-10-01";
+}
+
+function semester_endda($peryr, $perid) {
+    if ($perid == "001") return "$peryr"."-09-30";
+    else return ($peryr + 1)."-03-31";
+}
+
+function get_klvl_title($kid, $peryr, $perid) {
+    GLOBAL $pgDB;
+    $debug = false;
+    $q = "select tabnr, tline, begda, endda from " . SAP_VERANST . " where objid = '$kid' and peryr = '$peryr' and perid = '$perid' order by tabnr, tabseqnr";
+    $rows = pg_query($pgDB->connection, $q);
+    $title = "";
+    $lines = array();
+    $tabnrs = array();
+    while($r = pg_fetch_assoc($rows)) {
+        $lines[] = $r;
+        $tn = $r["tabnr"];
+        if (!in_array($tn, $tabnrs)) $tabnrs[] = $tn;
+        $title .= $r["tline"]." ";
+    }
+    if (count($tabnrs) == 1) return trim($title);
+    // Mehrere Titel: Wir müssen den mit den passenden Semestergrenzen suchen
+    $sembegda = semester_begda($peryr, $perid);
+    $semendda = semester_endda($peryr, $perid);
+    if ($debug) echo "Mehrere Titel vorhanden, suche mit $sembegda und $semendda\n";
+    $title = "";
+    foreach($lines as $line) {
+        if ($line["begda"] <= $sembegda && $semendda <= $line["endda"]) $title .= $line["tline"]." ";
+    }
+    if ($title == "") die("get_klvl_title: Kein Titel ermittelbar für $q");
+    return trim($title);
 }
 
