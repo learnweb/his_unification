@@ -112,7 +112,7 @@ function get_courses_by_veranstids_sap($veranstids) {
     $q = pg_query($pgDB->connection,
         "SELECT v.objid, d.peryr, d.perid, d.category, v.tabnr, v.tabseqnr, v.tline
         FROM " .
-        SAP_VERANST . " as v JOIN" . SAP_VERANST_DETAILS . " as d on v.objid = d.objid
+        SAP_VERANST . " as v JOIN " . SAP_VERANST_DETAILS . " as d on v.objid = d.objid
                      where v.objid in (" . $veranstids_string .
         ") AND " . "(CURRENT_DATE - CAST(v.begda AS date)) < " .
         get_config('local_lsf_unification', 'max_import_age_sap') .
@@ -131,7 +131,7 @@ function get_courses_by_veranstids_sap($veranstids) {
         $result->veranstaltungsart = $course->category;
         $result->titel = get_klvl_title($course->objid, $course->peryr, $course->perid);
         //$result->urlveranst = $course->urlveranst; TODO
-        $result_list[$course->veranstid] = $result;
+        $result_list[$course->objid] = $result;
     }
     return $result_list;
 }
