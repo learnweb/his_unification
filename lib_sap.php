@@ -131,7 +131,7 @@ function get_courses_by_veranstids_sap($veranstids) {
         }
         $result->semestertxt = $semester . " " . $course->peryr;
         $result->veranstaltungsart = $course->category;
-        $result->titel = get_klvl_title($course->objid, $course->peryr, $course->perid, SAP_VER_PO);
+        $result->titel = get_klvl_title($course->objid, $course->peryr, $course->perid, SAP_VERANST);
         //$result->urlveranst = $course->urlveranst; TODO
         $result_list[$course->objid] = $result;
     }
@@ -171,7 +171,7 @@ function get_teachers_course_list_sap($username, $longinfo = false) {
         $result = new stdClass();
 	$url = gen_url($course);
         $result->veranstid = $course->objid;
-        $result->info = get_klvl_title($course->objid, $course->peryr, $course->perid, SAP_VER_PO) . " (" . ($course->perid == 1? "SoSe " : "WiSe ") . $course->peryr . ",<a target='_blank' href=" . $url . "> Link - " . $course->objid . "</a>" . ")";
+        $result->info = get_klvl_title($course->objid, $course->peryr, $course->perid, SAP_VERANST) . " (" . ($course->perid == 1? "SoSe " : "WiSe ") . $course->peryr . ",<a target='_blank' href=" . $url . "> Link - " . $course->objid . "</a>" . ")";
         // TODO URL und Optional - beschreibung, früher shorttext oder so.
         $courselist[$course->short] = $result;
     }
