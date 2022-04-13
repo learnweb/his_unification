@@ -294,38 +294,39 @@ function print_request_handler() {
 
 
 // Handle Course-Request
-
-if (establish_secondary_DB_connection() === true) {
-    if (empty($answer)) {
-        print_first_overview(); // Task Selection
-    } elseif ($answer == 1) {
-        if (empty($veranstid)) {
-            print_courseselection(); // Extern Course Selection
-        } else {
-            if (has_course_import_rights($veranstid, $USER)) { // Validate veranstid, user
-                print_coursecreation(); // Request neccessary details and create course
+if(!$answer_sap){
+    if (establish_secondary_DB_connection() === true) {
+        if (empty($answer)) {
+            print_first_overview(); // Task Selection
+        } elseif ($answer == 1) {
+            if (empty($veranstid)) {
+                print_courseselection(); // Extern Course Selection
+            } else {
+                if (has_course_import_rights($veranstid, $USER)) { // Validate veranstid, user
+                    print_coursecreation(); // Request neccessary details and create course
+                }
             }
+        } elseif ($answer == 2) {
+            print_helptext('course_not_created_yet');
+        } elseif ($answer == 3) {
+            print_helptext('course_in_lsf_and_visible', $USER->username);
+        } elseif ($answer == 6) {
+            print_helptext('goto_old_requestform');
+        } elseif ($answer == 7) {
+            print_final(); // Goto Course
+        } elseif ($answer == 11) {
+            print_remote_creation(); // Remote Course Creation Starter
+        } elseif ($answer == 12) {
+            if (!is_course_of_teacher($veranstid, $USER->username)) { // Validate veranstid, user
+                die("Course request not existing, already handled or none of your business"); // The user isn't a teacher of this course, so he shouldn't get here
+            }
+            print_request_handler(); // Remote Course Creation Request Handler
         }
-    } elseif ($answer == 2) {
-        print_helptext('course_not_created_yet');
-    } elseif ($answer == 3) {
-        print_helptext('course_in_lsf_and_visible', $USER->username);
-    } elseif ($answer == 6) {
-        print_helptext('goto_old_requestform');
-    } elseif ($answer == 7) {
-        print_final(); // Goto Course
-    } elseif ($answer == 11) {
-        print_remote_creation(); // Remote Course Creation Starter
-    } elseif ($answer == 12) {
-        if (!is_course_of_teacher($veranstid, $USER->username)) { // Validate veranstid, user
-            die("Course request not existing, already handled or none of your business"); // The user isn't a teacher of this course, so he shouldn't get here
-        }
-        print_request_handler(); // Remote Course Creation Request Handler
-    }
-    close_secondary_DB_connection();
+        close_secondary_DB_connection();
 
-} else {
-    echo get_string('db_not_available', 'local_lsf_unification');
+    } else {
+        echo get_string('db_not_available', 'local_lsf_unification');
+    }
 }
 if(establish_secondary_DB_connection_sap() === true) {
     if (!$answer_sap) {
