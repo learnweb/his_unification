@@ -110,18 +110,18 @@ class lsf_course_request_form extends moodleform {
 
         if(!$sap){
             $choices = get_courses_categories($veranstid);
+            $choices = add_path_description($choices);
+            $choices[-1] = "";
+            $select = $mform->addElement('select', 'category', get_string('config_category','local_lsf_unification'), $choices);
+            $mform->addRule('category', '', 'required');
+            $mform->setDefault('category', -1);
         } else {
-            $helpfuntion2 = function ($array_el) {
-                return $array_el->name;
-            };
-            $categories = $DB->get_records('course_categories', array(), 'sortorder ASC');
-            $choices = array_map($helpfuntion2, $categories);
+            $displaylist = core_course_category::make_categories_list('moodle/course:request');
+            $mform->addElement('autocomplete', 'category', get_string('coursecategory'), $displaylist);
+            $mform->addRule('category', null, 'required', null, 'client');
+            $mform->setDefault('category', "");
+            $mform->addHelpButton('category', 'coursecategory');
         }
-        $choices = add_path_description($choices);
-        $choices[-1] = "";
-        $select = $mform->addElement('select', 'category', get_string('config_category','local_lsf_unification'), $choices);
-        $mform->addRule('category', '', 'required');
-        $mform->setDefault('category', -1);
 
         $mform->addElement('textarea','category_wish', get_string('config_category_wish','local_lsf_unification'),'');
         $mform->addHelpButton('category_wish', 'config_category_wish','local_lsf_unification');
