@@ -240,7 +240,7 @@ function get_default_fullname_sap($lsf_course) {
     foreach (get_teachers_of_course_sap($lsf_course->veranstid) as $person) {
         $personen .= ", " . trim($person->vorname) . " " . trim($person->nachname);
     }
-    return utf8_encode(($lsf_course->titel) . " " . trim($lsf_course->semestertxt) . $personen);
+    return (($lsf_course->titel) . " " . trim($lsf_course->semestertxt) . $personen);
 }
 
 /**
@@ -274,7 +274,7 @@ function get_default_shortname_sap($lsf_course, $long = false) {
  */
 function get_default_summary_sap($lsf_course) {
     $summary = '<p>' . get_klvl_title($lsf_course->veranstid, $lsf_course->peryr, $lsf_course->perid, SAP_VERANST_KOMMENTAR) . '</p>';
-    $summary = utf8_encode($summary) . '<p><a href="' . gen_url($lsf_course) .
+    $summary = $summary . '<p><a href="' . gen_url($lsf_course) .
         '">Kurs in SAP</a></p>';
     return $summary;
 }
@@ -326,7 +326,7 @@ function get_klvl_title($kid, $peryr, $perid, $table) {
     foreach($lines as $line) {
         if ($line["begda"] <= $sembegda && $semendda <= $line["endda"]) $title .= $line["tline"]." ";
     }
-    if ($title == "") die("get_klvl_title: Kein Titel ermittelbar für $q");
+    if ($title == "") return null;
     return trim($title);
 }
 
