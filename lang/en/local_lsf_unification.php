@@ -75,6 +75,8 @@ $string['answer_course_found'] = "The following list contains the course I'm loo
 $string['answer_course_in_lsf_and_visible'] = "The course exists on the HIS-LSF platform and you are registered as a teacher for that course.";
 $string['answer_proxy_creation'] = "The course exists on the HIS-LSF platform and you are authorized to create this course on behalf of a registered teacher.";
 $string['answer_goto_old_requestform'] = "None of the above apply and you are authorized to create this course in the Learnweb.";
+$string['answer_course_found_sap'] = "The course exists in SAP and is listed in the following:";
+$string['answer_proxy_creation_sap'] = "The course exists on the SAP platform and you are authorized to create this course on behalf of a registered teacher.";
 
 $string['info_course_in_lsf_and_visible'] = 'There are two potential reasons, why your course is not listed:<ol><li>Your course is published in HIS-LSF less than 24 hours ago. Data is only transferred once a day. If no further problem occurs, course data will be transferred tomorrow and then Learnweb course creation will be possible.</li><li>The username you use right now ({$a}) is not registered on the HIS-LSF. To access the courses you have registered on the HIS-LSF platform you have to include your username in your HIS-LSF-profile. After doing so, please wait at least one day for our database to update.<p style="text-align: center;"><img alt="Datenbearbeiten" src="http://www.uni-muenster.de/LearnWeb/diverse/HIS-Person_bearbeiten.png" /></p></li></ol>';
 

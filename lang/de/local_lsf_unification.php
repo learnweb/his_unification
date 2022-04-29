@@ -71,7 +71,9 @@ $string['question'] = "Bitte w&auml;hlen Sie die erste zutreffende Aussage:";
 $string['answer_course_found'] = "Der zu beantragende Kurs befindet sich in der nachfolgenden Liste:";
 $string['answer_course_in_lsf_and_visible'] = "Der zu beantragende Kurs befindet sich im HIS-LSF und Sie sind dort als Lehrende(r) eingetragen.";
 $string['answer_proxy_creation'] = "Der Kurs existiert im HIS-LSF und Sie m&ouml;chten im Auftrag einer/s dort eingetragenen Lehrenden diesen Kurs erstellen.";
-$string['answer_goto_old_requestform'] = "Sie m&ouml;chten eine Kursbeantragung ohne &Uuml;bernahme der Daten aus dem HIS-LSF vornehmen.";
+$string['answer_goto_old_requestform'] = "Sie m&ouml;chten eine Kursbeantragung ohne &Uuml;bernahme der Daten aus dem HIS-LSF oder SAP vornehmen.";
+$string['answer_course_found_sap'] = "Der zu beantragende Kurs befindet in SAP und ist in der nachfolgenden Liste aufgeführt:";
+$string['answer_proxy_creation_sap'] = "Der Kurs existiert in SAP und Sie m&ouml;chten im Auftrag einer/s dort eingetragenen Lehrenden diesen Kurs erstellen.";
 
 
 

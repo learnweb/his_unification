@@ -6,6 +6,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_sap.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
+require_once($CFG->dirroot . '/local/lsf_unification/requestoverview_form.php');
 require_once($CFG->dirroot . '/lib/outputlib.php');
 
 $veranstid = optional_param('veranstid', null, PARAM_ALPHANUM);
@@ -56,16 +57,31 @@ if (!empty($requestid)) {
 
 function print_first_overview() {
     global $USER;
-    $courselist = "<ul>";
-    foreach (get_teachers_course_list($USER->username, true) as $course) {
-        if (!course_exists($course->veranstid)) {
-            $courselist .= "<li>" . $course->info . "</li>";
+    if (establish_secondary_DB_connection() === true) {
+        $courselist = "<ul>";
+        foreach (get_teachers_course_list($USER->username, true) as $course) {
+            if (!course_exists($course->veranstid)) {
+                $courselist .= "<li>" . $course->info . "</li>";
+            }
         }
+        $courselist .= "</ul>";
+        close_secondary_DB_connection();
     }
-    $courselist .= "</ul>";
-    $editform = new course_overview_request_form('post', array('courselist' => $courselist));
+    if (establish_secondary_DB_connection_sap() === true) {
+        $courselist_sap = "<ul>";
+        foreach (get_teachers_course_list_sap($USER->username, true) as $course) {
+            if (!course_exists($course->veranstid)) {
+                $courselist_sap .= "<li>" . $course->info . "</li>";
+            }
+        }
+        $courselist_sap .= "</ul>";
+        close_secondary_DB_connection();
+    }
+    $editform = new course_overview_request_form(NULL, array('courselist' => $courselist, 'courselist_sap'=>$courselist_sap));
     if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
         var_dump($data);
+    } else {
+        $editform->display();
     }
     /*echo "<p>" . get_string('notice', 'local_lsf_unification') . "</p>";
     echo "<form name='input' action='request.php' method='post'><table><tr><td colspan='2'><b>" . get_string('question', 'local_lsf_unification') . "</b>";
@@ -303,13 +319,24 @@ function print_request_handler() {
 
 
 // Handle Course-Request
-if(!$answer_sap){
-    if (establish_secondary_DB_connection() === true) {
         if (empty($answer)) {
             print_first_overview(); // Task Selection
         } elseif ($answer == 1) {
             if (empty($veranstid)) {
-                print_courseselection(); // Extern Course Selection
+                if($answer_sap){
+                    if (establish_secondary_DB_connection_sap() === true) {
+                        print_courseselection(true);
+                    } else {
+                        echo get_string('db_not_available', 'local_lsf_unification');
+                    }
+                } else {
+                    if (establish_secondary_DB_connection() === true) {
+                        print_courseselection();
+                    } else {
+                        echo get_string('db_not_available', 'local_lsf_unification');
+                    }
+                }
+                 // Extern Course Selection
             } else {
                 if (has_course_import_rights($veranstid, $USER)) { // Validate veranstid, user
                     print_coursecreation(); // Request neccessary details and create course
@@ -333,11 +360,8 @@ if(!$answer_sap){
         }
         close_secondary_DB_connection();
 
-    } else {
-        echo get_string('db_not_available', 'local_lsf_unification');
-    }
-}
-if(establish_secondary_DB_connection_sap() === true) {
+    
+/*if(establish_secondary_DB_connection_sap() === true) {
     if (!$answer_sap) {
         print_first_overview_sap(); // Task Selection
     } elseif ($answer_sap) {
@@ -353,5 +377,5 @@ if(establish_secondary_DB_connection_sap() === true) {
     close_secondary_DB_connection_sap();
 } else {
     echo "could not establish sap connection";
-}
+}*/
 echo $OUTPUT->footer();
