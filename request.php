@@ -323,19 +323,11 @@ function print_request_handler() {
             print_first_overview(); // Task Selection
         } elseif ($answer == 1) {
             if (empty($veranstid)) {
-                if($answer_sap){
-                    if (establish_secondary_DB_connection_sap() === true) {
-                        print_courseselection(true);
-                    } else {
-                        echo get_string('db_not_available', 'local_lsf_unification');
-                    }
-                } else {
                     if (establish_secondary_DB_connection() === true) {
                         print_courseselection();
                     } else {
                         echo get_string('db_not_available', 'local_lsf_unification');
                     }
-                }
                  // Extern Course Selection
             } else {
                 if (has_course_import_rights($veranstid, $USER)) { // Validate veranstid, user
@@ -357,10 +349,23 @@ function print_request_handler() {
                 die("Course request not existing, already handled or none of your business"); // The user isn't a teacher of this course, so he shouldn't get here
             }
             print_request_handler(); // Remote Course Creation Request Handler
-        }
+        } elseif ($answer_sap){
+            if (establish_secondary_DB_connection_sap() === true) {
+                if(empty($veranstid)) {
+                    print_courseselection(true);
+                } else {
+                    // if (is_course_of_teacher_sap($veranstid, $USER)) { // Validate veranstid, user
+                    print_coursecreation(); // Request neccessary details and create course
+                    // }
+                }
+            } else {
+                echo get_string('db_not_available', 'local_lsf_unification');
+            }
+    } else {
+}
         close_secondary_DB_connection();
 
-    
+
 /*if(establish_secondary_DB_connection_sap() === true) {
     if (!$answer_sap) {
         print_first_overview_sap(); // Task Selection

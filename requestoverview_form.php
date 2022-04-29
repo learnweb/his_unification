@@ -7,7 +7,6 @@ require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 
 class course_overview_request_form extends moodleform
 {
-
     function definition(){
         $mform = $this->_form;
         $courselist = $this->_customdata['courselist'];
@@ -15,7 +14,7 @@ class course_overview_request_form extends moodleform
 
         $mform->addElement('html',"<table><tr><td colspan='2'><b>" . get_string('question', 'local_lsf_unification') . "</b></td></tr>");
         if($courselist != "<ul></ul>"){
-            $mform->addElement('html', "<tr><td style='vertical-align:top;'><input type='radio' name='answer' id='answer1' value='1'></td><td><label for='answer1'>" . get_string('answer_course_found', 'local_lsf_unification') . "" . $courselist . "</label></td></tr>");
+            $mform->addElement('html', "<tr><td style='vertical-align:top;'><input type='radio' name='answer' id='answer1' value='1'></td><td><label for='answer1'>" . get_string('answer_course_found', 'local_lsf_unification') . $courselist . "</label></td></tr>");
         } else {
             $mform->addElement('html', "");
         }
@@ -25,7 +24,7 @@ class course_overview_request_form extends moodleform
             $mform->addElement('html', "<tr><td><input type='radio' name='answer' id='answer11' value='11'></td><td><label for='answer11'>" . get_string('answer_proxy_creation', 'local_lsf_unification') . "</label></td></tr>");
         }
         if($courselist_sap != "<ul></ul>"){
-            $mform->addElement('html', "<tr><td style='vertical-align:top;'><input type='radio' name='answer_sap' id='answer1_sap' value='1'></td><td><label for='answer1'>" . get_string('answer_course_found_sap', 'local_lsf_unification') . "" . $courselist_sap . "</label></td></tr>");
+            $mform->addElement('html', "<tr><td style='vertical-align:top;'><input type='radio' name='answer_sap' id='answer1_sap' value='1'></td><td><label for='answer1'>" . get_string('answer_course_found_sap', 'local_lsf_unification') .  $courselist_sap . "</label></td></tr>");
         } else {
             $mform->addElement('html', "");
         }
