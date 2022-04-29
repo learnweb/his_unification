@@ -79,42 +79,10 @@ function print_first_overview() {
     }
     $editform = new course_overview_request_form(NULL, array('courselist' => $courselist, 'courselist_sap'=>$courselist_sap));
     if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
-        var_dump($data);
+
     } else {
         $editform->display();
     }
-    /*echo "<p>" . get_string('notice', 'local_lsf_unification') . "</p>";
-    echo "<form name='input' action='request.php' method='post'><table><tr><td colspan='2'><b>" . get_string('question', 'local_lsf_unification') . "</b>";
-    echo "</td></tr>";
-    echo ($courselist != "<ul></ul>") ? ("<tr><td style='vertical-align:top;'><input type='radio' name='answer' id='answer1' value='1'></td><td><label for='answer1'>" . get_string('answer_course_found', 'local_lsf_unification') . "" . $courselist . "</label></td></tr>") : "";
-
-    echo "<tr><td><input type='radio' name='answer' id='answer3' value='3'></td><td><label for='answer3'>" . get_string('answer_course_in_lsf_and_visible', 'local_lsf_unification') . "</label></td></tr>";
-    if (get_config('local_lsf_unification', 'remote_creation')) {
-        echo "<tr><td><input type='radio' name='answer' id='answer11' value='11'></td><td><label for='answer11'>" . get_string('answer_proxy_creation', 'local_lsf_unification') . "</label></td></tr>";
-    }
-    echo "<tr><td><input type='radio' name='answer' id='answer6' value='6'></td><td><label for='answer6'>" . get_string('answer_goto_old_requestform', 'local_lsf_unification') . "</label></td></tr>";
-    echo "<tr><td>&nbsp;</td><td><input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></td></tr></table></form>";*/
-}
-
-function print_first_overview_sap() {
-    global $USER;
-    $courselist = "<ul>";
-    foreach (get_teachers_course_list_sap($USER->username, true) as $course) {
-        if (!course_exists($course->veranstid)) {
-            $courselist .= "<li>" . $course->info . "</li>";
-        }
-    }
-    $courselist .= "</ul>";
-    echo "<p>" . get_string('notice', 'local_lsf_unification') . "</p>";
-    echo "<form name='input_sap' action='request.php' method='post'><table><tr><td colspan='2'><b>" . get_string('question', 'local_lsf_unification') . "</b>";
-    echo "</td></tr>";
-    echo ($courselist != "<ul></ul>") ? ("<tr><td style='vertical-align:top;'><input type='radio' name='answer_sap' id='answer1_sap' value='true'></td><td><label for='answer1'>" . get_string('answer_course_found', 'local_lsf_unification') . "" . $courselist . "</label></td></tr>") : "";
-
-    //echo "<tr><td><input type='radio' name='answer_sap' id='answer3_sap' value='3'></td><td><label for='answer3_sap'>" . get_string('answer_course_in_lsf_and_visible', 'local_lsf_unification') . "</label></td></tr>";
-    if (get_config('local_lsf_unification', 'remote_creation')) {
-        echo "<tr><td><input type='radio' name='answer_sap' id='answer11_sap' value='11'></td><td><label for='answer11_sap'>" . get_string('answer_proxy_creation', 'local_lsf_unification') . "</label></td></tr>";
-    }
-    echo "<tr><td>&nbsp;</td><td><input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></td></tr></table></form>";
 }
 
 function print_helptext($t, $s = null) {
@@ -319,68 +287,49 @@ function print_request_handler() {
 
 
 // Handle Course-Request
-        if (empty($answer)) {
-            print_first_overview(); // Task Selection
-        } elseif ($answer == 1) {
-            if (empty($veranstid)) {
-                    if (establish_secondary_DB_connection() === true) {
-                        print_courseselection();
-                    } else {
-                        echo get_string('db_not_available', 'local_lsf_unification');
-                    }
-                 // Extern Course Selection
-            } else {
-                if (has_course_import_rights($veranstid, $USER)) { // Validate veranstid, user
-                    print_coursecreation(); // Request neccessary details and create course
-                }
-            }
-        } elseif ($answer == 2) {
-            print_helptext('course_not_created_yet');
-        } elseif ($answer == 3) {
-            print_helptext('course_in_lsf_and_visible', $USER->username);
-        } elseif ($answer == 6) {
-            print_helptext('goto_old_requestform');
-        } elseif ($answer == 7) {
-            print_final(); // Goto Course
-        } elseif ($answer == 11) {
-            print_remote_creation(); // Remote Course Creation Starter
-        } elseif ($answer == 12) {
-            if (!is_course_of_teacher($veranstid, $USER->username)) { // Validate veranstid, user
-                die("Course request not existing, already handled or none of your business"); // The user isn't a teacher of this course, so he shouldn't get here
-            }
-            print_request_handler(); // Remote Course Creation Request Handler
-        } elseif ($answer_sap){
-            if (establish_secondary_DB_connection_sap() === true) {
-                if(empty($veranstid)) {
-                    print_courseselection(true);
-                } else {
-                    // if (is_course_of_teacher_sap($veranstid, $USER)) { // Validate veranstid, user
-                    print_coursecreation(); // Request neccessary details and create course
-                    // }
-                }
-            } else {
-                echo get_string('db_not_available', 'local_lsf_unification');
-            }
-    } else {
-}
-        close_secondary_DB_connection();
-
-
-/*if(establish_secondary_DB_connection_sap() === true) {
-    if (!$answer_sap) {
-        print_first_overview_sap(); // Task Selection
-    } elseif ($answer_sap) {
-        if (empty($veranstid)) {
-            print_courseselection(true); //
+if (empty($answer) && !$answer_sap) {
+    print_first_overview(); // Task Selection
+} elseif ($answer == 1 && !$answer_sap) {
+    if (empty($veranstid)) {
+        if (establish_secondary_DB_connection() === true) {
+            print_courseselection();
         } else {
-            var_dump("in else");
-              // if (is_course_of_teacher_sap($veranstid, $USER)) { // Validate veranstid, user
-                   print_coursecreation(); // Request neccessary details and create course
-              // }
-            }
+            echo get_string('db_not_available', 'local_lsf_unification');
+        }
+        // Extern Course Selection
+    } else {
+        if (has_course_import_rights($veranstid, $USER)) { // Validate veranstid, user
+            print_coursecreation(); // Request neccessary details and create course
+        }
     }
-    close_secondary_DB_connection_sap();
-} else {
-    echo "could not establish sap connection";
-}*/
+} elseif ($answer == 2) {
+    print_helptext('course_not_created_yet');
+} elseif ($answer == 3) {
+    print_helptext('course_in_lsf_and_visible', $USER->username);
+} elseif ($answer == 6) {
+    print_helptext('goto_old_requestform');
+} elseif ($answer == 7) {
+    print_final(); // Goto Course
+} elseif ($answer == 11) {
+    print_remote_creation(); // Remote Course Creation Starter
+} elseif ($answer == 12) {
+    if (!is_course_of_teacher($veranstid, $USER->username)) { // Validate veranstid, user
+        die("Course request not existing, already handled or none of your business"); // The user isn't a teacher of this course, so he shouldn't get here
+    }
+    print_request_handler(); // Remote Course Creation Request Handler
+} elseif ($answer_sap){
+    if (establish_secondary_DB_connection_sap() === true) {
+        if(empty($veranstid)) {
+            print_courseselection(true);
+        } else {
+            // if (is_course_of_teacher_sap($veranstid, $USER)) { // Validate veranstid, user
+            print_coursecreation(); // Request neccessary details and create course
+            // }
+        }
+    } else {
+        echo get_string('db_not_available', 'local_lsf_unification');
+    }
+}
+close_secondary_DB_connection();
+
 echo $OUTPUT->footer();
