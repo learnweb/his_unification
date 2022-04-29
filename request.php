@@ -63,7 +63,11 @@ function print_first_overview() {
         }
     }
     $courselist .= "</ul>";
-    echo "<p>" . get_string('notice', 'local_lsf_unification') . "</p>";
+    $editform = new course_overview_request_form('post', array('courselist' => $courselist));
+    if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
+        var_dump($data);
+    }
+    /*echo "<p>" . get_string('notice', 'local_lsf_unification') . "</p>";
     echo "<form name='input' action='request.php' method='post'><table><tr><td colspan='2'><b>" . get_string('question', 'local_lsf_unification') . "</b>";
     echo "</td></tr>";
     echo ($courselist != "<ul></ul>") ? ("<tr><td style='vertical-align:top;'><input type='radio' name='answer' id='answer1' value='1'></td><td><label for='answer1'>" . get_string('answer_course_found', 'local_lsf_unification') . "" . $courselist . "</label></td></tr>") : "";
@@ -73,7 +77,7 @@ function print_first_overview() {
         echo "<tr><td><input type='radio' name='answer' id='answer11' value='11'></td><td><label for='answer11'>" . get_string('answer_proxy_creation', 'local_lsf_unification') . "</label></td></tr>";
     }
     echo "<tr><td><input type='radio' name='answer' id='answer6' value='6'></td><td><label for='answer6'>" . get_string('answer_goto_old_requestform', 'local_lsf_unification') . "</label></td></tr>";
-    echo "<tr><td>&nbsp;</td><td><input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></td></tr></table></form>";
+    echo "<tr><td>&nbsp;</td><td><input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></td></tr></table></form>";*/
 }
 
 function print_first_overview_sap() {
