@@ -15,8 +15,9 @@ class lsf_course_request_form extends moodleform {
         $mform    = $this->_form;
 
         $veranstid = $this->_customdata['veranstid']; // this contains the data of this form
-        $sap = $this->_customdata['sap'];
+        $sap = $this->_customdata['answer_sap'];
         $this->veranstid = $veranstid;
+        $this->answer_sap = $sap;
         if ($sap){
             $lsf_course = get_course_by_veranstid_sap($veranstid);
         } else {
@@ -32,6 +33,9 @@ class lsf_course_request_form extends moodleform {
         $mform->addElement('hidden', 'answer', null);
         $mform->setType('answer', PARAM_INT);
         $mform->setConstant('answer', 1);
+        $mform->addElement('hidden', 'answer_sap', null);
+        $mform->setType('answer_sap', PARAM_INT);
+        $mform->setConstant('answer_sap', $sap);
 
         $mform->addElement('text','fullname', get_string('fullnamecourse'),'maxlength="254" size="80"');
         $mform->addHelpButton('fullname', 'fullnamecourse');

@@ -233,7 +233,7 @@ function print_remote_creation() {
 
 function print_coursecreation() {
     global $CFG, $USER, $DB, $OUTPUT, $answer_sap, $teachername, $veranstid, $courseid;
-    $editform = new lsf_course_request_form(NULL, array('veranstid' => $veranstid, 'sap' => $answer_sap));
+    $editform = new lsf_course_request_form(NULL, array('veranstid' => $veranstid, 'answer_sap' => $answer_sap));
     if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
         // dbenrolment enrolment can only be enabled if it is globally enabled
         $ext_enabled_global = get_config('local_lsf_unification', 'enable_enrol_ext_db') == true;
