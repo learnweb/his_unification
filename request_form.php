@@ -34,7 +34,7 @@ class lsf_course_request_form extends moodleform {
         $mform->setType('fullname', PARAM_MULTILANG);
         $mform->setDefault('fullname', get_default_fullname($lsf_course));
 
-        $mform->addElement('text', 'shortname', get_string('shortnamecourse'), 'maxlength="100" size="30"');
+        $mform->addElement('text', 'shortname', get_string('shortnamecourse', 'local_lsf_unification', shortname_hint($lsf_course)), 'maxlength="100" size="30"');
         $mform->addHelpButton('shortname', 'shortnamecourse');
         $mform->addRule('shortname', get_string('missingshortname'), 'required', null, 'client');
         $mform->setType('shortname', PARAM_MULTILANG);

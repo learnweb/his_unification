@@ -38,6 +38,7 @@ if (empty($CFG->enablecourserequests)) {
 $context = context_system::instance();
 
 $PAGE->set_context($context);
+$PAGE->set_secondary_navigation(false);
 require_capability('moodle/course:request', $context);
 
 $strtitle = get_string('courserequest');

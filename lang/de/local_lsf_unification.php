@@ -107,8 +107,8 @@ $string['email_error'] = 'Der Kategorieumzugswunsch konnte leider nicht automati
 $string['email_success'] = 'Eine Email bzgl. des Kategoriewechsels wird an den Support gesendet.';
 $string['new_request'] = 'Einen weiteren Kurs beantragen.';
 $string['noConnection'] = "Es konnte keine Verbindung zur LSF-Datenbank hergestellt werden. Bitte nutzen Sie das manuelle <a href='../../course/request.php'>Kursbeantragungs-Formular</a>.";
-$string['shortnamehint'] = 'Der Kurzname muss {$a} am Ende enthalten.';
 $string['shortnameinvalid'] = 'Kurzbezeichnung fehlerhaft (es muss {$a} am Ende stehen)';
+$string['shortnamecourse'] = get_string('shortnamecourse'). '<i> (der Kurzname muss {$a} am Ende enthalten) </i>';
 $string['warning_cannot_enrol_nologin'] = "Person wurde nicht hinzugef&uuml;gt (kein Benutzername gefunden)";
 $string['warning_cannot_enrol_nouser'] = "Person wurde nicht hinzugef&uuml;gt (kein Benutzer gefunden)";
 $string['warning_cannot_enrol_other'] = "Person wurde nicht hinzugef&uuml;gt";

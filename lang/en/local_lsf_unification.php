@@ -108,12 +108,11 @@ $string['email_error'] = 'The category wish wasn\'t sent. Please contact the sup
 $string['email_success'] = 'Email regarding category wish will be sent.';
 $string['new_request'] = 'request another course';
 $string['noConnection'] = "A connection to LSF-Database couldn't be established. Please use the regular <a href='../../course/request.php'>formular</a>.";
-$string['shortnamehint'] = 'shortname must contain {$a} at the end';
 $string['shortnameinvalid'] = 'shortname is invalid (it must contain {$a} at the end)';
+$string['shortnamecourse'] = get_string('shortnamecourse'). '<i> (shortname must contain {$a} at the end) </i>';
 $string['warning_cannot_enrol_nologin'] = "person wasn't enrolled (no username found)";
 $string['warning_cannot_enrol_nouser'] = "person wasn't enrolled (no user found)";
 $string['warning_cannot_enrol_other'] = "person wasn't enrolled";
-
 $string['next_steps'] = "Next Steps";
 $string['linktext_users'] = "Edit the assigned teachers and students ...";
 $string['linktext_course'] = "... or go directly to your new couse.";
