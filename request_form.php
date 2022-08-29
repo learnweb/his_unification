@@ -39,7 +39,6 @@ class lsf_course_request_form extends moodleform {
         $mform->addRule('shortname', get_string('missingshortname'), 'required', null, 'client');
         $mform->setType('shortname', PARAM_MULTILANG);
         $mform->setDefault('shortname', get_default_shortname($lsf_course));
-        $mform->addElement('html', '<i>'.get_string('shortnamehint', 'local_lsf_unification', shortname_hint($lsf_course)).'</i>');
 
         $mform->addElement('text','idnumber', get_string('idnumbercourse'),'maxlength="100"  size="10"');
         $mform->addHelpButton('idnumber', 'idnumbercourse');
@@ -106,7 +105,7 @@ class lsf_course_request_form extends moodleform {
             $datacontroller = \core_customfield\data_controller::create(0, null, $fieldcontroller);
             $datacontroller->instance_form_definition($mform);
 
-            $mform->setDefault('customfield_' . $shortname, 27);
+            $mform->setDefault('customfield_' . $datacontroller->get_default_value(), 27);
             // TODO default <=> lsf data!
         }
 
