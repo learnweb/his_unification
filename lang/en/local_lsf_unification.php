@@ -114,7 +114,8 @@ $string['warning_cannot_enrol_nologin'] = "person wasn't enrolled (no username f
 $string['warning_cannot_enrol_nouser'] = "person wasn't enrolled (no user found)";
 $string['warning_cannot_enrol_other'] = "person wasn't enrolled";
 $string['next_steps'] = "Next Steps";
-$string['linktext_users'] = "Edit the assigned teachers and students ...";
+$string['linktext_users'] = "Edit the assigned teachers and students, ...";
+$string['linktext_content'] = "... import content from already existing courses ...";
 $string['linktext_course'] = "... or go directly to your new couse.";
 
 

@@ -114,7 +114,8 @@ $string['warning_cannot_enrol_nouser'] = "Person wurde nicht hinzugef&uuml;gt (k
 $string['warning_cannot_enrol_other'] = "Person wurde nicht hinzugef&uuml;gt";
 
 $string['next_steps'] = "N&auml;chste Schritte";
-$string['linktext_users'] = "Bearbeiten Sie die eingeschriebenen Lehrenden und Studierenden ...";
+$string['linktext_users'] = "Bearbeiten Sie die eingeschriebenen Lehrenden und Studierenden, ...";
+$string['linktext_content'] = "... importieren Sie Inhalte aus bereits existierenden Kursen ...";
 $string['linktext_course'] = "... oder gehen Sie direkt zum neu erstellten Kurs.";
 
 $string['course_duplication_question'] = 'Wollen Sie die Daten aus einem alten Learnweb-Kurs in den soeben erstellten Kurs kopieren? (Dies ist die einzige Gelegenheit dazu)';
