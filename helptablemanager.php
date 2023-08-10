@@ -68,7 +68,7 @@ if ($originid == -1) {
 	}
 	$subcats = get_mdl_sublevels($mainid);
 	$displaylist = array();
-    $displaylist = coursecat::make_categories_list();
+    	$displaylist = core_course_category::make_categories_list();
 	$options = "";
 	foreach ($displaylist as $id => $txt) {
 		if (isset($subcats[$id])) $options .= "<option value='".$id."'>".$txt."</option>";

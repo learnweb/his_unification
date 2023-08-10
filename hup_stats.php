@@ -41,9 +41,11 @@ function get_cat_sem($ueid) {
 function get_cat_veranstids_and_count($ueids) {
     global $pgDB;
     $hup_stats_veranstcount_table = array();
-    $q_main = pg_query($pgDB->connection, "SELECT veranstaltungsart, textcat_all(DISTINCT ".HIS_UEBERSCHRIFT.".veranstid || ',') as veranstids, COUNT(DISTINCT ".HIS_UEBERSCHRIFT.".veranstid) as c FROM ".HIS_UEBERSCHRIFT." JOIN ".HIS_VERANSTALTUNG." on ".HIS_UEBERSCHRIFT.".veranstid = ".HIS_VERANSTALTUNG.".veranstid WHERE ueid IN (".$ueids.") GROUP BY veranstaltungsart");
-    while ($hislsf_title = pg_fetch_object($q_main)) {
-        $hup_stats_veranstcount_table[$hislsf_title->veranstaltungsart] = array("veranstids" => explode(",", $hislsf_title->veranstids), "count" => $hislsf_title->c);
+    if(!empty($ueids)){
+    	$q_main = pg_query($pgDB->connection, "SELECT veranstaltungsart, textcat_all(DISTINCT ".HIS_UEBERSCHRIFT.".veranstid || ',') as veranstids, COUNT(DISTINCT ".HIS_UEBERSCHRIFT.".veranstid) as c FROM ".HIS_UEBERSCHRIFT." JOIN ".HIS_VERANSTALTUNG." on ".HIS_UEBERSCHRIFT.".veranstid = ".HIS_VERANSTALTUNG.".veranstid WHERE ueid IN (".$ueids.") GROUP BY veranstaltungsart");
+    	while ($hislsf_title = pg_fetch_object($q_main)) {
+        	$hup_stats_veranstcount_table[$hislsf_title->veranstaltungsart] = array("veranstids" => explode(",", $hislsf_title->veranstids), "count" => $hislsf_title->c);
+    	}
     }
     return $hup_stats_veranstcount_table;
 }
