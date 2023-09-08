@@ -4,7 +4,7 @@ include("./class_pg_lite.php");
 include("./lib.php");
 include("./lib_features.php");
 /// Check permissions.
-require_login();
+require_admin();
 
 $tryeverything         = optional_param('tryeverything', false, PARAM_INT);       // his category origin id
 
