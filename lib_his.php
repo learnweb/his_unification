@@ -357,6 +357,8 @@ function course_exists($veranstid) {
         } else {
             return true;
         }
+    } else if($DB->record_exists("course", array("idnumber" => ($veranstid)))){
+        return true;
     }
     return false;
 }
@@ -527,9 +529,22 @@ function get_courses_categories($veranstid, $update_helptables_if_necessary = tr
             if (empty($maincourses)) {
                 $maincourses = get_config('local_lsf_unification', 'defaultcategory');
             }
-            $categories_sql = "SELECT id, name FROM " . $CFG->prefix .
-                     "course_categories WHERE id in (" . $maincourses . ") OR parent in (" .
-                     $maincourses . ") ORDER BY sortorder";
+            $categories_sql_main = "SELECT id, name FROM " . $CFG->prefix .
+                     "course_categories WHERE id in (" . $maincourses . ") ORDER BY sortorder";
+            $categories = array_map($helpfuntion2, $DB->get_records_sql($categories_sql_main));
+            $categories_sql_child = "SELECT id, name FROM " . $CFG->prefix .
+                "course_categories WHERE parent in (" . $maincourses . ") ORDER BY sortorder";
+            $categories_child = $DB->get_records_sql($categories_sql_child);
+            $categories = $categories+ array_map($helpfuntion2, $categories_child);
+            foreach($categories_child as $child){
+                if(!str_contains($child->name, 'Archiv')){
+                    $categories_sql_iterative = "SELECT id, name FROM " . $CFG->prefix .
+                        "course_categories WHERE path like '%".$child->id."/%' ORDER BY sortorder";
+                    $categories = array_map($helpfuntion2, $DB->get_records_sql($categories_sql_iterative))+ $categories;
+                }
+
+            }
+            return $categories;
         }
         $categories = array_map($helpfuntion2, $DB->get_records_sql($categories_sql));
     }
