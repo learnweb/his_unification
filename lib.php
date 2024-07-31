@@ -298,15 +298,23 @@ function add_path_description($choices) {
         $cat = $DB->get_record("course_categories", array("id" => $id
         ));
         $path = explode("/", $cat->path);
-        $choices[$id] = "";
+        $result[$id] = "";
         foreach ($path as $pathid) {
-            $choices[$id] .= (empty($choices[$id]) ? "" : " / ") .
-                     (empty($pathid) ? "" : ($DB->get_record("course_categories", 
-                            array("id" => $pathid
-                            ))->name));
+            if(empty($pathid)){
+                $name = "";
+            } else {
+                $name = $DB->get_record("course_categories",
+                    array("id" => $pathid
+                    ))->name;
+            }
+            if(str_contains($name, 'Archiv')){
+                unset($result[$id]);
+                break;
+            }
+            $result[$id] .= (empty($result[$id]) ? "" : " / ") . $name;
         }
     }
-    return $choices;
+    return $result;
 }
 
 /**

@@ -87,7 +87,8 @@ class lsf_course_request_form extends moodleform {
         $mform->addElement('header','categoryheader', get_string('config_category', 'local_lsf_unification'));
 
         $choices = get_courses_categories($veranstid);
-        $choices = add_path_description($choices);
+	$choices = add_path_description($choices);
+	asort($choices);
         $choices[-1] = "";
         $select = $mform->addElement('select', 'category', get_string('config_category','local_lsf_unification'), $choices);
         $mform->addRule('category', '', 'required');
