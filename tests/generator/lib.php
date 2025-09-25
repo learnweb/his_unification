@@ -19,7 +19,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Generator for the local_lsf_unification plugin.
  *
- * @package    his_unification
+ * @package    local_lsf_unification
  * @copyright  2018 Nina Herrmann
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -46,7 +46,7 @@ class local_lsf_unification_generator extends testing_data_generator {
         $sender = $this->create_user();
         $recipient = $this->create_user();
 
-        $data = array();
+        $data = [];
         // In case the request is an anwer we call the param acceptor else requester.
         if ($answer && !$categorywish) {
             $data['acceptorid'] = $sender->id;

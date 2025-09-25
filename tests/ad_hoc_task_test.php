@@ -19,13 +19,13 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Test the ad_hoc tasks.
  *
- * @package    his_unification
+ * @package    local_lsf_unification
  * @copyright  2018 Nina Herrmann
  * @group      lsf_unification_ad_hoc_task
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class ad_hoc_task_test extends advanced_testcase {
+final class ad_hoc_task_test extends advanced_testcase {
 
     /**
      * @var saves all emails send.
@@ -40,7 +40,8 @@ class ad_hoc_task_test extends advanced_testcase {
     /**
      * Set up the params to redirect mails.
      */
-    protected function setUp() {
+    protected function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest(true);
 
         unset_config('nomailever');
@@ -54,7 +55,7 @@ class ad_hoc_task_test extends advanced_testcase {
      * @throws coding_exception
      * @throws moodle_exception
      */
-    public function test_send_mail_category_wish() {
+    public function test_send_mail_category_wish(): void {
         $adhoctask = new \local_lsf_unification\task\send_mail_category_wish();
 
         $setupdata = $this->generator->set_up_params(true);
@@ -83,7 +84,7 @@ class ad_hoc_task_test extends advanced_testcase {
      * @throws coding_exception
      * @throws moodle_exception
      */
-    public function test_send_mail_course_creation_accepted() {
+    public function test_send_mail_course_creation_accepted(): void {
         global $CFG;
         $adhoctask = new \local_lsf_unification\task\send_mail_course_creation_accepted();
         $setupdata = $this->generator->set_up_params(false, false, true);
@@ -117,7 +118,7 @@ class ad_hoc_task_test extends advanced_testcase {
      * @throws coding_exception
      * @throws moodle_exception
      */
-    public function test_send_mail_course_creation_declined() {
+    public function test_send_mail_course_creation_declined(): void {
         global $CFG;
         $adhoctask = new \local_lsf_unification\task\send_mail_course_creation_declined();
 
@@ -149,7 +150,7 @@ class ad_hoc_task_test extends advanced_testcase {
      * @throws coding_exception
      * @throws moodle_exception
      */
-    public function test_send_mail_request_teacher_to_create_course() {
+    public function test_send_mail_request_teacher_to_create_course(): void {
         global $CFG;
         $adhoctask = new \local_lsf_unification\task\send_mail_request_teacher_to_create_course();
 
@@ -182,7 +183,7 @@ class ad_hoc_task_test extends advanced_testcase {
      * @throws coding_exception
      * @throws moodle_exception
      */
-    public function test_no_user_ad_hoc_task() {
+    public function test_no_user_ad_hoc_task(): void {
         $adhoctask = new \local_lsf_unification\task\send_mail_category_wish();
 
         $setupdata = $this->generator->set_up_params(true);
