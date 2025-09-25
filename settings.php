@@ -15,17 +15,6 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     $settings4 = new admin_externalpage('local_lsf_unification_remoterequests', 'LSF Remote Request Handling', $CFG->wwwroot . '/local/lsf_unification/remoterequests.php');
     $ADMIN->add('localplugins', $settings4);
 
-    /*
-     $settings->add(new admin_setting_configcheckbox('local_lsf_unification/send_errors',
-         get_string('send_errors', 'local_lsf_unification'), get_string('send_errors_description', 'local_lsf_unification'),
-         0));
-    $settings->add(new admin_setting_configselect('local_lsf_unification/log_mode',
-        get_string('log_mode', 'local_lsf_unification'), get_string('log_mode_description', 'local_lsf_unification'),
-        1, array(	0 => get_string('log_mode_0', 'local_lsf_unification'),
-                        1 => get_string('log_mode_1', 'local_lsf_unification'),
-                        2 => get_string('log_mode_2', 'local_lsf_unification'))));
-    */
-
     $settings->add(new admin_setting_configtext('local_lsf_unification/dbhost',
         get_string('dbhost', 'local_lsf_unification'), get_string('dbhost_description', 'local_lsf_unification'),
         '', PARAM_RAW));
@@ -100,44 +89,4 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
         get_string('icalurl', 'local_lsf_unification'), get_string('icalurl_description', 'local_lsf_unification'),
         'https://studium.uni-muenster.de/qisserver/rds?state=verpublish&status=transform&vmfile=no&moduleCall=iCalendarPlan&publishConfFile=reports&publishSubDir=veranstaltung&termine=', PARAM_RAW));
 
-    /*
-     $settings->add(new admin_setting_configselect('local_lsf_unification/enter_groupmode',
-         get_string('enter_groupmode', 'local_lsf_unification'), get_string('enter_groupmode_description', 'local_lsf_unification'),
-         1, array(	0 => get_string('enter_groupmode_0', 'local_lsf_unification'),
-                         1 => get_string('enter_groupmode_1', 'local_lsf_unification'),
-                         2 => get_string('enter_groupmode_2', 'local_lsf_unification'))));
-    //$settings->add(new admin_setting_configcheckbox('local_lsf_unification/replace_template_patterns',
-        //	get_string('replace_template_patterns', 'local_lsf_unification'), get_string('replace_template_patterns_description', 'local_lsf_unification'),
-        //	1));
-    $settings->add(new admin_setting_configtext('local_lsf_unification/new_user_auth',
-        get_string('new_user_auth', 'local_lsf_unification'), get_string('new_user_auth_description', 'local_lsf_unification'),
-        'ldap', PARAM_AUTH));
-    $settings->add(new admin_setting_configtext('local_lsf_unification/new_user_mnethostid',
-        get_string('new_user_mnethostid', 'local_lsf_unification'), get_string('new_user_mnethostid_description', 'local_lsf_unification'),
-        $CFG->mnet_localhost_id, PARAM_INT));
-    $settings->add(new admin_setting_configtext('local_lsf_unification/new_user_institution',
-        get_string('new_user_institution', 'local_lsf_unification'), get_string('new_user_institution_description', 'local_lsf_unification'),
-        'WWU', PARAM_RAW));
-    $settings->add(new admin_setting_configtext('local_lsf_unification/new_user_department',
-        get_string('new_user_department', 'local_lsf_unification'), get_string('new_user_department_description', 'local_lsf_unification'),
-        '', PARAM_RAW));
-    $settings->add(new admin_setting_configtext('local_lsf_unification/new_user_city',
-        get_string('new_user_city', 'local_lsf_unification'), get_string('new_user_city_description', 'local_lsf_unification'),
-        'Muenster', PARAM_RAW));
-    $settings->add(new admin_setting_configtext('local_lsf_unification/new_user_country',
-        get_string('new_user_country', 'local_lsf_unification'), get_string('new_user_country_description', 'local_lsf_unification'),
-        'DE', PARAM_RAW));
-    $settings->add(new admin_setting_configtext('local_lsf_unification/new_user_lang',
-        get_string('new_user_lang', 'local_lsf_unification'), get_string('new_user_lang_description', 'local_lsf_unification'),
-        'de', PARAM_ALPHANUMEXT));
-    $settings->add(new admin_setting_configtext('local_lsf_unification/role_course_creator',
-        get_string('role_course_creator', 'local_lsf_unification'), get_string('role_course_creator_description', 'local_lsf_unification'),
-        2, PARAM_INT));
-    $settings->add(new admin_setting_configtext('local_lsf_unification/role_teacher',
-        get_string('role_teacher', 'local_lsf_unification'), get_string('role_teacher_description', 'local_lsf_unification'),
-        3, PARAM_INT));
-    $settings->add(new admin_setting_configtext('local_lsf_unification/role_student',
-        get_string('role_student', 'local_lsf_unification'), get_string('role_student_description', 'local_lsf_unification'),
-        5, PARAM_INT));
-    */
 }
