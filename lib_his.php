@@ -42,7 +42,7 @@ function setupHisSoap() {
     if (empty($hislsf_soapclient)) {
         try {
             $hislsf_soapclient = new SoapClient(get_config('local_lsf_unification', 'soapwsdl'));
-            $result = $hislsf_soapclient->auth(get_config('local_lsf_unification', 'soapuser'), 
+            $result = $hislsf_soapclient->auth(get_config('local_lsf_unification', 'soapuser'),
                     get_config('local_lsf_unification', 'soappass'));
             $his_moodle_url = get_config('local_lsf_unification', 'moodle_url');
             $result = $result &&
@@ -78,7 +78,7 @@ function removeHisLink($veranstid) {
 function get_students_stdp_terminids($mtknr) {
     global $pgDB;
     establish_secondary_DB_connection();
-    $q = pg_query($pgDB->connection, 
+    $q = pg_query($pgDB->connection,
             "SELECT terminid FROM " . HIS_STDP .
                      " WHERE mtknr = $mtknr and terminid is not null group by terminid order by terminid;");
     $return = array();
@@ -91,14 +91,14 @@ function get_students_stdp_terminids($mtknr) {
 
 /**
  * get_teachers_pid returns the pid (personen-id) connected to a specific username
- * 
+ *
  * @param $username the teachers username
  * @return $pid the teachers pid (personen-id)
  */
 function get_teachers_pid($username, $checkhis = false) {
     global $pgDB;
     $emailcheck = $checkhis ? (" OR (login = '" . $username . "')") : "";
-    $q = pg_query($pgDB->connection, 
+    $q = pg_query($pgDB->connection,
             "SELECT pid FROM " . HIS_PERSONAL . " WHERE (zivk = '" . $username . "')" . $emailcheck);
     if ($hislsf_teacher = pg_fetch_object($q)) {
         return $hislsf_teacher->pid;
@@ -109,21 +109,20 @@ function get_teachers_pid($username, $checkhis = false) {
     return null;
 }
 
-function get_courses_by_veranstids($veranstids) {
+function get_courses_by_veranstids_and_time ($veranstids, $days) {
     global $pgDB;
-    
+
     // if veranstids is empty, no need to make a db request. return empty list
-    if (empty($veranstids))
+    if (empty($veranstids)) {
         return array();
-    
-    $veranstids_string = implode(',', $veranstids);
-    $q = pg_query($pgDB->connection, 
-            "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst
+    }
+
+    $veranstidsstring = implode(',', $veranstids);
+    $q = pg_query($pgDB->connection,
+                  "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst
         FROM " .
-                     HIS_VERANSTALTUNG . " as veranst where veranstid in (" . $veranstids_string .
-                     ") AND " . "(CURRENT_DATE - CAST(veranst.zeitstempel AS date)) < " .
-                     get_config('local_lsf_unification', 'max_import_age') .
-                     "order by semester,titel;");
+                  HIS_VERANSTALTUNG . " as veranst where veranstid in (" . $veranstidsstring .
+                  ") AND " . "(CURRENT_DATE - CAST(veranst.zeitstempel AS date)) < $days order by semester,titel;");
     $result_list = array();
     while ($course = pg_fetch_object($q)) {
         $result = new stdClass();
@@ -139,15 +138,54 @@ function get_courses_by_veranstids($veranstids) {
     return $result_list;
 }
 
+function get_courses_by_veranstids($veranstids) {
+    global $pgDB;
+
+    // if veranstids is empty, no need to make a db request. return empty list
+    if (empty($veranstids))
+        return array();
+
+    $veranstids_string = implode(',', $veranstids);
+    $q = pg_query($pgDB->connection,
+            "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst
+        FROM " .
+                     HIS_VERANSTALTUNG . " as veranst where veranstid in (" . $veranstids_string .
+                     ") AND " . "(CURRENT_DATE - CAST(veranst.zeitstempel AS date)) < " .
+                     get_config('local_lsf_unification', 'max_import_age') .
+                     "order by semester,titel;");
+    $returnlist = array();
+    while ($course = pg_fetch_object($q)) {
+        $returnlist[$course->veranstid] = refinecourse($course);
+    }
+    return $returnlist;
+}
+
+function refinecourse ($course) {
+    $result = new stdClass();
+    $result->veranstid = $course->veranstid;
+    $result->veranstnr = $course->veranstnr;
+    $result->semester = $course->semester;
+    $result->semestertxt = $course->semestertxt;
+    $result->veranstaltungsart = $course->veranstaltungsart;
+    $result->titel = $course->titel;
+    $result->urlveranst = $course->urlveranst;
+    return $result;
+}
+
 function get_course_by_veranstid($veranstid) {
-    $result = get_courses_by_veranstids(array($veranstid
-    ));
-    return $result[$veranstid];
+    global $pgDB;
+    $q = pg_query($pgDB->connection,
+                  "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst FROM ".
+                  HIS_VERANSTALTUNG . " as veranst where veranstid = $veranstid;");
+    return refinecourse(pg_fetch_object($q));
 }
 
 function get_veranstids_by_teacher($pid) {
+    if ($pid == null) {
+        return array();
+    }
     global $pgDB;
-    $q = pg_query($pgDB->connection, 
+    $q = pg_query($pgDB->connection,
             "SELECT veranstid FROM " . HIS_PERSONAL_VERANST .
                      " WHERE pid = $pid and veranstid is not null group by veranstid order by veranstid;");
     $return = array();
@@ -165,7 +203,7 @@ function username_to_mail($username) {
  * creates a list of courses assigned to a teacher
  * get_teachers_course_list is a required function for the lsf_unification plugin
  *
- * @param $username the teachers username
+ * @param $username String the teachers username
  * @param $longinfo level of detail
  * @param $checkmail not intended for manual setting, just for recursion
  * @return $courselist an array containing objects consisting of veranstid and info
@@ -200,8 +238,11 @@ function get_teachers_course_list($username, $longinfo = false) {
  * @return $is_valid
  */
 function is_course_of_teacher($veranstid, $username) {
-    $courses = get_teachers_course_list($username, false, true);
-    return !empty($courses[$veranstid]);
+    global $pgDB;
+    $pid = get_teachers_pid($username);
+    $q = pg_query($pgDB->connection,
+        "SELECT $pid in (SELECT pid FROM learnweb_personal_veranst WHERE veranstid = $veranstid) as isteacher");
+    return pg_fetch_assoc($q)['isteacher'] == "t";
 }
 
 /**
@@ -216,10 +257,10 @@ function find_origin_category($quellid) {
     $origin = $quellid;
     do {
         $quellid = $origin;
-        $q = pg_query($pgDB->connection, 
+        $q = pg_query($pgDB->connection,
                 "SELECT quellid FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" . $quellid . "'");
         if ($hislsf_title = pg_fetch_object($q)) {
-            $q2 = pg_query($pgDB->connection, 
+            $q2 = pg_query($pgDB->connection,
                     "SELECT quellid FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" .
                              ($hislsf_title->quellid) . "'");
             if ($hislsf_title2 = pg_fetch_object($q2)) {
@@ -241,7 +282,7 @@ function get_teachers_of_course($veranstid) {
     // get sorted (by relevance) pids of teachers
     $pidstring = "";
     $pids = array();
-    $q1 = pg_query($pgDB->connection, 
+    $q1 = pg_query($pgDB->connection,
             "SELECT DISTINCT pid, sort FROM " . HIS_PERSONAL_VERANST . " WHERE veranstid = " .
                      $veranstid . " ORDER BY sort ASC");
     while ($person = pg_fetch_object($q1)) {
@@ -252,7 +293,7 @@ function get_teachers_of_course($veranstid) {
         return array();
         // get personal info
     $result = array();
-    $q2 = pg_query($pgDB->connection, 
+    $q2 = pg_query($pgDB->connection,
             "SELECT vorname, nachname, zivk, login, pid FROM " . HIS_PERSONAL . " WHERE pid IN (" .
                      $pidstring . ")");
     while ($person = pg_fetch_object($q2)) {
@@ -313,7 +354,7 @@ function get_default_shortname($lsf_course, $long = false) {
 function get_default_summary($lsf_course) {
     global $pgDB;
     $summary = '';
-    $q = pg_query($pgDB->connection, 
+    $q = pg_query($pgDB->connection,
             "SELECT kommentar FROM " . HIS_VERANST_KOMMENTAR . " WHERE veranstid = '" .
                      $lsf_course->veranstid . "'");
     while ($sum_object = pg_fetch_object($q)) {
@@ -350,7 +391,7 @@ function get_default_startdate($lsf_course) {
 function course_exists($veranstid) {
     global $DB;
     if ($DB->record_exists("local_lsf_course", array("veranstid" => ($veranstid))) &&
-             !($DB->record_exists("local_lsf_course", array("veranstid" => ($veranstid), "mdlid" => 0)) || 
+             !($DB->record_exists("local_lsf_course", array("veranstid" => ($veranstid), "mdlid" => 0)) ||
             $DB->record_exists("local_lsf_course", array("veranstid" => ($veranstid), "mdlid" => 1)))) {
         if (!$DB->record_exists("course", array("idnumber" => ($veranstid)))) {
             $DB->delete_records("local_lsf_course", array("veranstid" => ($veranstid)));
@@ -413,7 +454,7 @@ function enrole_teachers($veranstid, $courseid) {
             $teacher = $DB->get_record("user", array("username" => $lsf_user->login));
         }
         if (empty($teacher) ||
-                 !enrol_try_internal_enrol($courseid, $teacher->id, 
+                 !enrol_try_internal_enrol($courseid, $teacher->id,
                         get_config('local_lsf_unification', 'roleid_teacher'))) {
             $warnings = $warnings . "\n" .
              get_string('warning_cannot_enrol_other', 'local_lsf_unification') . " (" .
@@ -507,7 +548,7 @@ function get_courses_categories($veranstid, $update_helptables_if_necessary = tr
     $helpfuntion3 = function ($array_el) {
         return $array_el->mdlid;
     };
-    $q = pg_query($pgDB->connection, 
+    $q = pg_query($pgDB->connection,
             "SELECT ueid FROM " . HIS_UEBERSCHRIFT . " WHERE veranstid=" . $veranstid . "");
     $choices = array();
     $categories = array();
@@ -524,7 +565,7 @@ function get_courses_categories($veranstid, $update_helptables_if_necessary = tr
                  "local_lsf_category.mdlid = " . $CFG->prefix .
                  "course_categories.id) WHERE ueid in (" . $origins . ") ORDER BY sortorder";
         if (get_config('local_lsf_unification', 'subcategories')) {
-            $maincourses = implode(", ", 
+            $maincourses = implode(", ",
                     array_map($helpfuntion3, $DB->get_records_sql($categories_sql)));
             if (empty($maincourses)) {
                 $maincourses = get_config('local_lsf_unification', 'defaultcategory');
@@ -575,8 +616,8 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
         $records1_unique[$record1->ueid] = true;
     foreach ($records2 as $record2)
         $records2_unique[$record2->child][$record2->parent] = ($tryeverything === false);
-    
-    $q_main = pg_query($pgDB->connection, 
+
+    $q_main = pg_query($pgDB->connection,
             "SELECT ueid, uebergeord, uebergeord, quellid, txt, zeitstempel FROM " . HIS_UEBERSCHRIFT .
                      " " .
                      ((!empty($tryeverything)) ? ("WHERE ueid >= '" . $tryeverything . "'") : ""));
@@ -608,10 +649,10 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
                     $entry->txt = utf8_encode(delete_bad_chars($hislsf_title->txt));
                     $DB->insert_record("local_lsf_category", $entry, true);
                     $records1_unique[$hislsf_title->ueid] = true;
-                    if ($debugoutput) 
+                    if ($debugoutput)
                         echo "x";
                 } catch(Exception $e) {
-                    if ($debugoutput) 
+                    if ($debugoutput)
                         print("<pre>FEHLER1 ".print_r($e,true)."".print_r($DB->get_last_error(),true));
                 }
             }
@@ -627,7 +668,7 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
             do {
                 $ueid = $parent;
                 $distance++;
-                $q2 = pg_query($pgDB->connection, 
+                $q2 = pg_query($pgDB->connection,
                         "SELECT ueid, uebergeord, txt FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" .
                                  $ueid . "'");
                 if (($hislsf_title2 = pg_fetch_object($q2)) && ($hislsf_title2->uebergeord != $ueid)) {
@@ -652,7 +693,7 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
                     $records2_unique[$child][$parent] = true;
                 }
             } while (!empty($parent) && ($ueid != $parent));
-            $entry = $DB->get_record('local_lsf_category', 
+            $entry = $DB->get_record('local_lsf_category',
                     array("ueid" => $hislsf_title->ueid
                     ));
             $entry->txt2 = utf8_encode($fullname);
