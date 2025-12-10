@@ -65,7 +65,7 @@ class local_lsf_unification_generator extends testing_data_generator {
         if (!$categorywish) {
             $data['recipientid'] = $recipient->id;
             $course = $this->create_lsf_course();
-            $params->c = utf8_encode($course->titel);
+            $params->c = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1');
             $data['veranstid'] = $course->veranstid;
             if ($request) {
                 $data['requestid'] = '1';
@@ -76,7 +76,7 @@ class local_lsf_unification_generator extends testing_data_generator {
             $data['supportuserid'] = $recipient->id;
             $course = $this->create_course();
             $params->b = $sender->id;
-            $params->c = utf8_encode($course->fullname);
+            $params->c = mb_convert_encoding($course->fullname, 'UTF-8', 'ISO-8859-1');
             $params->d = $course->id;
             $params->e = 'I want to change to Category xy';
         }

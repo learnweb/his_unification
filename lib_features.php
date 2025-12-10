@@ -99,7 +99,7 @@ function send_support_mail($course, $text) {
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
     $params->b = $USER->id;
-    $params->c = utf8_encode($course->fullname);
+    $params->c = mb_convert_encoding($course->fullname, 'UTF-8', 'ISO-8859-1');
     $params->d = $course->id;
     $params->e = $text;
 
@@ -124,7 +124,7 @@ function send_course_request_mail($recipientusername, $course, $requestid) {
     $user = get_or_create_user($recipientusername, $email);
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
-    $params->c = utf8_encode($course->titel);
+    $params->c = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1');
 
     $data = array('recipientid' => $user->id, 'requesterid' => $USER->id, 'requesterfirstname' => $USER->firstname,
         'requesterlastname' => $USER->lastname, 'requestid' => $requestid, 'params' => $params);
@@ -149,7 +149,7 @@ function send_course_creation_mail($recipient, $course) {
     global $USER;
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
-    $params->c = utf8_encode($course->titel);
+    $params->c = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1');
 
     $data = array('recipientid' => $recipient->id, 'acceptorid' => $USER->id, 'acceptorfirstname' => $USER->firstname,
         'acceptorlastname' => $USER->lastname, 'veranstid' => $course->veranstid, 'params' => $params);
@@ -169,7 +169,7 @@ function send_sorry_mail($recipient, $course) {
     global $USER;
     $params = new stdClass();
     $params->a = $USER->firstname." ".$USER->lastname;
-    $params->c = utf8_encode($course->titel);
+    $params->c = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1');
 
     $data = array('recipientid' => $recipient->id, 'acceptorid' => $USER->id, 'acceptorfirstname' => $USER->firstname,
         'acceptorlastname' => $USER->lastname, 'params' => $params);

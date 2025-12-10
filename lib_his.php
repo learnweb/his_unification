@@ -3,6 +3,7 @@
  * Functions that are specific to HIS database, format and helptables containing his-formatted data
  */
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 require_once ($CFG->dirroot . '/local/lsf_unification/class_pg_lite.php');
 
 define("HIS_PERSONAL",         "public.learnweb_personal");
@@ -182,7 +183,7 @@ function get_teachers_course_list($username, $longinfo = false) {
     foreach ($courses as $veranstid => $course) {
         $result = new stdClass();
         $result->veranstid = $course->veranstid;
-        $result->info = utf8_encode($course->titel) .
+        $result->info = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1') .
                  ($longinfo ? ("&nbsp;&nbsp;(" . $course->semestertxt .
                  ((!empty($course->urlveranst)) ? (", <a href='" . $course->urlveranst .
                  "'> KVV-Nr. " . $course->veranstnr . "</a>") : "") . ")") : "");
@@ -278,7 +279,7 @@ function get_default_fullname($lsf_course) {
     foreach (get_teachers_of_course($lsf_course->veranstid) as $person) {
         $personen .= ", " . trim($person->vorname) . " " . trim($person->nachname);
     }
-    return utf8_encode(($lsf_course->titel) . " " . trim($lsf_course->semestertxt) . $personen);
+    return mb_convert_encoding(($lsf_course->titel) . " " . trim($lsf_course->semestertxt) . $personen, 'UTF-8', 'ISO-8859-1');
 }
 
 /**
@@ -294,8 +295,7 @@ function get_default_shortname($lsf_course, $long = false) {
     foreach (explode(" ", $lsf_course->titel) as $word) {
         $i .= strtoupper($word[0]) . (($long && !empty($word[1])) ? $word[1] : "");
     }
-    $name = utf8_encode(
-            $i . "-" . substr($lsf_course->semester, 0, 4) . "_" . substr($lsf_course->semester, -1));
+    $name = mb_convert_encoding($i . "-" . substr($lsf_course->semester, 0, 4) . "_" . substr($lsf_course->semester, -1), 'UTF-8', 'ISO-8859-1');
     if (!$long && $DB->record_exists('course', array('shortname' => $name
     ))) {
         return get_default_shortname($lsf_course, true);
@@ -321,7 +321,7 @@ function get_default_summary($lsf_course) {
             $summary .= '<p>' . $sum_object->kommentar . '</p>';
         }
     }
-    $summary = utf8_encode($summary) . '<p><a href="' . $lsf_course->urlveranst .
+    $summary = mb_convert_encoding($summary, 'UTF-8', 'ISO-8859-1') . '<p><a href="' . $lsf_course->urlveranst .
              '">Kurs im HIS-LSF</a></p>';
     return $summary;
 }
@@ -595,7 +595,7 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
             $entry->origin = find_origin_category($hislsf_title->ueid);
             $entry->mdlid = 0;
             $entry->timestamp = strtotime($hislsf_title->zeitstempel);
-            $entry->txt = utf8_encode($hislsf_title->txt);
+            $entry->txt = mb_convert_encoding($hislsf_title->txt, 'UTF-8', 'ISO-8859-1');
             if ($debugoutput)
                 echo "!";
             try {
@@ -605,7 +605,7 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
                     echo "x";
             } catch (Exception $e) {
                 try {
-                    $entry->txt = utf8_encode(delete_bad_chars($hislsf_title->txt));
+                    $entry->txt = mb_convert_encoding(delete_bad_chars($hislsf_title->txt), 'UTF-8', 'ISO-8859-1');
                     $DB->insert_record("local_lsf_category", $entry, true);
                     $records1_unique[$hislsf_title->ueid] = true;
                     if ($debugoutput) 
@@ -655,7 +655,7 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
             $entry = $DB->get_record('local_lsf_category', 
                     array("ueid" => $hislsf_title->ueid
                     ));
-            $entry->txt2 = utf8_encode($fullname);
+            $entry->txt2 = mb_convert_encoding($fullname, 'UTF-8', 'ISO-8859-1');
             try {
                 $DB->update_record('local_lsf_category', $entry, true);
             } catch (Exception $e) {
@@ -685,7 +685,7 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
  * @return $str
  */
 function delete_bad_chars($str) {
-    return strtr(utf8_encode($str), array(
+    return strtr(mb_convert_encoding($str, 'UTF-8', 'ISO-8859-1'), array(
                     "\xc2\x96" => "",   // EN DASH
                     "\xc2\x97" => "",   // EM DASH
                     "\xc2\x84" => ""    // DOUBLE LOW-9 QUOTATION MARK

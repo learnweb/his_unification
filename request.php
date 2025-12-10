@@ -2,6 +2,7 @@
 
 
 require_once(dirname(__FILE__) . '/../../config.php');
+global $CFG, $USER, $DB, $PAGE, $SESSION, $OUTPUT;
 //require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
@@ -138,9 +139,9 @@ function print_res_selection() {
                 }
                 foreach ($catfiles as $id => $fileinfo) {
                     $lines = explode("\n", trim($fileinfo->info, " \t\r\n"), 2);
-                    echo '<li style="list-style-image: url(' . $OUTPUT->image_url("i/navigationitem")->out(true) . ')"><a href="duplicate_course.php?courseid=' . $courseid . "&filetype=t&fileid=" . $id . '">' . utf8_encode($lines[0]) . "</a>";
+                    echo '<li style="list-style-image: url(' . $OUTPUT->image_url("i/navigationitem")->out(true) . ')"><a href="duplicate_course.php?courseid=' . $courseid . "&filetype=t&fileid=" . $id . '">' . mb_convert_encoding($lines[0], 'UTF-8', 'ISO-8859-1') . "</a>";
                     if (count($lines) == 2)
-                        echo "<br/>" . utf8_encode($lines[1]);
+                        echo "<br/>" . mb_convert_encoding($lines[1], 'UTF-8', 'ISO-8859-1');
                     echo "</li>";
                 }
                 if (!empty($name)) echo "</ul></li>";
@@ -247,7 +248,7 @@ function print_request_handler() {
         echo get_string('remote_request_select_alternative', 'local_lsf_unification');
         $params = new stdClass();
         $params->a = $requester->firstname . " " . $requester->lastname;
-        $params->b = utf8_encode($course->titel);
+        $params->b = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1');
         echo '<p>' .
             '<a href="' . $CFG->wwwroot . '/local/lsf_unification/request.php?answer=' . $answer . '&requestid=' . $request->id . '&accept=1">' . get_string('remote_request_accept', 'local_lsf_unification', $params) . '</a>' .
             '<br>';

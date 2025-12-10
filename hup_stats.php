@@ -63,7 +63,7 @@ $toplevel_origins = get_his_toplevel_originids();
 $secondlevel_orinins = get_newest_sublevels(implode(", ", $toplevel_origins));
 foreach ($secondlevel_orinins as $secondndlevel) {
     // Kategoriekopien herausfinden
-    $secondndlevel->txt = utf8_encode($secondndlevel->txt);
+    $secondndlevel->txt = mb_convert_encoding($secondndlevel->txt, 'UTF-8', 'ISO-8859-1');
     $secondndlevel->copies = $DB->get_records("local_lsf_category",array("origin" => $secondndlevel->origin),null,"ueid");
     foreach($secondndlevel->copies as $secondlevel_copy) {
         // Semester bestimmen
