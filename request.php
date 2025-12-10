@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+use local_lsf_unification\output\first_overview;
+
 require_once(dirname(__FILE__) . '/../../config.php');
 global $CFG, $USER, $DB, $PAGE, $SESSION, $OUTPUT;
 // require_once($CFG->dirroot . '/course/lib.php');
@@ -68,25 +70,14 @@ if (!empty($requestid)) {
 }
 
 function print_first_overview() {
+    global $PAGE;
     global $USER;
-    $courselist = "<ul>";
-    foreach (get_teachers_course_list($USER->username, true) as $course) {
-        if (!course_exists($course->veranstid)) {
-            $courselist .= "<li>" . $course->info . "</li>";
-        }
-    }
-    $courselist .= "</ul>";
-    echo "<p>" . get_string('notice', 'local_lsf_unification') . "</p>";
-    echo "<form name='input' action='request.php' method='post'><table><tr><td colspan='2'><b>" . get_string('question', 'local_lsf_unification') . "</b>";
-    echo "</td></tr>";
-    echo ($courselist != "<ul></ul>") ? ("<tr><td style='vertical-align:top;'><input type='radio' name='answer' id='answer1' value='1'></td><td><label for='answer1'>" . get_string('answer_course_found', 'local_lsf_unification') . "" . $courselist . "</label></td></tr>") : "";
-
-    echo "<tr><td><input type='radio' name='answer' id='answer3' value='3'></td><td><label for='answer3'>" . get_string('answer_course_in_lsf_and_visible', 'local_lsf_unification') . "</label></td></tr>";
-    if (get_config('local_lsf_unification', 'remote_creation')) {
-        echo "<tr><td><input type='radio' name='answer' id='answer11' value='11'></td><td><label for='answer11'>" . get_string('answer_proxy_creation', 'local_lsf_unification') . "</label></td></tr>";
-    }
-    echo "<tr><td><input type='radio' name='answer' id='answer6' value='6'></td><td><label for='answer6'>" . get_string('answer_goto_old_requestform', 'local_lsf_unification') . "</label></td></tr>";
-    echo "<tr><td>&nbsp;</td><td><input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></td></tr></table></form>";
+    $courselist = array_filter(
+        get_teachers_course_list($USER->username, true),
+        function ($course) { return !course_exists($course->veranstid); }
+    );
+    $output = $PAGE->get_renderer('core');
+    echo $output->render(new first_overview($courselist));
 }
 
 function print_helptext($t, $s = null) {

@@ -1,0 +1,101 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_lsf_unification/first_overview
+
+    This template renders the first overview part of the request page.
+
+    Example (json):
+    {
+        "courselist": [
+            {
+                "title": "Veranstaltungstitel Nr.1",
+            },
+            {
+                "title": "Veranstaltungstitel Nr.2",
+            },
+            {
+                "title": "Veranstaltungstitel Nr.3",
+            }
+        ]
+    }
+}}
+<div id="lsf_unification_courselist_root">
+    <p>{{#str}} notice, local_lsf_unification {{/str}}</p>
+    <form name="input" action="request.php" method="post">
+        <table>
+            <tr>
+                <td colspan="2">
+                    <b>{{#str}} question, local_lsf_unification {{/str}}</b>
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align:top;">
+                    <input type="radio" name="answer" id="answer1" value="1">
+                </td>
+                <td>
+                    <label for="answer1">
+                        {{#str}} answer_course_found, local_lsf_unification {{/str}}
+                        <ul>
+                            {{#courselist}}
+                                <li>{{{title}}}</li>
+                            {{/courselist}}
+                        </ul>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="radio" name="answer" id="answer3" value="3">
+                </td>
+                <td>
+                    <label for="answer3">
+                        {{#str}} answer_course_in_lsf_and_visible, local_lsf_unification {{/str}}
+                    </label>
+                </td>
+            </tr>
+            {{#showremotecreation}}
+                <tr>
+                    <td>
+                        <input type="radio" name="answer" id="answer11" value="11">
+                    </td>
+                    <td>
+                        <label for="answer11">
+                            {{#str}} answer_proxy_creation, local_lsf_unification {{/str}}
+                        </label>
+                    </td>
+                </tr>
+            {{/showremotecreation}}
+            <tr>
+                <td>
+                    <input type="radio" name="answer" id="answer6" value="6">
+                </td>
+                <td>
+                    <label for="answer6">
+                        {{#str}} answer_goto_old_requestform, local_lsf_unification {{/str}}
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>&#160;</td>
+                <td>
+                    <input type="submit" value="{{#str}} select, local_lsf_unification {{/str}}">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
