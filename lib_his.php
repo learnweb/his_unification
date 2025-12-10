@@ -1,28 +1,45 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * Functions that are specific to HIS database, format and helptables containing his-formatted data
  */
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
-require_once ($CFG->dirroot . '/local/lsf_unification/class_pg_lite.php');
+require_once($CFG->dirroot . '/local/lsf_unification/class_pg_lite.php');
 
-define("HIS_PERSONAL",         "public.learnweb_personal");
-define("HIS_VERANSTALTUNG",    "public.learnweb_veranstaltung");
+define("HIS_PERSONAL", "public.learnweb_personal");
+define("HIS_VERANSTALTUNG", "public.learnweb_veranstaltung");
 define("HIS_PERSONAL_VERANST", "public.learnweb_personal_veranst");
-define("HIS_UEBERSCHRIFT",     "public.learnweb_ueberschrift");
-define("HIS_STDP",             "public.learnweb_stdp");
-define("HIS_VERANST_KOMMENTAR","public.learnweb_veranst_kommentar");
+define("HIS_UEBERSCHRIFT", "public.learnweb_ueberschrift");
+define("HIS_STDP", "public.learnweb_stdp");
+define("HIS_VERANST_KOMMENTAR", "public.learnweb_veranst_kommentar");
 
 /**
  * establish_secondary_DB_connection is a required function for the lsf_unification plugin
  */
 function establish_secondary_DB_connection() {
     global $pgDB;
-    if (!empty($pgDB) && !empty($pgDB->connection))
+    if (!empty($pgDB) && !empty($pgDB->connection)) {
         return;
+    }
     $pgDB = new pg_lite();
-    if (!($pgDB->connect() === true))
+    if (!($pgDB->connect() === true)) {
         return false;
+    }
     return true;
 }
 
@@ -31,24 +48,29 @@ function establish_secondary_DB_connection() {
  */
 function close_secondary_DB_connection() {
     global $pgDB;
-    if (empty($pgDB) || empty($pgDB->connection))
+    if (empty($pgDB) || empty($pgDB->connection)) {
         return;
+    }
     $pgDB->dispose();
 }
 
 function setupHisSoap() {
     global $CFG, $hislsf_soapclient;
-    if (!get_config('local_lsf_unification', 'his_deeplink_via_soap'))
+    if (!get_config('local_lsf_unification', 'his_deeplink_via_soap')) {
         return false;
+    }
     if (empty($hislsf_soapclient)) {
         try {
             $hislsf_soapclient = new SoapClient(get_config('local_lsf_unification', 'soapwsdl'));
-            $result = $hislsf_soapclient->auth(get_config('local_lsf_unification', 'soapuser'), 
-                    get_config('local_lsf_unification', 'soappass'));
+            $result = $hislsf_soapclient->auth(
+                get_config('local_lsf_unification', 'soapuser'),
+                get_config('local_lsf_unification', 'soappass')
+            );
             $his_moodle_url = get_config('local_lsf_unification', 'moodle_url');
             $result = $result &&
                      $hislsf_soapclient->configureMoodleWKZ(
-                            $his_moodle_url . "/course/view.php?id=MOODLEID");
+                         $his_moodle_url . "/course/view.php?id=MOODLEID"
+                     );
             return $result;
         } catch (Exception $e) {
             return false;
@@ -59,8 +81,9 @@ function setupHisSoap() {
 
 function setHisLink($veranstid, $mdlid) {
     global $hislsf_soapclient;
-    if (!setupHisSoap())
+    if (!setupHisSoap()) {
         return false;
+    }
     $hislsf_soapclient->removeMoodleLink($veranstid); // to override the old value (if a link
                                                       // already is etablished) you have to remove
                                                       // the existing Link first
@@ -70,8 +93,9 @@ function setHisLink($veranstid, $mdlid) {
 
 function removeHisLink($veranstid) {
     global $hislsf_soapclient;
-    if (!setupHisSoap())
+    if (!setupHisSoap()) {
         return false;
+    }
     $hislsf_soapclient->removeMoodleLink($veranstid);
     return true;
 }
@@ -79,10 +103,12 @@ function removeHisLink($veranstid) {
 function get_students_stdp_terminids($mtknr) {
     global $pgDB;
     establish_secondary_DB_connection();
-    $q = pg_query($pgDB->connection, 
-            "SELECT terminid FROM " . HIS_STDP .
-                     " WHERE mtknr = $mtknr and terminid is not null group by terminid order by terminid;");
-    $return = array();
+    $q = pg_query(
+        $pgDB->connection,
+        "SELECT terminid FROM " . HIS_STDP .
+        " WHERE mtknr = $mtknr and terminid is not null group by terminid order by terminid;"
+    );
+    $return = [];
     while ($terminid = pg_fetch_object($q)) {
         array_push($return, $terminid->terminid);
     }
@@ -92,15 +118,17 @@ function get_students_stdp_terminids($mtknr) {
 
 /**
  * get_teachers_pid returns the pid (personen-id) connected to a specific username
- * 
+ *
  * @param $username the teachers username
  * @return $pid the teachers pid (personen-id)
  */
 function get_teachers_pid($username, $checkhis = false) {
     global $pgDB;
     $emailcheck = $checkhis ? (" OR (login = '" . $username . "')") : "";
-    $q = pg_query($pgDB->connection, 
-            "SELECT pid FROM " . HIS_PERSONAL . " WHERE (zivk = '" . $username . "')" . $emailcheck);
+    $q = pg_query(
+        $pgDB->connection,
+        "SELECT pid FROM " . HIS_PERSONAL . " WHERE (zivk = '" . $username . "')" . $emailcheck
+    );
     if ($hislsf_teacher = pg_fetch_object($q)) {
         return $hislsf_teacher->pid;
     }
@@ -112,20 +140,23 @@ function get_teachers_pid($username, $checkhis = false) {
 
 function get_courses_by_veranstids($veranstids) {
     global $pgDB;
-    
+
     // if veranstids is empty, no need to make a db request. return empty list
-    if (empty($veranstids))
-        return array();
-    
+    if (empty($veranstids)) {
+        return [];
+    }
+
     $veranstids_string = implode(',', $veranstids);
-    $q = pg_query($pgDB->connection, 
-            "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst
+    $q = pg_query(
+        $pgDB->connection,
+        "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst
         FROM " .
                      HIS_VERANSTALTUNG . " as veranst where veranstid in (" . $veranstids_string .
                      ") AND " . "(CURRENT_DATE - CAST(veranst.zeitstempel AS date)) < " .
                      get_config('local_lsf_unification', 'max_import_age') .
-                     "order by semester,titel;");
-    $result_list = array();
+        "order by semester,titel;"
+    );
+    $result_list = [];
     while ($course = pg_fetch_object($q)) {
         $result = new stdClass();
         $result->veranstid = $course->veranstid;
@@ -141,17 +172,19 @@ function get_courses_by_veranstids($veranstids) {
 }
 
 function get_course_by_veranstid($veranstid) {
-    $result = get_courses_by_veranstids(array($veranstid
-    ));
+    $result = get_courses_by_veranstids([$veranstid,
+    ]);
     return $result[$veranstid];
 }
 
 function get_veranstids_by_teacher($pid) {
     global $pgDB;
-    $q = pg_query($pgDB->connection, 
-            "SELECT veranstid FROM " . HIS_PERSONAL_VERANST .
-                     " WHERE pid = $pid and veranstid is not null group by veranstid order by veranstid;");
-    $return = array();
+    $q = pg_query(
+        $pgDB->connection,
+        "SELECT veranstid FROM " . HIS_PERSONAL_VERANST .
+        " WHERE pid = $pid and veranstid is not null group by veranstid order by veranstid;"
+    );
+    $return = [];
     while ($veranstid = pg_fetch_object($q)) {
         array_push($return, $veranstid->veranstid);
     }
@@ -173,7 +206,7 @@ function username_to_mail($username) {
  */
 function get_teachers_course_list($username, $longinfo = false) {
     global $pgDB;
-    $courselist = array();
+    $courselist = [];
     $pid = get_teachers_pid($username);
     if (empty($pid)) {
         return $courselist;
@@ -217,12 +250,16 @@ function find_origin_category($quellid) {
     $origin = $quellid;
     do {
         $quellid = $origin;
-        $q = pg_query($pgDB->connection, 
-                "SELECT quellid FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" . $quellid . "'");
+        $q = pg_query(
+            $pgDB->connection,
+            "SELECT quellid FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" . $quellid . "'"
+        );
         if ($hislsf_title = pg_fetch_object($q)) {
-            $q2 = pg_query($pgDB->connection, 
-                    "SELECT quellid FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" .
-                             ($hislsf_title->quellid) . "'");
+            $q2 = pg_query(
+                $pgDB->connection,
+                "SELECT quellid FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" .
+                ($hislsf_title->quellid) . "'"
+            );
             if ($hislsf_title2 = pg_fetch_object($q2)) {
                 $origin = $hislsf_title->quellid;
             }
@@ -241,26 +278,31 @@ function get_teachers_of_course($veranstid) {
     global $pgDB;
     // get sorted (by relevance) pids of teachers
     $pidstring = "";
-    $pids = array();
-    $q1 = pg_query($pgDB->connection, 
-            "SELECT DISTINCT pid, sort FROM " . HIS_PERSONAL_VERANST . " WHERE veranstid = " .
-                     $veranstid . " ORDER BY sort ASC");
+    $pids = [];
+    $q1 = pg_query(
+        $pgDB->connection,
+        "SELECT DISTINCT pid, sort FROM " . HIS_PERSONAL_VERANST . " WHERE veranstid = " .
+        $veranstid . " ORDER BY sort ASC"
+    );
     while ($person = pg_fetch_object($q1)) {
         $pidstring .= (empty($pidstring) ? "" : ",") . $person->pid;
         $pids[] = $person->pid;
     }
-    if (empty($pids))
-        return array();
+    if (empty($pids)) {
+        return [];
+    }
         // get personal info
-    $result = array();
-    $q2 = pg_query($pgDB->connection, 
-            "SELECT vorname, nachname, zivk, login, pid FROM " . HIS_PERSONAL . " WHERE pid IN (" .
-                     $pidstring . ")");
+    $result = [];
+    $q2 = pg_query(
+        $pgDB->connection,
+        "SELECT vorname, nachname, zivk, login, pid FROM " . HIS_PERSONAL . " WHERE pid IN (" .
+        $pidstring . ")"
+    );
     while ($person = pg_fetch_object($q2)) {
         $result[$person->pid] = $person;
     }
     // sort by relevance
-    $sortedresult = array();
+    $sortedresult = [];
     foreach ($pids as $pid) {
         $sortedresult[] = $result[$pid];
     }
@@ -296,8 +338,10 @@ function get_default_shortname($lsf_course, $long = false) {
         $i .= strtoupper($word[0]) . (($long && !empty($word[1])) ? $word[1] : "");
     }
     $name = mb_convert_encoding($i . "-" . substr($lsf_course->semester, 0, 4) . "_" . substr($lsf_course->semester, -1), 'UTF-8', 'ISO-8859-1');
-    if (!$long && $DB->record_exists('course', array('shortname' => $name
-    ))) {
+    if (
+        !$long && $DB->record_exists('course', ['shortname' => $name,
+        ])
+    ) {
         return get_default_shortname($lsf_course, true);
     }
     return $name;
@@ -313,9 +357,11 @@ function get_default_shortname($lsf_course, $long = false) {
 function get_default_summary($lsf_course) {
     global $pgDB;
     $summary = '';
-    $q = pg_query($pgDB->connection, 
-            "SELECT kommentar FROM " . HIS_VERANST_KOMMENTAR . " WHERE veranstid = '" .
-                     $lsf_course->veranstid . "'");
+    $q = pg_query(
+        $pgDB->connection,
+        "SELECT kommentar FROM " . HIS_VERANST_KOMMENTAR . " WHERE veranstid = '" .
+        $lsf_course->veranstid . "'"
+    );
     while ($sum_object = pg_fetch_object($q)) {
         if (!empty($sum_object->kommentar) && strpos($summary, $sum_object->kommentar) === false) {
             $summary .= '<p>' . $sum_object->kommentar . '</p>';
@@ -349,15 +395,17 @@ function get_default_startdate($lsf_course) {
  */
 function course_exists($veranstid) {
     global $DB;
-    if ($DB->record_exists("local_lsf_course", array("veranstid" => ($veranstid))) &&
-             !($DB->record_exists("local_lsf_course", array("veranstid" => ($veranstid), "mdlid" => 0)) || 
-            $DB->record_exists("local_lsf_course", array("veranstid" => ($veranstid), "mdlid" => 1)))) {
-        if (!$DB->record_exists("course", array("idnumber" => ($veranstid)))) {
-            $DB->delete_records("local_lsf_course", array("veranstid" => ($veranstid)));
+    if (
+        $DB->record_exists("local_lsf_course", ["veranstid" => ($veranstid)]) &&
+             !($DB->record_exists("local_lsf_course", ["veranstid" => ($veranstid), "mdlid" => 0]) ||
+            $DB->record_exists("local_lsf_course", ["veranstid" => ($veranstid), "mdlid" => 1]))
+    ) {
+        if (!$DB->record_exists("course", ["idnumber" => ($veranstid)])) {
+            $DB->delete_records("local_lsf_course", ["veranstid" => ($veranstid)]);
         } else {
             return true;
         }
-    } else if($DB->record_exists("course", array("idnumber" => ($veranstid)))){
+    } else if ($DB->record_exists("course", ["idnumber" => ($veranstid)])) {
         return true;
     }
     return false;
@@ -406,15 +454,20 @@ function enrole_teachers($veranstid, $courseid) {
     foreach (get_teachers_of_course($veranstid) as $lsf_user) {
         unset($teacher);
         if (!empty($lsf_user->zivk)) {
-            $teacher = $DB->get_record("user", array("username" => $lsf_user->zivk));
+            $teacher = $DB->get_record("user", ["username" => $lsf_user->zivk]);
         }
         // if user cannot be found by zivk try to find user by login that is manually set in his
         if (empty($teacher) && !empty($lsf_user->login)) {
-            $teacher = $DB->get_record("user", array("username" => $lsf_user->login));
+            $teacher = $DB->get_record("user", ["username" => $lsf_user->login]);
         }
-        if (empty($teacher) ||
-                 !enrol_try_internal_enrol($courseid, $teacher->id, 
-                        get_config('local_lsf_unification', 'roleid_teacher'))) {
+        if (
+            empty($teacher) ||
+                 !enrol_try_internal_enrol(
+                     $courseid,
+                     $teacher->id,
+                     get_config('local_lsf_unification', 'roleid_teacher')
+                 )
+        ) {
             $warnings = $warnings . "\n" .
              get_string('warning_cannot_enrol_other', 'local_lsf_unification') . " (" .
              $lsf_user->zivk . ", " . $lsf_user->login . " " . $lsf_user->vorname . " " .
@@ -433,7 +486,7 @@ function enrole_teachers($veranstid, $courseid) {
  */
 function set_course_created($veranstid, $courseid) {
     global $DB;
-    if ($courseentry = $DB->get_record("local_lsf_course", array("veranstid" => $veranstid))) {
+    if ($courseentry = $DB->get_record("local_lsf_course", ["veranstid" => $veranstid])) {
         $courseentry->mdlid = $courseid;
         $courseentry->timestamp = time();
         $DB->update_record('local_lsf_course', $courseentry);
@@ -448,18 +501,18 @@ function set_course_created($veranstid, $courseid) {
 
 function get_course_request($rid) {
     global $DB;
-    return $DB->get_record("local_lsf_course", array("id" => $rid, "mdlid" => 0));
+    return $DB->get_record("local_lsf_course", ["id" => $rid, "mdlid" => 0]);
 }
 
 function get_course_requests() {
     global $DB;
-    return $DB->get_records("local_lsf_course", array("mdlid" => 0), "id");
+    return $DB->get_records("local_lsf_course", ["mdlid" => 0], "id");
 }
 
 function set_course_requested($veranstid) {
     global $DB, $USER;
-    if ($courseentry = $DB->get_record("local_lsf_course", array("veranstid" => $veranstid))) {
-        return NULL;
+    if ($courseentry = $DB->get_record("local_lsf_course", ["veranstid" => $veranstid])) {
+        return null;
     } else {
         $courseentry = new stdClass();
         $courseentry->veranstid = $veranstid;
@@ -473,19 +526,19 @@ function set_course_requested($veranstid) {
 
 function set_course_accepted($veranstid) {
     global $DB, $USER;
-    if ($courseentry = $DB->get_record("local_lsf_course", array("veranstid" => $veranstid))) {
+    if ($courseentry = $DB->get_record("local_lsf_course", ["veranstid" => $veranstid])) {
         $courseentry->requeststate = 2;
         $courseentry->timestamp = time();
         $courseentry->acceptorid = $USER->id;
         $DB->update_record('local_lsf_course', $courseentry);
-    return $courseentry->id;
+        return $courseentry->id;
     }
 }
 
 function set_course_declined($veranstid) {
     global $DB, $USER;
-    if ($courseentry = $DB->get_record("local_lsf_course", array("veranstid" => $veranstid))) {
-        $DB->delete_records("local_lsf_course", array("veranstid" => ($veranstid)));
+    if ($courseentry = $DB->get_record("local_lsf_course", ["veranstid" => $veranstid])) {
+        $DB->delete_records("local_lsf_course", ["veranstid" => ($veranstid)]);
     }
 }
 
@@ -507,12 +560,15 @@ function get_courses_categories($veranstid, $update_helptables_if_necessary = tr
     $helpfuntion3 = function ($array_el) {
         return $array_el->mdlid;
     };
-    $q = pg_query($pgDB->connection, 
-            "SELECT ueid FROM " . HIS_UEBERSCHRIFT . " WHERE veranstid=" . $veranstid . "");
-    $choices = array();
-    $categories = array();
-    while ($hislsf_title = pg_fetch_object($q))
+    $q = pg_query(
+        $pgDB->connection,
+        "SELECT ueid FROM " . HIS_UEBERSCHRIFT . " WHERE veranstid=" . $veranstid . ""
+    );
+    $choices = [];
+    $categories = [];
+    while ($hislsf_title = pg_fetch_object($q)) {
         $ueids = (empty($ueids) ? "" : ($ueids . ", ")) . ("" . $hislsf_title->ueid . "");
+    }
     $other_ueids_sql = "SELECT parent FROM " . $CFG->prefix .
              "local_lsf_categoryparenthood WHERE child in (" . $ueids . ")";
     $origins_sql = "SELECT origin FROM " . $CFG->prefix . "local_lsf_category WHERE ueid in (" .
@@ -524,8 +580,10 @@ function get_courses_categories($veranstid, $update_helptables_if_necessary = tr
                  "local_lsf_category.mdlid = " . $CFG->prefix .
                  "course_categories.id) WHERE ueid in (" . $origins . ") ORDER BY sortorder";
         if (get_config('local_lsf_unification', 'subcategories')) {
-            $maincourses = implode(", ", 
-                    array_map($helpfuntion3, $DB->get_records_sql($categories_sql)));
+            $maincourses = implode(
+                ", ",
+                array_map($helpfuntion3, $DB->get_records_sql($categories_sql))
+            );
             if (empty($maincourses)) {
                 $maincourses = get_config('local_lsf_unification', 'defaultcategory');
             }
@@ -535,14 +593,13 @@ function get_courses_categories($veranstid, $update_helptables_if_necessary = tr
             $categories_sql_child = "SELECT id, name FROM " . $CFG->prefix .
                 "course_categories WHERE parent in (" . $maincourses . ") ORDER BY sortorder";
             $categories_child = $DB->get_records_sql($categories_sql_child);
-            $categories = $categories+ array_map($helpfuntion2, $categories_child);
-            foreach($categories_child as $child){
-                if(!str_contains($child->name, 'Archiv')){
+            $categories = $categories + array_map($helpfuntion2, $categories_child);
+            foreach ($categories_child as $child) {
+                if (!str_contains($child->name, 'Archiv')) {
                     $categories_sql_iterative = "SELECT id, name FROM " . $CFG->prefix .
-                        "course_categories WHERE path like '%".$child->id."/%' ORDER BY sortorder";
-                    $categories = array_map($helpfuntion2, $DB->get_records_sql($categories_sql_iterative))+ $categories;
+                        "course_categories WHERE path like '%" . $child->id . "/%' ORDER BY sortorder";
+                    $categories = array_map($helpfuntion2, $DB->get_records_sql($categories_sql_iterative)) + $categories;
                 }
-
             }
             return $categories;
         }
@@ -569,21 +626,28 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
     $list2 = "";
     $records1 = $DB->get_recordset('local_lsf_category', null, '', 'ueid');
     $records2 = $DB->get_recordset('local_lsf_categoryparenthood', null, '', 'child, parent');
-    $records1_unique = array();
-    $records2_unique = array();
-    foreach ($records1 as $record1)
+    $records1_unique = [];
+    $records2_unique = [];
+    foreach ($records1 as $record1) {
         $records1_unique[$record1->ueid] = true;
-    foreach ($records2 as $record2)
+    }
+    foreach ($records2 as $record2) {
         $records2_unique[$record2->child][$record2->parent] = ($tryeverything === false);
-    
-    $q_main = pg_query($pgDB->connection, 
-            "SELECT ueid, uebergeord, uebergeord, quellid, txt, zeitstempel FROM " . HIS_UEBERSCHRIFT .
+    }
+
+    $q_main = pg_query(
+        $pgDB->connection,
+        "SELECT ueid, uebergeord, uebergeord, quellid, txt, zeitstempel FROM " . HIS_UEBERSCHRIFT .
                      " " .
-                     ((!empty($tryeverything)) ? ("WHERE ueid >= '" . $tryeverything . "'") : ""));
+        ((!empty($tryeverything)) ? ("WHERE ueid >= '" . $tryeverything . "'") : "")
+    );
     while ($hislsf_title = pg_fetch_object($q_main)) {
-        if (!isset($records1_unique[$hislsf_title->ueid]) || (!isset(
-                $records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord]) ||
-                 $records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord] != true)) {
+        if (
+            !isset($records1_unique[$hislsf_title->ueid]) || (!isset(
+                $records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord]
+            ) ||
+                 $records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord] != true)
+        ) {
             $a++;
             echo $hislsf_title->ueid . " ";
         }
@@ -596,28 +660,34 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
             $entry->mdlid = 0;
             $entry->timestamp = strtotime($hislsf_title->zeitstempel);
             $entry->txt = mb_convert_encoding($hislsf_title->txt, 'UTF-8', 'ISO-8859-1');
-            if ($debugoutput)
+            if ($debugoutput) {
                 echo "!";
+            }
             try {
                 $DB->insert_record("local_lsf_category", $entry, true);
                 $records1_unique[$hislsf_title->ueid] = true;
-                if ($debugoutput)
+                if ($debugoutput) {
                     echo "x";
+                }
             } catch (Exception $e) {
                 try {
                     $entry->txt = mb_convert_encoding(delete_bad_chars($hislsf_title->txt), 'UTF-8', 'ISO-8859-1');
                     $DB->insert_record("local_lsf_category", $entry, true);
                     $records1_unique[$hislsf_title->ueid] = true;
-                    if ($debugoutput) 
+                    if ($debugoutput) {
                         echo "x";
-                } catch(Exception $e) {
-                    if ($debugoutput) 
-                        print("<pre>FEHLER1 ".print_r($e,true)."".print_r($DB->get_last_error(),true));
+                    }
+                } catch (Exception $e) {
+                    if ($debugoutput) {
+                        print("<pre>FEHLER1 " . print_r($e, true) . "" . print_r($DB->get_last_error(), true));
+                    }
                 }
             }
         }
-        if (!isset($records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord]) ||
-                 $records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord] != true) {
+        if (
+            !isset($records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord]) ||
+                 $records2_unique[$hislsf_title->ueid][$hislsf_title->uebergeord] != true
+        ) {
             // create parenthood-table-entry if not existing
             $child = $hislsf_title->ueid;
             $ueid = $hislsf_title->ueid;
@@ -627,9 +697,11 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
             do {
                 $ueid = $parent;
                 $distance++;
-                $q2 = pg_query($pgDB->connection, 
-                        "SELECT ueid, uebergeord, txt FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" .
-                                 $ueid . "'");
+                $q2 = pg_query(
+                    $pgDB->connection,
+                    "SELECT ueid, uebergeord, txt FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" .
+                    $ueid . "'"
+                );
                 if (($hislsf_title2 = pg_fetch_object($q2)) && ($hislsf_title2->uebergeord != $ueid)) {
                     $parent = $hislsf_title2->uebergeord;
                     $fullname = ($hislsf_title2->txt) . (empty($fullname) ? "" : ("/" . $fullname));
@@ -640,21 +712,27 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
                             $entry->parent = $parent;
                             $entry->distance = $distance;
                             $DB->insert_record("local_lsf_categoryparenthood", $entry, true);
-                            if ($debugoutput)
+                            if ($debugoutput) {
                                 echo "?"; // ((
+                            }
                         } catch (Exception $e) {
-                            if ($debugoutput)
+                            if ($debugoutput) {
                                 mtrace(
-                                        "<pre>FEHLER2 " . print_r($e, true) . "" .
-                                                 print_r($DB->get_last_error(), true), '');
+                                    "<pre>FEHLER2 " . print_r($e, true) . "" .
+                                    print_r($DB->get_last_error(), true),
+                                    ''
+                                );
+                            }
                         }
                     }
                     $records2_unique[$child][$parent] = true;
                 }
             } while (!empty($parent) && ($ueid != $parent));
-            $entry = $DB->get_record('local_lsf_category', 
-                    array("ueid" => $hislsf_title->ueid
-                    ));
+            $entry = $DB->get_record(
+                'local_lsf_category',
+                ["ueid" => $hislsf_title->ueid,
+                ]
+            );
             $entry->txt2 = mb_convert_encoding($fullname, 'UTF-8', 'ISO-8859-1');
             try {
                 $DB->update_record('local_lsf_category', $entry, true);
@@ -663,15 +741,19 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
                     $entry->txt2 = delete_bad_chars($entry->txt2);
                     $DB->update_record('local_lsf_category', $entry, true);
                 } catch (Exception $e) {
-                    if ($debugoutput)
+                    if ($debugoutput) {
                         mtrace(
-                                "<pre>FEHLER2 " . print_r($e, true) . "" .
-                                         print_r($DB->get_last_error(), true), '');
+                            "<pre>FEHLER2 " . print_r($e, true) . "" .
+                            print_r($DB->get_last_error(), true),
+                            ''
+                        );
+                    }
                 }
             }
         }
         if ($debugoutput && (($a % 101) == 0)) {
-            mtrace("<br>&nbsp;&nbsp;"); $a++;
+            mtrace("<br>&nbsp;&nbsp;");
+            $a++;
             flush();
         }
     }
@@ -685,11 +767,11 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
  * @return $str
  */
 function delete_bad_chars($str) {
-    return strtr(mb_convert_encoding($str, 'UTF-8', 'ISO-8859-1'), array(
-                    "\xc2\x96" => "",   // EN DASH
-                    "\xc2\x97" => "",   // EM DASH
-                    "\xc2\x84" => ""    // DOUBLE LOW-9 QUOTATION MARK
-    ));
+    return strtr(mb_convert_encoding($str, 'UTF-8', 'ISO-8859-1'), [
+                    "\xc2\x96" => "", // EN DASH
+                    "\xc2\x97" => "", // EM DASH
+                    "\xc2\x84" => "", // DOUBLE LOW-9 QUOTATION MARK
+    ]);
 }
 
 /**
@@ -737,14 +819,14 @@ function has_sublevels($origins) {
  */
 function get_newest_element($id) {
     global $CFG, $DB;
-    $origins = $DB->get_record("local_lsf_category", array("ueid" => $id
-    ), "origin")->origin;
+    $origins = $DB->get_record("local_lsf_category", ["ueid" => $id,
+    ], "origin")->origin;
     $sublevels_sql = "SELECT max(ueid) as max_ueid, origin FROM " . $CFG->prefix .
              "local_lsf_category WHERE origin in (" . $origins . ") GROUP BY origin";
     $sublevels = $DB->get_records_sql($sublevels_sql);
     $ueid = array_shift($sublevels)->max_ueid;
-    return $DB->get_record("local_lsf_category", array("ueid" => $ueid
-    ));
+    return $DB->get_record("local_lsf_category", ["ueid" => $ueid,
+    ]);
 }
 
 /**
@@ -753,8 +835,8 @@ function get_newest_element($id) {
 function get_newest_parent($id) {
     global $CFG, $DB;
     $parent = get_newest_element($id)->parent;
-    return $DB->get_record("local_lsf_category", array("ueid" => $parent
-    ));
+    return $DB->get_record("local_lsf_category", ["ueid" => $parent,
+    ]);
 }
 
 /**
@@ -762,8 +844,8 @@ function get_newest_parent($id) {
  */
 function get_mdlid($id) {
     global $CFG, $DB;
-    $origin = $DB->get_record("local_lsf_category", array("ueid" => $id), "origin")->origin;
-    $mdlid = $DB->get_record("local_lsf_category", array("ueid" => $origin), "mdlid")->mdlid;
+    $origin = $DB->get_record("local_lsf_category", ["ueid" => $id], "origin")->origin;
+    $mdlid = $DB->get_record("local_lsf_category", ["ueid" => $origin], "mdlid")->mdlid;
     return $mdlid;
 }
 
@@ -772,9 +854,9 @@ function get_mdlid($id) {
  */
 function get_mdlname($id) {
     global $CFG, $DB;
-    $origin = $DB->get_record("local_lsf_category", array("ueid" => $id), "origin")->origin;
-    $mdlid = $DB->get_record("local_lsf_category", array("ueid" => $origin), "mdlid")->mdlid;
-    $cat = $DB->get_record("course_categories", array("id" => $mdlid), "name");
+    $origin = $DB->get_record("local_lsf_category", ["ueid" => $id], "origin")->origin;
+    $mdlid = $DB->get_record("local_lsf_category", ["ueid" => $origin], "mdlid")->mdlid;
+    $cat = $DB->get_record("course_categories", ["id" => $mdlid], "name");
     return $cat->name;
 }
 
@@ -783,12 +865,12 @@ function get_mdlname($id) {
  */
 function set_cat_mapping($ueid, $mdlid) {
     global $DB, $SITE;
-    $obj = $DB->get_record("local_lsf_category",array("ueid"=>$ueid));
-    $event = \local_lsf_unification\event\matchingtable_updated::create(array(
+    $obj = $DB->get_record("local_lsf_category", ["ueid" => $ueid]);
+    $event = \local_lsf_unification\event\matchingtable_updated::create([
             'objectid' => $obj->id,
             'context' => context_system::instance(0, IGNORE_MISSING),
-            'other' => array('mappingold' => $obj->mdlid, 'mappingnew' => $mdlid, 'originid' => $ueid)
-    ));
+            'other' => ['mappingold' => $obj->mdlid, 'mappingnew' => $mdlid, 'originid' => $ueid],
+    ]);
     $event->trigger();
     $obj->mdlid = $mdlid;
     $DB->update_record("local_lsf_category", $obj);

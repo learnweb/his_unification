@@ -17,7 +17,7 @@
 /**
  * Version details.
  *
- * @package    local
+ * @package    local_lsf_unification
  * @subpackage lsf_unification
  * @copyright  2011 Olaf Koehler WWU
  */

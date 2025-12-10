@@ -18,7 +18,7 @@
  * The ad hoc task for sending a email to the teacher of a course. The course is requested from a different user
  * and the teacher is asked for permission.
  *
- * @package    his_unification
+ * @package    local_lsf_unification
  * @copyright  2018 Nina Herrmann
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -45,15 +45,15 @@ class send_mail_request_teacher_to_create_course extends \core\task\adhoc_task {
         $data = $this->get_custom_data();
 
         $recipientid = $data->recipientid;
-        $userarray = user_get_users_by_id(array($recipientid));
+        $userarray = user_get_users_by_id([$recipientid]);
 
         // In case no recipient can be found the task is aborted and deleted.
         if (empty($userarray[$recipientid])) {
             return;
         }
         $user = $userarray[$recipientid];
-        $data->params->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid=' . $data->requestid;
-        $data->params->userurl = $CFG->wwwroot.'/user/view.php?id=' . $data->requesterid;
+        $data->params->requesturl = $CFG->wwwroot . '/local/lsf_unification/request.php?answer=12&requestid=' . $data->requestid;
+        $data->params->userurl = $CFG->wwwroot . '/user/view.php?id=' . $data->requesterid;
         // Expected params of $data->params are:
         // A) a-> (string) firstname,
         // B) userurl-> (string) url to the user profile page of the requesting user,
@@ -61,13 +61,20 @@ class send_mail_request_teacher_to_create_course extends \core\task\adhoc_task {
         // D) requesturl-> the (moodle_url)link for managing the request.
         $content = get_string('email2', 'local_lsf_unification', $data->params);
 
-        $wassent = email_to_user($user, get_string('email_from', 'local_lsf_unification').
-            " (by ".$data->requesterfirstname." ".$data->requesterlastname.")",
-            get_string('email2_title', 'local_lsf_unification'), $content);
+        $wassent = email_to_user(
+            $user,
+            get_string('email_from', 'local_lsf_unification') .
+            " (by " . $data->requesterfirstname . " " . $data->requesterlastname . ")",
+            get_string('email2_title', 'local_lsf_unification'),
+            $content
+        );
 
         if (!$wassent) {
-            throw new \moodle_exception(get_string('ad_hoc_task_failed', 'local_lsf_unification',
-                'send_mail_request_teacher_to_create_course'));
+            throw new \moodle_exception(get_string(
+                'ad_hoc_task_failed',
+                'local_lsf_unification',
+                'send_mail_request_teacher_to_create_course'
+            ));
         }
     }
 }

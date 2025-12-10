@@ -17,7 +17,7 @@
 /**
  * The ad hoc task for sending a email to the support user with a wish for a different category.
  *
- * @package    his_unification
+ * @package    local_lsf_unification
  * @copyright  2018 Nina Herrmann
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -43,7 +43,7 @@ class send_mail_category_wish extends \core\task\adhoc_task {
         $data = $this->get_custom_data();
 
         $supportuserid = $data->supportuserid;
-        $supportuserarray = user_get_users_by_id(array($supportuserid));
+        $supportuserarray = user_get_users_by_id([$supportuserid]);
         // In case no recipient can be found the task is aborted and deleted.
         if (empty($supportuserarray[$supportuserid])) {
             return;
@@ -58,13 +58,20 @@ class send_mail_category_wish extends \core\task\adhoc_task {
         // E) e-> the text entered by the user regarding the category wish.
         $content = get_string('email', 'local_lsf_unification', $data->params);
 
-        $wassent = email_to_user($supportuser, get_string('email_from', 'local_lsf_unification').
-            " (by ".$data->requesterfirstname." ".$data->requesterlastname.")",
-            get_string('config_category_wish', 'local_lsf_unification'), $content);
+        $wassent = email_to_user(
+            $supportuser,
+            get_string('email_from', 'local_lsf_unification') .
+            " (by " . $data->requesterfirstname . " " . $data->requesterlastname . ")",
+            get_string('config_category_wish', 'local_lsf_unification'),
+            $content
+        );
 
         if (!$wassent) {
-            throw new \moodle_exception(get_string('ad_hoc_task_failed',
-                'local_lsf_unification', 'send_mail_category_wish'));
+            throw new \moodle_exception(get_string(
+                'ad_hoc_task_failed',
+                'local_lsf_unification',
+                'send_mail_category_wish'
+            ));
         }
     }
 }

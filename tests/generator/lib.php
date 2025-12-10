@@ -61,7 +61,7 @@ class local_lsf_unification_generator extends testing_data_generator {
         }
 
         $params = new stdClass();
-        $params->a = $sender->firstname." ".$sender->lastname;
+        $params->a = $sender->firstname . " " . $sender->lastname;
         if (!$categorywish) {
             $data['recipientid'] = $recipient->id;
             $course = $this->create_lsf_course();

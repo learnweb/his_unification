@@ -13,12 +13,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 /**
  * The matchingtableupdated event.
  *
- * @package    FULLPLUGINNAME
- * @copyright  2014 YOUR NAME
+ * @package    local_lsf_unification
+ * @copyright  2025 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_lsf_unification\event;
@@ -36,16 +36,16 @@ class matchingtable_updated extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'local_lsf_category';
     }
- 
+
     public static function get_name() {
         return get_string('eventmatchingtable_updated', 'local_lsf_unification');
     }
- 
+
     public function get_description() {
         return "The user with id '{$this->userid}' updated a his category matching with id '{$this->objectid}'. Original mapping: '{$this->other["mappingold"]}'. New mapping: '{$this->other["mappingnew"]}'.";
     }
- 
+
     public function get_url() {
-        return new \moodle_url('/local/lsf_unification/helptablemanager.php', array('originid' => $this->other["originid"]));
+        return new \moodle_url('/local/lsf_unification/helptablemanager.php', ['originid' => $this->other["originid"]]);
     }
 }

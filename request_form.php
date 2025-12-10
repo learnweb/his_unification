@@ -1,8 +1,22 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 
 class lsf_course_request_form extends moodleform {
@@ -19,7 +33,7 @@ class lsf_course_request_form extends moodleform {
         $lsf_course = get_course_by_veranstid($veranstid);
         $this->lsf_course = $lsf_course;
 
-        $mform->addElement('header','general', get_string('general', 'form'));
+        $mform->addElement('header', 'general', get_string('general', 'form'));
 
         $mform->addElement('hidden', 'veranstid', null);
         $mform->setType('veranstid', PARAM_INT);
@@ -28,7 +42,7 @@ class lsf_course_request_form extends moodleform {
         $mform->setType('answer', PARAM_INT);
         $mform->setConstant('answer', 1);
 
-        $mform->addElement('text','fullname', get_string('fullnamecourse'),'maxlength="254" size="80"');
+        $mform->addElement('text', 'fullname', get_string('fullnamecourse'), 'maxlength="254" size="80"');
         $mform->addHelpButton('fullname', 'fullnamecourse');
         $mform->addRule('fullname', get_string('missingfullname'), 'required', null, 'client');
         $mform->setType('fullname', PARAM_MULTILANG);
@@ -39,8 +53,8 @@ class lsf_course_request_form extends moodleform {
         $mform->addRule('shortname', get_string('missingshortname'), 'required', null, 'client');
         $mform->setType('shortname', PARAM_MULTILANG);
         $mform->setDefault('shortname', get_default_shortname($lsf_course));
-        
-        $mform->addElement('text','idnumber', get_string('idnumbercourse'),'maxlength="100"  size="10"');
+
+        $mform->addElement('text', 'idnumber', get_string('idnumbercourse'), 'maxlength="100"  size="10"');
         $mform->addHelpButton('idnumber', 'idnumbercourse');
         $mform->setType('idnumber', PARAM_RAW);
         $mform->hardFreeze('idnumber');
@@ -54,21 +68,21 @@ class lsf_course_request_form extends moodleform {
         $mform->addHelpButton('startdate', 'startdate');
         $mform->setDefault('startdate', get_default_startdate($lsf_course));
 
-        $mform->addElement('header','enrol', get_string('config_enrol', 'local_lsf_unification'));
+        $mform->addElement('header', 'enrol', get_string('config_enrol', 'local_lsf_unification'));
         $mform->setExpanded('enrol');
         if (get_config('local_lsf_unification', 'enable_enrol_ext_db')) {
-            $mform->addElement('advcheckbox', 'dbenrolment', get_string('config_dbenrolment', 'local_lsf_unification'), '', array('group' => 1), array(0, 1));
+            $mform->addElement('advcheckbox', 'dbenrolment', get_string('config_dbenrolment', 'local_lsf_unification'), '', ['group' => 1], [0, 1]);
             $mform->addHelpButton('dbenrolment', 'config_dbenrolment', 'local_lsf_unification');
             $mform->setDefault('dbenrolment', 0);
-            
-            $mform->addElement('advcheckbox', 'selfenrolment', get_string('config_selfenrolment', 'local_lsf_unification'), '', array('group' => 2), array(0,1));
+
+            $mform->addElement('advcheckbox', 'selfenrolment', get_string('config_selfenrolment', 'local_lsf_unification'), '', ['group' => 2], [0, 1]);
             $mform->setDefault('selfenrolment', 1);
             $mform->addHelpButton('selfenrolment', 'config_selfenrolment', 'local_lsf_unification');
         }
-        
-        $mform->addElement('passwordunmask','enrolment_key', get_string('config_enrolment_key','local_lsf_unification'),'maxlength="100"  size="10"');
+
+        $mform->addElement('passwordunmask', 'enrolment_key', get_string('config_enrolment_key', 'local_lsf_unification'), 'maxlength="100"  size="10"');
         $mform->setType('enrolment_key', PARAM_RAW);
-        $mform->addHelpButton('enrolment_key', 'config_enrolment_key','local_lsf_unification');
+        $mform->addHelpButton('enrolment_key', 'config_enrolment_key', 'local_lsf_unification');
         $mform->disabledIf('enrolment_key', 'selfenrolment', 'neq', 1);
 
         /* Enrolment Settings (to be implemented)
@@ -84,24 +98,24 @@ class lsf_course_request_form extends moodleform {
         $mform->setDefault('update_duration', -1);
         */
 
-        $mform->addElement('header','categoryheader', get_string('config_category', 'local_lsf_unification'));
+        $mform->addElement('header', 'categoryheader', get_string('config_category', 'local_lsf_unification'));
 
         $choices = get_courses_categories($veranstid);
-	$choices = add_path_description($choices);
-	asort($choices);
+        $choices = add_path_description($choices);
+        asort($choices);
         $choices[-1] = "";
-        $select = $mform->addElement('select', 'category', get_string('config_category','local_lsf_unification'), $choices);
+        $select = $mform->addElement('select', 'category', get_string('config_category', 'local_lsf_unification'), $choices);
         $mform->addRule('category', '', 'required');
         $mform->setDefault('category', -1);
 
-        $mform->addElement('textarea','category_wish', get_string('config_category_wish','local_lsf_unification'),'');
-        $mform->addHelpButton('category_wish', 'config_category_wish','local_lsf_unification');
+        $mform->addElement('textarea', 'category_wish', get_string('config_category_wish', 'local_lsf_unification'), '');
+        $mform->addHelpButton('category_wish', 'config_category_wish', 'local_lsf_unification');
         $mform->setType('enrolment_key', PARAM_RAW);
 
-        $mform->addElement('header','semesterheader', get_string('config_course_semester', 'local_lsf_unification'));
+        $mform->addElement('header', 'semesterheader', get_string('config_course_semester', 'local_lsf_unification'));
 
         $semesterfieldname = 'semester';
-        if ($field = $DB->get_record('customfield_field', array('shortname' => $semesterfieldname, 'type' => 'semester'))) {
+        if ($field = $DB->get_record('customfield_field', ['shortname' => $semesterfieldname, 'type' => 'semester'])) {
             $fieldcontroller = \core_customfield\field_controller::create($field->id);
             $datacontroller = \core_customfield\data_controller::create(0, null, $fieldcontroller);
             $datacontroller->instance_form_definition($mform);
@@ -111,7 +125,6 @@ class lsf_course_request_form extends moodleform {
         }
 
         $this->add_action_buttons();
-
     }
 
     function definition_after_data() {
@@ -123,7 +136,7 @@ class lsf_course_request_form extends moodleform {
         global $DB, $CFG;
 
         $errors = parent::validation($data, $files);
-        if ($foundcourses = $DB->get_records('course', array('shortname'=>$data['shortname']))) {
+        if ($foundcourses = $DB->get_records('course', ['shortname' => $data['shortname']])) {
             if (!empty($data['id'])) {
                 unset($foundcourses[$data['id']]);
             }
@@ -132,20 +145,19 @@ class lsf_course_request_form extends moodleform {
                     $foundcoursenames[] = $foundcourse->fullname;
                 }
                 $foundcoursenamestring = implode(',', $foundcoursenames);
-                $errors['shortname']= get_string('shortnametaken', '', $foundcoursenamestring);
+                $errors['shortname'] = get_string('shortnametaken', '', $foundcoursenamestring);
             }
         }
 
         if (!is_shortname_valid($this->lsf_course, $data['shortname'])) {
-            $errors['shortname']= get_string('shortnameinvalid', 'local_lsf_unification', shortname_hint($this->lsf_course));
+            $errors['shortname'] = get_string('shortnameinvalid', 'local_lsf_unification', shortname_hint($this->lsf_course));
         }
 
         $categories = get_courses_categories($this->veranstid, false);
         if (empty($data['category']) || !isset($categories[$data['category']])) {
-            $errors['category']= get_string('categoryinvalid', 'local_lsf_unification');
+            $errors['category'] = get_string('categoryinvalid', 'local_lsf_unification');
         }
 
         return $errors;
     }
 }
-

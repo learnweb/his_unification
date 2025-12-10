@@ -1,9 +1,22 @@
 <?php
-
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 require_once(dirname(__FILE__) . '/../../config.php');
 global $CFG, $USER, $DB, $PAGE, $SESSION, $OUTPUT;
-//require_once($CFG->dirroot . '/course/lib.php');
+// require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
 require_once($CFG->dirroot . '/lib/outputlib.php');
@@ -17,9 +30,9 @@ $answer = optional_param('answer', null, PARAM_INT);
 $requestid = optional_param('requestid', null, PARAM_INT);
 
 if (!empty($answer) && !empty($requestid)) {
-    $PAGE->set_url('/local/lsf_unification/request.php', array("answer" => $answer, "requestid" => $requestid));
+    $PAGE->set_url('/local/lsf_unification/request.php', ["answer" => $answer, "requestid" => $requestid]);
 } else if (!empty($answer) && !empty($veranstid)) {
-    $PAGE->set_url('/local/lsf_unification/request.php', array("answer" => $answer, "veranstid" => $veranstid));
+    $PAGE->set_url('/local/lsf_unification/request.php', ["answer" => $answer, "veranstid" => $veranstid]);
 } else {
     $PAGE->set_url('/local/lsf_unification/request.php');
 }
@@ -49,7 +62,7 @@ $PAGE->navbar->add($strtitle);
 echo $OUTPUT->header();
 
 if (!empty($requestid)) {
-    if (($request = $DB->get_record("local_lsf_course", array("id" => $requestid))) && ($request->requeststate == 1)) {
+    if (($request = $DB->get_record("local_lsf_course", ["id" => $requestid])) && ($request->requeststate == 1)) {
         $veranstid = $request->veranstid;
     }
 }
@@ -118,19 +131,21 @@ function print_res_selection() {
     }
     if (empty($backupfiles) && empty($templatefiles)) {
         print_final();
-    } elseif (!empty($templatefiles)) {
+    } else if (!empty($templatefiles)) {
         $alternative_counter = 1;
 
         // "Continue with the course template ..."
         if (get_config('local_lsf_unification', 'restore_templates') && !empty($templatefiles)) {
-            $cats = array();
+            $cats = [];
             $i = 0;
-            foreach ($templatefiles as $id => $fileinfo)
+            foreach ($templatefiles as $id => $fileinfo) {
                 $cats[$fileinfo->category][$id] = $fileinfo;
+            }
             // if there are items without a category move them to the end
             $catkeys = array_keys($cats);
-            if (!empty($cats) && array_pop($catkeys) == "")
+            if (!empty($cats) && array_pop($catkeys) == "") {
                 array_unshift($cats, array_pop($cats));
+            }
             // render
             echo "<b>" . get_string('pre_template', 'local_lsf_unification', $alternative_counter++) . '</b><ul style="list-style-type:none">';
             foreach ($cats as $name => $catfiles) {
@@ -140,11 +155,14 @@ function print_res_selection() {
                 foreach ($catfiles as $id => $fileinfo) {
                     $lines = explode("\n", trim($fileinfo->info, " \t\r\n"), 2);
                     echo '<li style="list-style-image: url(' . $OUTPUT->image_url("i/navigationitem")->out(true) . ')"><a href="duplicate_course.php?courseid=' . $courseid . "&filetype=t&fileid=" . $id . '">' . mb_convert_encoding($lines[0], 'UTF-8', 'ISO-8859-1') . "</a>";
-                    if (count($lines) == 2)
+                    if (count($lines) == 2) {
                         echo "<br/>" . mb_convert_encoding($lines[1], 'UTF-8', 'ISO-8859-1');
+                    }
                     echo "</li>";
                 }
-                if (!empty($name)) echo "</ul></li>";
+                if (!empty($name)) {
+                    echo "</ul></li>";
+                }
             }
             echo "</ul>";
         }
@@ -201,7 +219,7 @@ function print_remote_creation() {
 
 function print_coursecreation() {
     global $CFG, $USER, $DB, $OUTPUT, $answer, $teachername, $veranstid, $courseid;
-    $editform = new lsf_course_request_form(NULL, array('veranstid' => $veranstid));
+    $editform = new lsf_course_request_form(null, ['veranstid' => $veranstid]);
     if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
         // dbenrolment enrolment can only be enabled if it is globally enabled
         $ext_enabled_global = get_config('local_lsf_unification', 'enable_enrol_ext_db') == true;
@@ -211,11 +229,11 @@ function print_coursecreation() {
 
         $result = create_lsf_course($veranstid, $data->fullname, $data->shortname, $data->summary, $data->startdate, $enable_dbenrolment, $enable_self_enrolment, empty($data->enrolment_key) ? "" : ($data->enrolment_key), $data->category);
         $courseid = $result['course']->id;
-        $event = \local_lsf_unification\event\course_imported::create(array(
+        $event = \local_lsf_unification\event\course_imported::create([
             'objectid' => $courseid,
             'context' => context_system::instance(0, IGNORE_MISSING),
-            'other' => $veranstid
-        ));
+            'other' => $veranstid,
+        ]);
         $event->trigger();
         if (!empty($data->category_wish)) {
             if (!empty($CFG->supportemail)) {
@@ -224,7 +242,7 @@ function print_coursecreation() {
         }
         // Update customfield.
         $coursecontext = \context_course::instance($courseid);
-        if ($field = $DB->get_record('customfield_field', array('shortname' => 'semester', 'type' => 'semester'))) {
+        if ($field = $DB->get_record('customfield_field', ['shortname' => 'semester', 'type' => 'semester'])) {
             $fieldcontroller = \core_customfield\field_controller::create($field->id);
             $datacontroller = \core_customfield\data_controller::create(0, null, $fieldcontroller);
             $datacontroller->set('instanceid', $courseid);
@@ -233,8 +251,8 @@ function print_coursecreation() {
         }
 
         echo (!empty($result["warnings"])) ? ("<p>" . $OUTPUT->box("<b>" . get_string('warnings', 'local_lsf_unification') . "</b><br>" . "<pre>" . $result["warnings"] . "<pre>") . "</p>") : "";
-       // print_res_selection($result["course"]->id);
-	print_final($result["course"]->id);
+        // print_res_selection($result["course"]->id);
+        print_final($result["course"]->id);
     } else {
         $editform->display();
     }
@@ -243,7 +261,7 @@ function print_coursecreation() {
 function print_request_handler() {
     global $CFG, $DB, $answer, $request, $veranstid, $accept;
     $course = get_course_by_veranstid($veranstid);
-    $requester = $DB->get_record("user", array("id" => $request->requesterid));
+    $requester = $DB->get_record("user", ["id" => $request->requesterid]);
     if (empty($accept)) {
         echo get_string('remote_request_select_alternative', 'local_lsf_unification');
         $params = new stdClass();
@@ -272,7 +290,7 @@ function print_request_handler() {
 if (establish_secondary_DB_connection() === true) {
     if (empty($answer)) {
         print_first_overview(); // Task Selection
-    } elseif ($answer == 1) {
+    } else if ($answer == 1) {
         if (empty($veranstid)) {
             print_courseselection(); // Extern Course Selection
         } else {
@@ -280,17 +298,17 @@ if (establish_secondary_DB_connection() === true) {
                 print_coursecreation(); // Request neccessary details and create course
             }
         }
-    } elseif ($answer == 2) {
+    } else if ($answer == 2) {
         print_helptext('course_not_created_yet');
-    } elseif ($answer == 3) {
+    } else if ($answer == 3) {
         print_helptext('course_in_lsf_and_visible', $USER->username);
-    } elseif ($answer == 6) {
+    } else if ($answer == 6) {
         print_helptext('goto_old_requestform');
-    } elseif ($answer == 7) {
+    } else if ($answer == 7) {
         print_final(); // Goto Course
-    } elseif ($answer == 11) {
+    } else if ($answer == 11) {
         print_remote_creation(); // Remote Course Creation Starter
-    } elseif ($answer == 12) {
+    } else if ($answer == 12) {
         if (!is_course_of_teacher($veranstid, $USER->username)) { // Validate veranstid, user
             die("Course request not existing, already handled or none of your business"); // The user isn't a teacher of this course, so he shouldn't get here
         }

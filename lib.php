@@ -1,12 +1,27 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * Functions that aid core functionality
  */
 defined('MOODLE_INTERNAL') || die();
 
 // require_once("$CFG->dirroot/group/lib.php");
-require_once ($CFG->libdir . '/enrollib.php');
-require_once ($CFG->dirroot . '/user/lib.php');
+require_once($CFG->libdir . '/enrollib.php');
+require_once($CFG->dirroot . '/user/lib.php');
 
 /**
  * get_course_by_idnumber returns the course's id, where idnumber fits $courseid
@@ -16,11 +31,12 @@ require_once ($CFG->dirroot . '/user/lib.php');
  */
 function get_course_by_idnumber($courseid, $silent = false) {
     global $DB;
-    $result = $DB->get_record('course', array('idnumber' => $courseid
-    ), 'id');
+    $result = $DB->get_record('course', ['idnumber' => $courseid,
+    ], 'id');
     $externid = isset($result->id) ? $result->id : -1;
-    if (!$silent && (empty($externid) || $externid <= 0))
+    if (!$silent && (empty($externid) || $externid <= 0)) {
         throw new moodle_exception('course not found');
+    }
     return $externid;
 }
 
@@ -32,8 +48,10 @@ function get_course_by_idnumber($courseid, $silent = false) {
  */
 function find_or_create_category($title, $parent_title) {
     global $DB;
-    if ($category = $DB->get_record("course_categories", array("name" => $title
-    ))) {
+    if (
+        $category = $DB->get_record("course_categories", ["name" => $title,
+        ])
+    ) {
         return $category;
     }
     $parent = empty($parent_title) ? 0 : (find_or_create_category($parent_title, null)->id);
@@ -56,14 +74,18 @@ function find_or_create_category($title, $parent_title) {
 function has_course_import_rights($veranstid, $user) {
     global $DB;
     if (!is_course_of_teacher($veranstid, $user->username)) {
-        if ($courseentry = $DB->get_record("local_lsf_course", 
-                array("veranstid" => $veranstid, "requesterid" => $user->id
-                ))) {
+        if (
+            $courseentry = $DB->get_record(
+                "local_lsf_course",
+                ["veranstid" => $veranstid, "requesterid" => $user->id,
+                ]
+            )
+        ) {
             if ($courseentry->requeststate == 1) {
                 echo ("Course cannot be requested."); // The user shouldn't be on this website
                                                       // because this link isn't known to him
                 return false;
-            } elseif ($courseentry->requeststate != 2) {
+            } else if ($courseentry->requeststate != 2) {
                 echo ("Course already created."); // The course already exists, so the user
                                                   // shouldn't get here
                 return false;
@@ -80,9 +102,13 @@ function has_course_import_rights($veranstid, $user) {
 
 function is_course_imported_by($mdlid, $user) {
     global $DB;
-    if ($courseentry = $DB->get_record("local_lsf_course", 
-            array("mdlid" => $mdlid, "requesterid" => $user->id, "requeststate" => 2
-            ))) {
+    if (
+        $courseentry = $DB->get_record(
+            "local_lsf_course",
+            ["mdlid" => $mdlid, "requesterid" => $user->id, "requeststate" => 2,
+            ]
+        )
+    ) {
         return true;
     }
     return false;
@@ -90,10 +116,14 @@ function is_course_imported_by($mdlid, $user) {
 
 function get_course_acceptor($mdlid) {
     global $DB;
-    
-    if ($courseentry = $DB->get_record("local_lsf_course", 
-            array("mdlid" => $mdlid, "requeststate" => 2
-            ))) {
+
+    if (
+        $courseentry = $DB->get_record(
+            "local_lsf_course",
+            ["mdlid" => $mdlid, "requeststate" => 2,
+            ]
+        )
+    ) {
         return $courseentry->acceptorid;
     }
     return null;
@@ -107,12 +137,16 @@ function get_course_acceptor($mdlid) {
  */
 function enable_manual_enrolment($course) {
     global $DB;
-    
+
     $plugin = enrol_get_plugin('manual');
     $instanceid = $plugin->add_default_instance($course);
-    $instance = $DB->get_record('enrol', 
-            array('courseid' => $course->id, 'enrol' => 'manual', 'id' => $instanceid
-            ), '*', MUST_EXIST);
+    $instance = $DB->get_record(
+        'enrol',
+        ['courseid' => $course->id, 'enrol' => 'manual', 'id' => $instanceid,
+        ],
+        '*',
+        MUST_EXIST
+    );
     $instance->roleid = get_config('local_lsf_unification', 'roleid_student');
     $DB->update_record('enrol', $instance);
 }
@@ -125,17 +159,17 @@ function enable_manual_enrolment($course) {
  */
 function enable_lsf_enrolment($id, $enrolment_start, $enrolment_end) {
     global $DB;
-    
-    $course = $DB->get_record('course', array('id' => $id
-    ), '*', MUST_EXIST);
+
+    $course = $DB->get_record('course', ['id' => $id,
+    ], '*', MUST_EXIST);
     $plugin = enrol_get_plugin('lsf');
-    $fields = array(
-        'status' => ENROL_INSTANCE_ENABLED, 
-        'enrolperiod' => null, 
-        'roleid' => get_config('local_lsf_webservices', 'role_student'), 
-        'customint1' => $enrolment_start, 
-        'customint2' => $enrolment_end
-    );
+    $fields = [
+        'status' => ENROL_INSTANCE_ENABLED,
+        'enrolperiod' => null,
+        'roleid' => get_config('local_lsf_webservices', 'role_student'),
+        'customint1' => $enrolment_start,
+        'customint2' => $enrolment_end,
+    ];
     $plugin->add_instance($course, $fields);
 }
 
@@ -148,12 +182,16 @@ function enable_lsf_enrolment($id, $enrolment_start, $enrolment_end) {
  */
 function enable_self_enrolment($course, $password) {
     global $DB;
-    
+
     $plugin = enrol_get_plugin('self');
     $instanceid = $plugin->add_default_instance($course);
-    $instance = $DB->get_record('enrol', 
-            array('courseid' => $course->id, 'enrol' => 'self', 'id' => $instanceid
-            ), '*', MUST_EXIST);
+    $instance = $DB->get_record(
+        'enrol',
+        ['courseid' => $course->id, 'enrol' => 'self', 'id' => $instanceid,
+        ],
+        '*',
+        MUST_EXIST
+    );
     $instance->password = $password;
     $instance->roleid = get_config('local_lsf_unification', 'roleid_student');
     $instance->expirythreshold = 0;
@@ -169,19 +207,23 @@ function enable_self_enrolment($course, $password) {
  */
 function enable_database_enrolment($course) {
     global $DB;
-    
+
     $plugin = enrol_get_plugin('database');
     $instanceid = $plugin->add_default_instance($course);
 }
 
-function create_guest_enrolment($course, $password = "", $enable = FALSE) {
+function create_guest_enrolment($course, $password = "", $enable = false) {
     global $DB;
-    
+
     $plugin = enrol_get_plugin("guest");
     $instanceid = $plugin->add_default_instance($course);
-    $instance = $DB->get_record('enrol', 
-            array('courseid' => $course->id, 'enrol' => 'guest', 'id' => $instanceid
-            ), '*', MUST_EXIST);
+    $instance = $DB->get_record(
+        'enrol',
+        ['courseid' => $course->id, 'enrol' => 'guest', 'id' => $instanceid,
+        ],
+        '*',
+        MUST_EXIST
+    );
     $instance->status = ($enable ? ENROL_INSTANCE_ENABLED : ENROL_INSTANCE_DISABLED);
     if (!empty($password)) {
         $instance->password = $password;
@@ -197,8 +239,8 @@ function create_guest_enrolment($course, $password = "", $enable = FALSE) {
  */
 function self_enrolment_status($courseid) {
     global $DB;
-    return ($a = $DB->get_record('enrol', array("courseid" => $courseid, "enrol" => 'self'
-    ))) ? ($a->password) : "";
+    return ($a = $DB->get_record('enrol', ["courseid" => $courseid, "enrol" => 'self',
+    ])) ? ($a->password) : "";
 }
 
 /**
@@ -213,9 +255,13 @@ function self_enrolment_status($courseid) {
  */
 function get_default_course($fullname, $idnumber, $summary, $shortname) {
     // check&format content
-    if (empty($shortname))
-        $shortname = (strlen($fullname) < 20) ? $fullname : substr($fullname, 0, 
-                strpos($fullname . ' ', ' ', 20));
+    if (empty($shortname)) {
+        $shortname = (strlen($fullname) < 20) ? $fullname : substr(
+            $fullname,
+            0,
+            strpos($fullname . ' ', ' ', 20)
+        );
+    }
         // create default object
     $course = new stdClass();
     $course->fullname = substr($fullname, 0, 254);
@@ -264,12 +310,12 @@ function get_or_create_support_user() {
 
 function get_or_create_user($username, $email) {
     global $DB, $CFG;
-    if (!empty($username) && ($usr = $DB->get_record('user', array('username' => $username)))) {
+    if (!empty($username) && ($usr = $DB->get_record('user', ['username' => $username]))) {
         if (empty($usr->email)) {
             $usr->email = $email;
         }
         return $usr;
-    } elseif ($usr = $DB->get_record('user', array('email' => $email))) {
+    } else if ($usr = $DB->get_record('user', ['email' => $email])) {
         return $usr;
     } else {
         $user['firstname'] = "";
@@ -281,7 +327,7 @@ function get_or_create_user($username, $email) {
         $user['auth'] = 'ldap'; // TODO default auth method should be configurable
         $user['lang'] = $CFG->lang;
         $user['id'] = user_create_user($user);
-        return $DB->get_record('user', array('id' => $user['id']));
+        return $DB->get_record('user', ['id' => $user['id']]);
     }
 }
 
@@ -293,21 +339,23 @@ function get_or_create_user($username, $email) {
  */
 function add_path_description($choices) {
     global $DB;
-    $result = array();
+    $result = [];
     foreach ($choices as $id => $name) {
-        $cat = $DB->get_record("course_categories", array("id" => $id
-        ));
+        $cat = $DB->get_record("course_categories", ["id" => $id,
+        ]);
         $path = explode("/", $cat->path);
         $result[$id] = "";
         foreach ($path as $pathid) {
-            if(empty($pathid)){
+            if (empty($pathid)) {
                 $name = "";
             } else {
-                $name = $DB->get_record("course_categories",
-                    array("id" => $pathid
-                    ))->name;
+                $name = $DB->get_record(
+                    "course_categories",
+                    ["id" => $pathid,
+                    ]
+                )->name;
             }
-            if(str_contains($name, 'Archiv')){
+            if (str_contains($name, 'Archiv')) {
                 unset($result[$id]);
                 break;
             }
@@ -325,18 +373,19 @@ function add_path_description($choices) {
  */
 function local_lsf_unification_cron() {
     global $CFG, $pgDB;
-    include_once (dirname(__FILE__) . '/class_pg_lite.php');
-    include_once (dirname(__FILE__) . '/lib_features.php');
-    
+    include_once(dirname(__FILE__) . '/class_pg_lite.php');
+    include_once(dirname(__FILE__) . '/lib_features.php');
+
     $pgDB = new pg_lite();
     $connected = $pgDB->connect();
     $recourceid = $pgDB->connection;
-    
+
     mtrace(
-            '! = unknown category found, ? = unknown linkage found;' . 'Verbindung: ' .
-                     ($connected ? 'ja' : 'nein') . ' (' . $recourceid . ')');
-    
+        '! = unknown category found, ? = unknown linkage found;' . 'Verbindung: ' .
+        ($connected ? 'ja' : 'nein') . ' (' . $recourceid . ')'
+    );
+
     insert_missing_helptable_entries(true, false);
-    
+
     $pgDB->dispose();
 }

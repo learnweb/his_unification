@@ -26,7 +26,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 final class ad_hoc_task_test extends advanced_testcase {
-
     /**
      * @var saves all emails send.
      */
@@ -47,7 +46,6 @@ final class ad_hoc_task_test extends advanced_testcase {
         unset_config('nomailever');
         $this->sink = $this->redirectEmails();
         $this->generator = $this->getDataGenerator()->get_plugin_generator('local_lsf_unification');
-
     }
 
     /**
@@ -99,9 +97,9 @@ final class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
-        $setupdata['params']->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=1&veranstid=' .
+        $setupdata['params']->requesturl = $CFG->wwwroot . '/local/lsf_unification/request.php?answer=1&veranstid=' .
             $setupdata['veranstid'];
-        $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id=' . $setupdata['acceptorid'];
+        $setupdata['params']->userurl = $CFG->wwwroot . '/user/view.php?id=' . $setupdata['acceptorid'];
         $content = get_string('email3', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
@@ -133,7 +131,7 @@ final class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
-        $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id='. $setupdata['acceptorid'];
+        $setupdata['params']->userurl = $CFG->wwwroot . '/user/view.php?id=' . $setupdata['acceptorid'];
         $content = get_string('email4', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
@@ -165,9 +163,9 @@ final class ad_hoc_task_test extends advanced_testcase {
         $messagebody = $this->trim_string($message->body);
 
         // Expected content.
-        $setupdata['params']->requesturl = $CFG->wwwroot.'/local/lsf_unification/request.php?answer=12&requestid=' .
+        $setupdata['params']->requesturl = $CFG->wwwroot . '/local/lsf_unification/request.php?answer=12&requestid=' .
             $setupdata['requestid'];
-        $setupdata['params']->userurl = $CFG->wwwroot.'/user/view.php?id=' . $setupdata['requesterid'];
+        $setupdata['params']->userurl = $CFG->wwwroot . '/user/view.php?id=' . $setupdata['requesterid'];
         $content = get_string('email2', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.

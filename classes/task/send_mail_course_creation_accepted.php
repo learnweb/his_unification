@@ -18,7 +18,7 @@
  * The ad hoc task for sending a email that a requested course was accepted to be created. The mail is send to the
  * user who requested the course.
  *
- * @package    his_unification
+ * @package    local_lsf_unification
  * @copyright  2018 Nina Herrmann
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -45,7 +45,7 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
         $data = $this->get_custom_data();
 
         $recipientid = $data->recipientid;
-        $userarray = user_get_users_by_id(array($recipientid));
+        $userarray = user_get_users_by_id([$recipientid]);
 
         // In case no recipient can be found the task is aborted and deleted.
         if (empty($userarray[$recipientid])) {
@@ -53,7 +53,7 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
         }
         $user = $userarray[$recipientid];
         $data->params->requesturl = get_remote_creation_continue_link($data->veranstid);
-        $data->params->userurl = $CFG->wwwroot.'/user/view.php?id=' . $data->acceptorid;
+        $data->params->userurl = $CFG->wwwroot . '/user/view.php?id=' . $data->acceptorid;
         // Expected params of $data->params are:
         // A) a -> (string) firstname,
         // B) userurl-> (string) the url to the user page,
@@ -61,12 +61,19 @@ class send_mail_course_creation_accepted extends \core\task\adhoc_task {
         // D) requesturl-> the url to answer the request.
         $content = get_string('email3', 'local_lsf_unification', $data->params);
 
-        $wassent = email_to_user($user, get_string('email_from', 'local_lsf_unification')
-            ." (by ".$data->acceptorfirstname." ".$data->acceptorlastname.")",
-            get_string('email3_title', 'local_lsf_unification'), $content);
+        $wassent = email_to_user(
+            $user,
+            get_string('email_from', 'local_lsf_unification')
+            . " (by " . $data->acceptorfirstname . " " . $data->acceptorlastname . ")",
+            get_string('email3_title', 'local_lsf_unification'),
+            $content
+        );
         if (!$wassent) {
-            throw new \moodle_exception(get_string('ad_hoc_task_failed',
-                'local_lsf_unification', 'send_mail_course_creation_accepted'));
+            throw new \moodle_exception(get_string(
+                'ad_hoc_task_failed',
+                'local_lsf_unification',
+                'send_mail_course_creation_accepted'
+            ));
         }
     }
 }

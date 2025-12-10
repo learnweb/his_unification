@@ -13,12 +13,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 /**
  * The matchingtableupdated event.
  *
- * @package    FULLPLUGINNAME
- * @copyright  2014 YOUR NAME
+ * @package    local_lsf_unification
+ * @copyright  2025 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_lsf_unification\event;
@@ -36,16 +36,16 @@ class course_duplicated extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = 'course';
     }
- 
+
     public static function get_name() {
         return get_string('eventcourse_duplicated', 'local_lsf_unification');
     }
- 
+
     public function get_description() {
         return "The user with id '{$this->userid}' duplicated contents from course with id '{$this->other}' into a course with id '{$this->objectid}'.";
     }
-    
+
     public function get_url() {
-        return new \moodle_url('/course/view.php', array('id' => $this->objectid));
+        return new \moodle_url('/course/view.php', ['id' => $this->objectid]);
     }
 }
