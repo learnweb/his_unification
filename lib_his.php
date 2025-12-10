@@ -147,15 +147,24 @@ function get_courses_by_veranstids($veranstids) {
     }
 
     $veranstids_string = implode(',', $veranstids);
-    $q = pg_query(
-        $pgDB->connection,
-        "SELECT veranstid, veranstnr, semester, semestertxt, veranstaltungsart, titel, urlveranst
-        FROM " .
-                     HIS_VERANSTALTUNG . " as veranst where veranstid in (" . $veranstids_string .
-                     ") AND " . "(CURRENT_DATE - CAST(veranst.zeitstempel AS date)) < " .
-                     get_config('local_lsf_unification', 'max_import_age') .
-        "order by semester,titel;"
-    );
+    $max_age = get_config('local_lsf_unification', 'max_import_age');
+
+    $sql = "
+        SELECT
+          veranstid,
+          veranstnr,
+          semester,
+          semestertxt,
+          veranstaltungsart,
+          titel,
+          urlveranst
+        FROM " . HIS_VERANSTALTUNG . " as veranst
+        WHERE
+          veranstid in ($veranstids_string)
+          AND (CURRENT_DATE - CAST(veranst.zeitstempel AS date)) < $max_age
+        ORDER BY semester, titel;";
+
+    $q = pg_query($pgDB->connection, $sql);
     $result_list = [];
     while ($course = pg_fetch_object($q)) {
         $result = new stdClass();
