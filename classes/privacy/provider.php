@@ -24,8 +24,6 @@
 
 namespace local_lsf_unification\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core_privacy\local\request\writer;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
@@ -46,7 +44,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @param $collection
      * @return mixed
      */
-    public static function _get_metadata($collection) {
+    public static function get_metadata($collection) {
         $collection->add_database_table(
             'local_lsf_course',
             [
@@ -69,7 +67,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @return contextlist $contextlist The list of contexts for a specific user.
      * @throws \dml_exception
      */
-    public static function _get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid($userid) {
         global $DB;
         $contextlist = new contextlist();
 
@@ -95,7 +93,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function _export_user_data(approved_contextlist $contextlist) {
+    public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
 
         if (empty($contextlist->count())) {
@@ -185,7 +183,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @param $context
      * @throws \dml_exception
      */
-    public static function _delete_data_for_all_users_in_context($context) {
+    public static function delete_data_for_all_users_in_context($context) {
         global $DB;
 
         // Sanity check that context is at the System context level.
@@ -206,7 +204,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @param $contextlist
      * @throws \dml_exception
      */
-    public static function _delete_data_for_user($contextlist) {
+    public static function delete_data_for_user($contextlist) {
         global $DB;
         $contexts = $contextlist->get_contexts();
         if (empty($contexts)) {
