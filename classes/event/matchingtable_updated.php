@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_lsf_unification\event;
-defined('MOODLE_INTERNAL') || die();
 /**
  * The matchingtableupdated event class.
  *
@@ -31,20 +30,41 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 class matchingtable_updated extends \core\event\base {
+    /**
+     * Init function.
+     *
+     * @return
+     */
     protected function init() {
-        $this->data['crud'] = 'u'; // c(reate), r(ead), u(pdate), d(elete)
+        $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'local_lsf_category';
     }
 
+    /**
+     * Return the event name.
+     *
+     * @return string
+     */
     public static function get_name() {
         return get_string('eventmatchingtable_updated', 'local_lsf_unification');
     }
 
+
+    /**
+     * Return the event description.
+     *
+     * @return string
+     */
     public function get_description() {
         return "The user with id '{$this->userid}' updated a his category matching with id '{$this->objectid}'. Original mapping: '{$this->other["mappingold"]}'. New mapping: '{$this->other["mappingnew"]}'.";
     }
 
+    /**
+     * Return the event url.
+     *
+     * @return \moodle_url
+     */
     public function get_url() {
         return new \moodle_url('/local/lsf_unification/helptablemanager.php', ['originid' => $this->other["originid"]]);
     }
