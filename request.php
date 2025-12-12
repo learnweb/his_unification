@@ -86,7 +86,8 @@ function print_first_overview() {
     global $USER;
     $courselist = array_filter(
         get_teachers_course_list($USER->username, true),
-        function ($course) { return !course_exists($course->veranstid);
+        function ($course) {
+            return !course_exists($course->veranstid);
         }
     );
     $output = $PAGE->get_renderer('core');
