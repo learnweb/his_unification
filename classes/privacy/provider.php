@@ -14,39 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_lsf_unification\privacy;
+
+use core_privacy\local\metadata\collection;
+use core_privacy\local\metadata\provider as metadata_provider;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\plugin\provider as plugin_provider;
+use core_privacy\local\request\writer;
+
 /**
  * Privacy Implementation for lsf_unification.
  *
- * @package    local_lsf_unification
- * @copyright  2018  Nina Herrmann
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-namespace local_lsf_unification\privacy;
-
-defined('MOODLE_INTERNAL') || die();
-
-use core_privacy\local\request\writer;
-use core_privacy\local\metadata\collection;
-use core_privacy\local\request\approved_contextlist;
-use core_privacy\local\request\contextlist;
-/**
- * Privacy provider for lsf_unification implementing metadata\provider and plugin\provider.
- * Remark: This Plugin does not need to provide a export to external sources since data from the HisLSF system
- * is only read not exported. (https://docs.moodle.org/dev/Privacy_API#Indicating_that_you_export_data_to_an_external_location)
+ * Remark: This Plugin does not need to provide a export to external
+ * sources since data from the HisLSF system is only read not
+ * exported. (https://docs.moodle.org/dev/Privacy_API#Indicating_that_you_export_data_to_an_external_location)
  *
+ * @package    local_lsf_unification
  * @copyright  2018 Nina Herrmann
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\provider, \core_privacy\local\request\plugin\provider {
-    use \core_privacy\local\legacy_polyfill;
-
-    /**
-     * Provides a description of the data saved.
-     * @param $collection
-     * @return mixed
-     */
-    public static function _get_metadata($collection) {
+class provider implements metadata_provider, plugin_provider {
+    #[\Override]
+    public static function get_metadata(collection $collection): collection {
         $collection->add_database_table(
             'local_lsf_course',
             [
@@ -63,13 +53,8 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         return $collection;
     }
 
-    /**
-     * Get the list of contexts that contain user information for the specified user.
-     * @param int $userid The user to search.
-     * @return contextlist $contextlist The list of contexts for a specific user.
-     * @throws \dml_exception
-     */
-    public static function _get_contexts_for_userid($userid) {
+    #[\Override]
+    public static function get_contexts_for_userid($userid): contextlist {
         global $DB;
         $contextlist = new contextlist();
 
@@ -89,13 +74,8 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         return $contextlist;
     }
 
-    /**
-     * Export the user data to a given contextlist.
-     * @param approved_contextlist $contextlist
-     * @throws \coding_exception
-     * @throws \dml_exception
-     */
-    public static function _export_user_data(approved_contextlist $contextlist) {
+    #[\Override]
+    public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
 
         if (empty($contextlist->count())) {
@@ -180,12 +160,8 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         return $data;
     }
 
-    /**
-     * Deletes data from the table for all users in all contexts.
-     * @param $context
-     * @throws \dml_exception
-     */
-    public static function _delete_data_for_all_users_in_context($context) {
+    #[\Override]
+    public static function delete_data_for_all_users_in_context($context) {
         global $DB;
 
         // Sanity check that context is at the System context level.
@@ -201,12 +177,8 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         }
     }
 
-    /**
-     * Deletes all records belonging to a user of a contextlist.
-     * @param $contextlist
-     * @throws \dml_exception
-     */
-    public static function _delete_data_for_user($contextlist) {
+    #[\Override]
+    public static function delete_data_for_user($contextlist) {
         global $DB;
         $contexts = $contextlist->get_contexts();
         if (empty($contexts)) {
