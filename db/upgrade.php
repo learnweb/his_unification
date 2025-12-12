@@ -48,68 +48,68 @@ function xmldb_local_lsf_unification_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2013050700) {
-        // lsf_unification needs a new role from now on
+        // Lsf_unification needs a new role from now on.
         require_once($CFG->dirroot . '/local/lsf_unification/db/install.php');
         xmldb_local_lsf_unification_install_course_creator_role();
 
-        // Define key uni2 (unique) to be dropped form local_lsf_course
+        // Define key uni2 (unique) to be dropped form local_lsf_course.
         $table = new xmldb_table('local_lsf_course');
         $key = new xmldb_key('uni2', XMLDB_KEY_UNIQUE, ['mdlid']);
 
-        // Launch drop key uni2
+        // Launch drop key uni2.
         $dbman->drop_key($table, $key);
 
-        // lsf_unification savepoint reached
+        // Lsf_unification savepoint reached.
         upgrade_plugin_savepoint(true, 2013050700, 'local', 'lsf_unification');
     }
 
     if ($oldversion < 2013060400) {
-        // Define field requeststate to be added to local_lsf_course
+        // Define field requeststate to be added to local_lsf_course.
         $table = new xmldb_table('local_lsf_course');
         $field = new xmldb_field('requeststate', XMLDB_TYPE_INTEGER, '5', null, XMLDB_NOTNULL, null, '0', 'ueid');
 
-        // Conditionally launch add field requeststate
+        // Conditionally launch add field requeststate.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // lsf_unification savepoint reached
+        // Lsf_unification savepoint reached.
         upgrade_plugin_savepoint(true, 2013060400, 'local', 'lsf_unification');
     }
 
     if ($oldversion < 2013061100) {
-        // Define field requeststate to be added to local_lsf_course
+        // Define field requeststate to be added to local_lsf_course.
         $table = new xmldb_table('local_lsf_course');
         $field = new xmldb_field('ueid');
 
-        // Conditionally launch drop field ueid
+        // Conditionally launch drop field ueid.
         if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field);
         }
 
         $field = new xmldb_field('requesterid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'requeststate');
 
-        // Conditionally launch add field requesterid
+        // Conditionally launch add field requesterid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
         $field = new xmldb_field('acceptorid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'requesterid');
 
-        // Conditionally launch add field acceptorid
+        // Conditionally launch add field acceptorid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // lsf_unification savepoint reached
+        // Lsf_unification savepoint reached.
         upgrade_plugin_savepoint(true, 2013061100, 'local', 'lsf_unification');
     }
     if ($oldversion < 2013090300) {
         if (get_config('enrol_self', 'version') > 2012120600) {
-            // lsf courses did not set customerint6 for self enrolments. This is the fix for already created self enrolments
+            // Lsf courses did not set customerint6 for self enrolments. This is the fix for already created self enrolments.
             $DB->execute("UPDATE {enrol} SET customint6 = 1 WHERE enrol = 'self' and customint6 is null");
         }
-        // lsf_unification savepoint reached
+        // Lsf_unification savepoint reached.
         upgrade_plugin_savepoint(true, 2013090300, 'local', 'lsf_unification');
     }
 

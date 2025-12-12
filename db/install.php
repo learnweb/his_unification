@@ -13,30 +13,42 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
-// This file replaces:
-// * STATEMENTS section in db/install.xml
-// * lib.php/modulename_install() post installation hook
-// * partially defaults.php
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
+ * Install php of lsf_unification.
+ * This file replaces:
+ * - STATEMENTS section in db/install.xml
+ * - lib.php/modulename_install() post installation hook
+ * - partially defaults.php
+ *
  * @package local_lsf_unification
- * @subpackage lsf_unification
- * @author Olaf Markus K�hler (WWU)
+ * @copyright  Olaf Markus Koehler (WWU)
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Install script.
+ * @return void
+ */
 function xmldb_local_lsf_unification_install() {
     xmldb_local_lsf_unification_install_course_creator_role();
 }
 
+/**
+ * Helper function for install script.
+ * @return bool|int
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function xmldb_local_lsf_unification_install_course_creator_role() {
     global $DB;
     $result = true;
     $sysctx  = context_system::instance();
     $levels = [CONTEXT_COURSECAT, CONTEXT_COURSE, CONTEXT_MODULE];
 
-    /// Fully setup the restore role.
+    // Fully setup the restore role.
     if (!$mrole = $DB->get_record('role', ['shortname' => 'lsfunificationcourseimporter'])) {
         if ($rid = create_role('LSF Unification Course Importer', 'lsfunificationcourseimporter', '', 'coursecreator')) {
             $result = $result & assign_capability('moodle/restore:restorecourse', CAP_ALLOW, $rid, $sysctx->id);

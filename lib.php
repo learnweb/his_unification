@@ -17,10 +17,12 @@
 /**
  * Functions that aid core functionality
  * @package local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-// require_once("$CFG->dirroot/group/lib.php");
+
 require_once($CFG->libdir . '/enrollib.php');
 require_once($CFG->dirroot . '/user/lib.php');
 
@@ -29,7 +31,6 @@ require_once($CFG->dirroot . '/user/lib.php');
  *
  * @param $courseid
  * @return $externid | -1
- * @package local_lsf_unification
  */
 function get_course_by_idnumber($courseid, $silent = false) {
     global $DB;
@@ -74,6 +75,13 @@ function find_or_create_category($title, $parenttitle) {
     return $newcategory;
 }
 
+/**
+ * Check if user has the right to import a course.
+ * @param $veranstid
+ * @param $user
+ * @return bool
+ * @throws dml_exception
+ */
 function has_course_import_rights($veranstid, $user) {
     global $DB;
     if (!is_course_of_teacher($veranstid, $user->username)) {
@@ -85,24 +93,30 @@ function has_course_import_rights($veranstid, $user) {
             )
         ) {
             if ($courseentry->requeststate == 1) {
-                echo ("Course cannot be requested."); // The user shouldn't be on this website
-                                                      // because this link isn't known to him
+                // The user shouldn't be on this website because this link isn't known to him.
+                echo ("Course cannot be requested.");
                 return false;
             } else if ($courseentry->requeststate != 2) {
-                echo ("Course already created."); // The course already exists, so the user
-                                                  // shouldn't get here
+                // The course already exists, so the user shouldn't get here.
+                echo ("Course already created.");
                 return false;
             }
         } else {
-            echo ("Course cannot be requested."); // The course isn't in the user's list and isn't
-                                                  // requested by him remotely, so he shouldn't be
-                                                  // here
+            // The course isn't in the user's list and isn't requested by him remotely, so he shouldn't be here.
+            echo ("Course cannot be requested.");
             return false;
         }
     }
     return true;
 }
 
+/**
+ * Checks if a course was imported by the user.
+ * @param $mdlid
+ * @param $user
+ * @return bool
+ * @throws dml_exception
+ */
 function is_course_imported_by($mdlid, $user) {
     global $DB;
     if (
@@ -117,6 +131,12 @@ function is_course_imported_by($mdlid, $user) {
     return false;
 }
 
+/**
+ * Get the acceptorid from a moodle course.
+ * @param $mdlid
+ * @return null
+ * @throws dml_exception
+ */
 function get_course_acceptor($mdlid) {
     global $DB;
 
@@ -219,6 +239,14 @@ function enable_database_enrolment($course) {
     $instanceid = $plugin->add_default_instance($course);
 }
 
+/**
+ * Creates a guest enrolment.
+ * @param $course
+ * @param $password
+ * @param $enable
+ * @return void
+ * @throws dml_exception
+ */
 function create_guest_enrolment($course, $password = "", $enable = false) {
     global $DB;
 
@@ -263,7 +291,7 @@ function self_enrolment_status($courseid) {
  * @package local_lsf_unification
  */
 function get_default_course($fullname, $idnumber, $summary, $shortname) {
-    // check&format content
+    // Check and format content.
     if (empty($shortname)) {
         $shortname = (strlen($fullname) < 20) ? $fullname : substr(
             $fullname,
@@ -271,7 +299,7 @@ function get_default_course($fullname, $idnumber, $summary, $shortname) {
             strpos($fullname . ' ', ' ', 20)
         );
     }
-        // create default object
+    // Create default object.
     $course = new stdClass();
     $course->fullname = substr($fullname, 0, 254);
     $course->idnumber = $idnumber;
@@ -318,6 +346,14 @@ function get_or_create_support_user() {
     return $support;
 }
 
+/**
+ * Creates a new user or return existing one.
+ * @param $username
+ * @param $email
+ * @return false|mixed|stdClass
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
 function get_or_create_user($username, $email) {
     global $DB, $CFG;
     if (!empty($username) && ($usr = $DB->get_record('user', ['username' => $username]))) {
@@ -332,9 +368,9 @@ function get_or_create_user($username, $email) {
         $user['lastname'] = "";
         $user['username'] = $username;
         $user['email'] = $email;
-        $user['confirmed'] = true; // if confirmation is neccessary, confirm-key is needed
+        $user['confirmed'] = true; // If confirmation is neccessary, confirm-key is needed.
         $user['mnethostid'] = $CFG->mnet_localhost_id;
-        $user['auth'] = 'ldap'; // TODO default auth method should be configurable
+        $user['auth'] = 'ldap'; // LEARNWEB-TODO default auth method should be configurable.
         $user['lang'] = $CFG->lang;
         $user['id'] = user_create_user($user);
         return $DB->get_record('user', ['id' => $user['id']]);
@@ -379,7 +415,7 @@ function add_path_description($choices) {
 /**
  * Function to be run periodically according to the scheduled task.
  *
- * NOTE: Since 2.7.2 this function is run by scheduled task rather
+ * LEARNWEB-TODO: Since 2.7.2 this function is run by scheduled task rather
  * than standard cron.
  * @package local_lsf_unification
  */

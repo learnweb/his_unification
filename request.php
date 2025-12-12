@@ -14,11 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Main page of lsf_unification.
+ *
+ * @package   local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 use local_lsf_unification\output\first_overview;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 global $CFG, $USER, $DB, $PAGE, $SESSION, $OUTPUT;
-// require_once($CFG->dirroot . '/course/lib.php');
+
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
 require_once($CFG->dirroot . '/lib/outputlib.php');
@@ -39,11 +46,11 @@ if (!empty($answer) && !empty($requestid)) {
     $PAGE->set_url('/local/lsf_unification/request.php');
 }
 
-/// Where we came from. Used in a number of redirects.
+// Where we came from. Used in a number of redirects.
 $returnurl = $CFG->wwwroot . '/course/index.php';
 
 
-/// Check permissions.
+// Check permissions.
 require_login();
 if (isguestuser()) {
     print_error('guestsarenotallowed', '', $returnurl);
@@ -69,6 +76,11 @@ if (!empty($requestid)) {
     }
 }
 
+/**
+ * Print first overview that user sees when interacting with the plugin.
+ * @return void
+ * @throws \core\exception\coding_exception
+ */
 function print_first_overview() {
     global $PAGE;
     global $USER;
@@ -81,11 +93,23 @@ function print_first_overview() {
     echo $output->render(new first_overview($courselist));
 }
 
+/**
+ * Print helptext.
+ * @param $t
+ * @param $s
+ * @return void
+ * @throws coding_exception
+ */
 function print_helptext($t, $s = null) {
     echo "<u>" . get_string('answer_' . $t, 'local_lsf_unification') . "</u><br>" . get_string('info_' . $t, 'local_lsf_unification', $s, true);
     echo "<br><a href='request.php'>" . get_string('back', 'local_lsf_unification') . "</a>";
 }
 
+/**
+ * Print the courses the user can see.
+ * @return void
+ * @throws coding_exception
+ */
 function print_courseselection() {
     global $USER, $answer;
     echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='" . $answer . "'>";
@@ -94,6 +118,13 @@ function print_courseselection() {
     echo "<br><a href='request.php'>" . get_string('back', 'local_lsf_unification') . "</a>";
 }
 
+/**
+ * Print the course table for a teacher.
+ * @param $teacher
+ * @param $appendix
+ * @return void
+ * @throws coding_exception
+ */
 function print_coursetable($teacher, $appendix = "") {
     echo "<table><tr><td colspan='2'><b>" . get_string('choose_course', 'local_lsf_unification') . "</b></td></tr>";
     foreach (get_teachers_course_list($teacher, true) as $course) {
@@ -104,6 +135,11 @@ function print_coursetable($teacher, $appendix = "") {
     echo $appendix . "</table>";
 }
 
+/**
+ * Final print.
+ * @return void
+ * @throws coding_exception
+ */
 function print_final() {
     global $OUTPUT, $CFG, $courseid;
     echo $OUTPUT->box("<b>" . get_string('next_steps', 'local_lsf_unification') . ":</b><br><a href='" . $CFG->wwwroot . "/user/index.php?id=" . ($courseid) . "'>" . get_string('linktext_users', 'local_lsf_unification') . "</a><br>
@@ -111,6 +147,12 @@ function print_final() {
     <a href='" . $CFG->wwwroot . "/course/view.php?id=" . ($courseid) . "'>" . get_string('linktext_course', 'local_lsf_unification') . "</a><br>&nbsp;");
 }
 
+/**
+ * Print result selection.
+ * @return void
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function print_res_selection() {
     global $CFG, $OUTPUT, $courseid;
 
@@ -126,19 +168,19 @@ function print_res_selection() {
     } else if (!empty($templatefiles)) {
         $alternativecounter = 1;
 
-        // "Continue with the course template ..."
+        // Continue with the course template.
         if (get_config('local_lsf_unification', 'restore_templates') && !empty($templatefiles)) {
             $cats = [];
             $i = 0;
             foreach ($templatefiles as $id => $fileinfo) {
                 $cats[$fileinfo->category][$id] = $fileinfo;
             }
-            // if there are items without a category move them to the end
+            // If there are items without a category move them to the end.
             $catkeys = array_keys($cats);
             if (!empty($cats) && array_pop($catkeys) == "") {
                 array_unshift($cats, array_pop($cats));
             }
-            // render
+            // Render.
             echo "<b>" . get_string('pre_template', 'local_lsf_unification', $alternativecounter++) . '</b><ul style="list-style-type:none">';
             foreach ($cats as $name => $catfiles) {
                 if (!empty($name)) {
@@ -159,10 +201,10 @@ function print_res_selection() {
             echo "</ul>";
         }
 
-        // "Continue with a blank course"
+        // Continue with a blank course.
         echo "<b>" . get_string('no_template', 'local_lsf_unification', $alternativecounter++) . "</b><ul><li><a href='request.php?courseid=" . $courseid . "&answer=7'>" . get_string('continue_with_empty_course', 'local_lsf_unification') . "</a></li></ul>";
 
-        // "Duplicate course from the course ..."
+        // Duplicate course from the course .
         if (get_config('local_lsf_unification', 'restore_old_courses') && !empty($backupfiles)) {
             echo "<b>" . get_string('template_from_course', 'local_lsf_unification', $alternativecounter++) . "</b><ul>";
             // Sortiere die Backups alphabetisch.
@@ -177,6 +219,12 @@ function print_res_selection() {
     }
 }
 
+/**
+ * Prints the remote course creation process.
+ * @return void
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function print_remote_creation() {
     global $USER, $answer, $teachername, $veranstid;
     if (!get_config('local_lsf_unification', 'remote_creation')) {
@@ -209,14 +257,21 @@ function print_remote_creation() {
     }
 }
 
+/**
+ * Prints the course creation process.
+ * @return void
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
 function print_coursecreation() {
     global $CFG, $USER, $DB, $OUTPUT, $answer, $teachername, $veranstid, $courseid;
     $editform = new lsf_course_request_form(null, ['veranstid' => $veranstid]);
     if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
-        // dbenrolment enrolment can only be enabled if it is globally enabled
+        // Dbenrolment enrolment can only be enabled if it is globally enabled.
         $extenabledglobal = get_config('local_lsf_unification', 'enable_enrol_ext_db') == true;
         $enabledbenrolment = $extenabledglobal ? $data->dbenrolment == 1 : false;
-        // enable self enrolment if dbenrolment is disabled globally
+        // Enable self enrolment if dbenrolment is disabled globally.
         $enableselfenrolment = !$extenabledglobal ? true : ($data->selfenrolment == 1);
 
         $result = create_lsf_course($veranstid, $data->fullname, $data->shortname, $data->summary, $data->startdate, $enabledbenrolment, $enableselfenrolment, empty($data->enrolment_key) ? "" : ($data->enrolment_key), $data->category);
@@ -243,13 +298,18 @@ function print_coursecreation() {
         }
 
         echo (!empty($result["warnings"])) ? ("<p>" . $OUTPUT->box("<b>" . get_string('warnings', 'local_lsf_unification') . "</b><br>" . "<pre>" . $result["warnings"] . "<pre>") . "</p>") : "";
-        // print_res_selection($result["course"]->id);
         print_final($result["course"]->id);
     } else {
         $editform->display();
     }
 }
 
+/**
+ * Shows the request handler.
+ * @return void
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function print_request_handler() {
     global $CFG, $DB, $answer, $request, $veranstid, $accept;
     $course = get_course_by_veranstid($veranstid);
@@ -277,17 +337,17 @@ function print_request_handler() {
 }
 
 
-// Handle Course-Request
+// Handle Course-Request.
 
 if (establish_secondary_DB_connection() === true) {
     if (empty($answer)) {
-        print_first_overview(); // Task Selection
+        print_first_overview(); // Task Selection.
     } else if ($answer == 1) {
         if (empty($veranstid)) {
-            print_courseselection(); // Extern Course Selection
+            print_courseselection(); // Extern Course Selection.
         } else {
-            if (has_course_import_rights($veranstid, $USER)) { // Validate veranstid, user
-                print_coursecreation(); // Request neccessary details and create course
+            if (has_course_import_rights($veranstid, $USER)) { // Validate veranstid, user.
+                print_coursecreation(); // Request neccessary details and create course.
             }
         }
     } else if ($answer == 2) {
@@ -297,14 +357,15 @@ if (establish_secondary_DB_connection() === true) {
     } else if ($answer == 6) {
         print_helptext('goto_old_requestform');
     } else if ($answer == 7) {
-        print_final(); // Goto Course
+        print_final(); // Goto Course.
     } else if ($answer == 11) {
-        print_remote_creation(); // Remote Course Creation Starter
+        print_remote_creation(); // Remote Course Creation Starter.
     } else if ($answer == 12) {
-        if (!is_course_of_teacher($veranstid, $USER->username)) { // Validate veranstid, user
-            die("Course request not existing, already handled or none of your business"); // The user isn't a teacher of this course, so he shouldn't get here
+        if (!is_course_of_teacher($veranstid, $USER->username)) { // Validate veranstid, user.
+            // The user isn't a teacher of this course, so he shouldn't get here.
+            die("Course request not existing, already handled or none of your business");
         }
-        print_request_handler(); // Remote Course Creation Request Handler
+        print_request_handler(); // Remote Course Creation Request Handler.
     }
     close_secondary_DB_connection();
 } else {
