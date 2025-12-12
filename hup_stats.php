@@ -14,21 +14,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * File with different statistics.
+ *
+ * @package   local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 include("../../config.php");
 include("./class_pg_lite.php");
 include("./lib.php");
 include("./lib_features.php");
-/// Check permissions.
+// Check permissions.
 require_login();
 if (!has_capability('moodle/site:config', context_system::instance())) {
     die("no access");
 }
 
-$reqsem         = optional_param('semester', null, PARAM_INT);       // his category origin id
+// HIS category origin id.
+$reqsem = optional_param('semester', null, PARAM_INT);
 
 set_time_limit(30 * 60);
 
 
+/**
+ * Create aggregate in lsf_view Database.
+ * @return void
+ */
 function create_aggregate() {
     global $pgdb;
     pg_query($pgdb->connection, "DROP AGGREGATE IF EXISTS textcat_all(text);");
@@ -40,9 +53,15 @@ function create_aggregate() {
     );");
 }
 
+/**
+ * Retrieves and saves all title-id (ueid) and semester from the learnweb_ueberschrift table.
+ *
+ * @return mixed|null the semester from a given title-id (ueid))
+ */
 function get_cat_sem($ueid) {
+    // LEARNWEB-TODO: filter the right row directly in the query, then return it. Dont save all semester and search for it.
     global $pgdb, $hupstatssemtable;
-    // read or (if not existing) create array
+    // Read or (if not existing) create array.
     if (!isset($hupstatssemtable)) {
         $hupstatssemtable = [];
         $qmain = pg_query($pgdb->connection, "SELECT ueid, semester FROM " . HIS_UEBERSCHRIFT);
@@ -53,6 +72,12 @@ function get_cat_sem($ueid) {
     return isset($hupstatssemtable[$ueid]) ? $hupstatssemtable[$ueid] : null;
 }
 
+/**
+ * Get an array that lists the veranstid and count for every type of 'veranstaltung'.
+ *
+ * @param $ueids
+ * @return array
+ */
 function get_cat_veranstids_and_count($ueids) {
     global $pgdb;
     $hupstatsveranstcounttable = [];
@@ -71,24 +96,24 @@ echo "<p>Verbindung: " . ($pgdb->connect() ? "ja" : "nein") . " (" . $pgdb->conn
 create_aggregate();
 
 echo "<p><pre>";
-// Root-Knoten herausfinden
+// Root-Knoten herausfinden.
 $toplevelorigins = get_his_toplevel_originids();
-// echo "TOPLEVEL_IDs = ".print_r($toplevel_origins,true)."\n\n";
-// Kategorien herausfinden
+
+// Kategorien herausfinden.
 $secondlevelorinins = get_newest_sublevels(implode(", ", $toplevelorigins));
 foreach ($secondlevelorinins as $secondndlevel) {
-    // Kategoriekopien herausfinden
+    // Kategoriekopien herausfinden.
     $secondndlevel->txt = mb_convert_encoding($secondndlevel->txt, 'UTF-8', 'ISO-8859-1');
     $secondndlevel->copies = $DB->get_records("local_lsf_category", ["origin" => $secondndlevel->origin], null, "ueid");
     foreach ($secondndlevel->copies as $secondlevelcopy) {
-        // Semester bestimmen
+        // Semester bestimmen.
         $secondlevelcopy->semester = get_cat_sem($secondlevelcopy->ueid);
         if (empty($reqsem) || ($reqsem == $secondlevelcopy->semester)) {
-            // Alle Unterkategorien der jeweiligen Kategoriekopien sammeln
+            // Alle Unterkategorien der jeweiligen Kategoriekopien sammeln.
             $secondlevelcopy->subs = array_keys($DB->get_records("local_lsf_categoryparenthood", ["parent" => $secondlevelcopy->ueid], null, "child"));
-            // Bestimme die Veranstatlungstypen und Anazahlen der jeweiligen Kategoriekopien
+            // Bestimme die Veranstatlungstypen und Anazahlen der jeweiligen Kategoriekopien.
             $secondlevelcopy->veranstcount = get_cat_veranstids_and_count(implode(",", $secondlevelcopy->subs));
-            // Semesterarray erstellen (daten umformatieren)
+            // Semesterarray erstellen (daten umformatieren).
             if (!isset($semstats[$secondlevelcopy->semester])) {
                 $semstats[$secondlevelcopy->semester] = [];
             }
@@ -101,7 +126,7 @@ foreach ($secondlevelorinins as $secondndlevel) {
                 }
                 $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["veranstids"] = array_filter(array_merge($semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["veranstids"], $veranstidsandcount["veranstids"]));
                 $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["existing"] += $veranstidsandcount["count"];
-                // zaehle bestehende kurse
+                // Zaehle bestehende kurse.
                 foreach ($semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["veranstids"] as $veranstid) {
                     $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["imported"] += $DB->record_exists("course", ["idnumber" => $veranstid]) ? 1 : 0;
                 }
@@ -109,10 +134,8 @@ foreach ($secondlevelorinins as $secondndlevel) {
         }
     }
 }
-// echo "2ndLEVEL_IDs = ".print_r($secondlevel_orinins,true)."\n\n";
-// echo "SEM_STATSs = ".print_r($sem_stats,true)."\n\n";
 
-// write CSV
+// Write CSV.
 echo "Semester;Kategorie;Typ;AnzahlGesamt;AnzahlImportiert\n";
 foreach ($semstats as $sem => $stats) {
     foreach ($stats as $cat => $catstats) {

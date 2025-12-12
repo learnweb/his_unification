@@ -18,14 +18,13 @@
  * Adds admin settings for local_lsf_unification
  *
  * @package     local_lsf_unification
- * @category    admin
  * @copyright   2013 Claus Alexander Usener
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-if ($hassiteconfig) { // needs this condition or there is error on login page
+if ($hassiteconfig) { // Needs this condition or there is error on login page.
     $settings = new admin_settingpage('local_lsf_unification', 'LSF Unification Config');
     $ADMIN->add('localplugins', $settings);
 

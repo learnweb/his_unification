@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Handle duplicated courses
+ *
+ * @package   local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 require_once("../../config.php");
 require_once("$CFG->libdir/adminlib.php");
 require_once("$CFG->dirroot/backup/util/includes/restore_includes.php");
@@ -21,13 +29,12 @@ require_once("$CFG->dirroot/backup/util/includes/restore_includes.php");
 require_once("./lib_features.php");
 require_login();
 
-
 $PAGE->set_url('/local/lsf_unification/duplicate_course.php');
 
-/// Where we came from. Used in a number of redirects.
+// Where we came from. Used in a number of redirects.
 $returnurl = $CFG->wwwroot . '/course/index.php';
 
-/// Check permissions.
+// Check permissions.
 require_login();
 if (isguestuser()) {
     print_error('guestsarenotallowed', '', $returnurl);
@@ -59,13 +66,13 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
     echo "<b>" . get_string('duplication_timeframe_error', 'local_lsf_unification', get_config('local_lsf_unification', 'duplication_timeframe')) . "</b><br>";
 } else {
     if (!empty($fileid)) {
-        // get rights
+        // Get rights.
         $creatorroleid = $DB->get_record('role', ['shortname' => 'lsfunificationcourseimporter'])->id;
         $context = context_course::instance($courseid, MUST_EXIST);
         if (!enrol_try_internal_enrol($course->id, $USER->id, $creatorroleid)) {
             die("error ##");
         }
-        // restore backup
+        // Restore backup.
         if ($filetype == "t" && get_config('local_lsf_unification', 'restore_templates')) {
             if (empty($filestemplates[$fileid])) {
                 die("error #0");
@@ -100,7 +107,7 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
             die("error #4");
         }
         restore_dbops::delete_course_content($courseid, ["keep_roles_and_enrolments" => true]);
-        // log is deleted by restore_dbops::delete_course_content
+        // Log is deleted by restore_dbops::delete_course_content.
         $event = \local_lsf_unification\event\course_duplicated::create([
                 'objectid' => $courseid,
                 'context' => context_system::instance(0, IGNORE_MISSING),
@@ -108,7 +115,7 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
         ]);
         $event->trigger();
         duplicate_course($courseid, $foldername);
-        // dump rights
+        // Dump rights.
         role_unassign($creatorroleid, $USER->id, $context->id);
     }
 }

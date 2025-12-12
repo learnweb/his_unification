@@ -14,14 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Page that shows the update_helptable process.
+ *
+ * @package local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 include("../../config.php");
 include("./class_pg_lite.php");
 include("./lib.php");
 include("./lib_features.php");
-/// Check permissions.
+// Check permissions.
 require_admin();
 
-$tryeverything         = optional_param('tryeverything', false, PARAM_INT);       // his category origin id
+// HIS category origin id.
+$tryeverything = optional_param('tryeverything', false, PARAM_INT);
 
 set_time_limit(30 * 60);
 

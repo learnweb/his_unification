@@ -14,6 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Page that lists the helptable.
+ *
+ * @package   local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 define('NO_OUTPUT_BUFFERING', true);
 require_once("../../config.php");
 require_once("$CFG->libdir/adminlib.php");
@@ -25,11 +32,11 @@ admin_externalpage_setup('local_lsf_unification_helptable');
 echo $OUTPUT->header();
 echo $OUTPUT->heading('HISLSF Helptable Management');
 
-$originid         = optional_param('originid', -1, PARAM_INT);       // his category origin id
-$mainid           = optional_param('mainid', -1, PARAM_INT);         // his catecory id
-$mdlid            = optional_param('mdlid', -1, PARAM_INT);          // moodle category id
-$maxorigin        = optional_param('maxorigin', 0, PARAM_INT);       // max (his origin ids)
-$delete           = optional_param('delete', 0, PARAM_INT);          // category id where to remove a matching
+$originid         = optional_param('originid', -1, PARAM_INT); // HIS category origin id.
+$mainid           = optional_param('mainid', -1, PARAM_INT);   // HIS catecory id.
+$mdlid            = optional_param('mdlid', -1, PARAM_INT);    // Moodle category id.
+$maxorigin        = optional_param('maxorigin', 0, PARAM_INT); // Max (his origin ids).
+$delete           = optional_param('delete', 0, PARAM_INT);    // Category id where to remove a matching.
 
 if ($originid == -1) {
     echo "<p>" . $OUTPUT->box('<a href="./update_helptable.php">' . get_string('update_helptable', 'local_lsf_unification') . '</a>') . "</p>";

@@ -16,10 +16,14 @@
 
 /**
  * Functions for creating hislsf calendar instances
- * @package local_lsf_unification
+ *
+ * @package   local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');    // It must be included from a Moodle page
+    die('Direct access to this script is forbidden.');
 }
 
 define("HIS_CAL_IDENTIFIER", "hislsf");
@@ -28,7 +32,9 @@ require_once($CFG->dirroot . '/calendar/lib.php');
 require_once($CFG->libdir . '/bennu/bennu.inc.php');
 
 /**
- * Returns the CURRENT (because of the event ids instead of the user id being appended this URL changes when users subscribe to new events) userspecific ICal-URL
+ * Returns the CURRENT (because of the event ids instead of the user id being appended this URL changes when users
+ * subscribe to new events) userspecific ICal-URL
+ *
  * @param unknown_type $userid
  * @package local_lsf_unification
  */
