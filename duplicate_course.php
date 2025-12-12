@@ -46,8 +46,8 @@ echo $OUTPUT->header();
 
 $courseid   = required_param('courseid', PARAM_INT);
 $acceptorid = get_course_acceptor($courseid);
-$files_backups = get_backup_files($acceptorid);
-$files_templates = get_template_files();
+$filesbackups = get_backup_files($acceptorid);
+$filestemplates = get_template_files();
 $filetype   = optional_param('filetype', null, PARAM_RAW);
 $fileid     = optional_param('fileid', null, PARAM_RAW);
 $fileinfo   = null;
@@ -67,15 +67,15 @@ if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification'
         }
         // restore backup
         if ($filetype == "t" && get_config('local_lsf_unification', 'restore_templates')) {
-            if (empty($files_templates[$fileid])) {
+            if (empty($filestemplates[$fileid])) {
                 die("error #0");
             }
-            $fileinfo = $files_templates[$fileid];
+            $fileinfo = $filestemplates[$fileid];
         } else if ($filetype == "b" && get_config('local_lsf_unification', 'restore_old_courses')) {
-            if (empty($files_backups[$fileid])) {
+            if (empty($filesbackups[$fileid])) {
                 die("error #0");
             }
-            $fileinfo = $files_backups[$fileid];
+            $fileinfo = $filesbackups[$fileid];
         } else {
             die("error #x");
         }

@@ -16,6 +16,7 @@
 
 /**
  * Functions that are used by request.php
+ * @package local_lsf_unification
  **/
 defined('MOODLE_INTERNAL') || die;
 
@@ -39,8 +40,9 @@ require_once($CFG->dirroot . '/course/format/lib.php');
  * @param $category
  * @throws moodle_exception
  * @return array consisting of the course-object and warnings
+ * @package local_lsf_unification
  */
-function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startdate, $database_enrol, $self_enrol, $password, $category) {
+function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startdate, $databaseenrol, $selfenrol, $password, $category) {
     global $DB, $USER, $CFG;
     $transaction = $DB->start_delegated_transaction();
     $warnings = "";
@@ -84,10 +86,10 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
     create_guest_enrolment($course, $enable = false);
 
     // enable enrolment-plugins
-    if ($database_enrol) {
+    if ($databaseenrol) {
         enable_database_enrolment($course);
     }
-    if ($self_enrol) {
+    if ($selfenrol) {
         enable_self_enrolment($course, $password);
     }
 
@@ -109,6 +111,7 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
  * @param $course
  * @param $text
  * @return bool
+ * @package local_lsf_unification
  */
 function send_support_mail($course, $text) {
     global $USER;
@@ -134,6 +137,7 @@ function send_support_mail($course, $text) {
  * @param $course
  * @param $requestid
  * @return bool
+ * @package local_lsf_unification
  */
 function send_course_request_mail($recipientusername, $course, $requestid) {
     global $USER;
@@ -161,6 +165,7 @@ function get_remote_creation_continue_link($veranstid) {
  * @param $recipient
  * @param $course
  * @return bool
+ * @package local_lsf_unification
  */
 function send_course_creation_mail($recipient, $course) {
     global $USER;
@@ -181,6 +186,7 @@ function send_course_creation_mail($recipient, $course) {
  * @param $recipient
  * @param $course
  * @return bool
+ * @package local_lsf_unification
  */
 function send_sorry_mail($recipient, $course) {
     global $USER;
@@ -203,8 +209,8 @@ function send_sorry_mail($recipient, $course) {
 */
 function get_my_courses_as_teacher($additionalid = null) {
     global $DB, $USER, $CFG;
-    $helpfuntion1 = function ($array_el) {
-        return $array_el->instanceid;
+    $helpfuntion1 = function ($arrayel) {
+        return $arrayel->instanceid;
     };
     $addsql = empty($additionalid) ? "" : "OR " . $CFG->prefix . "role_assignments.userid=$additionalid";
     $sql = "SELECT " . $CFG->prefix . "role_assignments.id, instanceid, roleid FROM " . $CFG->prefix . "role_assignments JOIN " . $CFG->prefix . "context ON " . $CFG->prefix . "role_assignments.contextid = " . $CFG->prefix . "context.id WHERE " . $CFG->prefix . "role_assignments.roleid=" . $CFG->creatornewroleid . " AND ( " . $CFG->prefix . "role_assignments.userid=$USER->id " . $addsql . " ) AND " . $CFG->prefix . "context.contextlevel=50";
@@ -271,9 +277,9 @@ function get_template_files() {
             $file->path = $backuppath;
             $file->info = "no info available";
             $file->category = isset($matches[2]) ? $matches[2] : "";
-            $txt_file = $file->path . "/" . substr($file->name, 0, -3) . "txt";
-            if (file_exists($txt_file)) {
-                $file->info = file_get_contents($txt_file);
+            $txtfile = $file->path . "/" . substr($file->name, 0, -3) . "txt";
+            if (file_exists($txtfile)) {
+                $file->info = file_get_contents($txtfile);
             }
             $files[$entry] = $file;
         }
@@ -375,7 +381,7 @@ function duplicate_course($courseid, $foldername) {
 }
 
 
-function lsf_unification_unzip($zipfile, $destination = '', $showstatus_ignored = true) {
+function lsf_unification_unzip($zipfile, $destination = '', $showstatusignored = true) {
     global $CFG, $USER;
     $fb = get_file_packer('application/vnd.moodle.backup');
     $result = $fb->extract_to_pathname(

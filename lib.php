@@ -16,6 +16,7 @@
 
 /**
  * Functions that aid core functionality
+ * @package local_lsf_unification
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -28,6 +29,7 @@ require_once($CFG->dirroot . '/user/lib.php');
  *
  * @param $courseid
  * @return $externid | -1
+ * @package local_lsf_unification
  */
 function get_course_by_idnumber($courseid, $silent = false) {
     global $DB;
@@ -45,8 +47,9 @@ function get_course_by_idnumber($courseid, $silent = false) {
  *
  * @param $title
  * @return $parent_title | null
+ * @package local_lsf_unification
  */
-function find_or_create_category($title, $parent_title) {
+function find_or_create_category($title, $parenttitle) {
     global $DB;
     if (
         $category = $DB->get_record("course_categories", ["name" => $title,
@@ -54,7 +57,7 @@ function find_or_create_category($title, $parent_title) {
     ) {
         return $category;
     }
-    $parent = empty($parent_title) ? 0 : (find_or_create_category($parent_title, null)->id);
+    $parent = empty($parenttitle) ? 0 : (find_or_create_category($parenttitle, null)->id);
     $parent = empty($parent) ? 0 : $parent;
     $newcategory = new stdClass();
     $newcategory->name = $title;
@@ -134,6 +137,7 @@ function get_course_acceptor($mdlid) {
  *
  * @param $id
  * @return null
+ * @package local_lsf_unification
  */
 function enable_manual_enrolment($course) {
     global $DB;
@@ -156,8 +160,9 @@ function enable_manual_enrolment($course) {
  *
  * @param $id
  * @return null
+ * @package local_lsf_unification
  */
-function enable_lsf_enrolment($id, $enrolment_start, $enrolment_end) {
+function enable_lsf_enrolment($id, $enrolmentstart, $enrolmentend) {
     global $DB;
 
     $course = $DB->get_record('course', ['id' => $id,
@@ -167,8 +172,8 @@ function enable_lsf_enrolment($id, $enrolment_start, $enrolment_end) {
         'status' => ENROL_INSTANCE_ENABLED,
         'enrolperiod' => null,
         'roleid' => get_config('local_lsf_webservices', 'role_student'),
-        'customint1' => $enrolment_start,
-        'customint2' => $enrolment_end,
+        'customint1' => $enrolmentstart,
+        'customint2' => $enrolmentend,
     ];
     $plugin->add_instance($course, $fields);
 }
@@ -179,6 +184,7 @@ function enable_lsf_enrolment($id, $enrolment_start, $enrolment_end) {
  * @param $course
  * @param $password
  * @return null
+ * @package local_lsf_unification
  */
 function enable_self_enrolment($course, $password) {
     global $DB;
@@ -204,6 +210,7 @@ function enable_self_enrolment($course, $password) {
  *
  * @param $course
  * @return null
+ * @package local_lsf_unification
  */
 function enable_database_enrolment($course) {
     global $DB;
@@ -236,6 +243,7 @@ function create_guest_enrolment($course, $password = "", $enable = false) {
  *
  * @param $courseid
  * @return $password | ""
+ * @package local_lsf_unification
  */
 function self_enrolment_status($courseid) {
     global $DB;
@@ -252,6 +260,7 @@ function self_enrolment_status($courseid) {
  * @param $shortname
  * @param $startdate
  * @return $course
+ * @package local_lsf_unification
  */
 function get_default_course($fullname, $idnumber, $summary, $shortname) {
     // check&format content
@@ -301,6 +310,7 @@ function get_default_course($fullname, $idnumber, $summary, $shortname) {
  * @param $shortname
  * @param $startdate
  * @return $course
+ * @package local_lsf_unification
  */
 function get_or_create_support_user() {
     global $DB, $CFG;
@@ -336,6 +346,7 @@ function get_or_create_user($username, $email) {
  *
  * @param array that maps id to name
  * @return array that maps id to path
+ * @package local_lsf_unification
  */
 function add_path_description($choices) {
     global $DB;
@@ -370,15 +381,16 @@ function add_path_description($choices) {
  *
  * NOTE: Since 2.7.2 this function is run by scheduled task rather
  * than standard cron.
+ * @package local_lsf_unification
  */
 function local_lsf_unification_cron() {
-    global $CFG, $pgDB;
+    global $CFG, $pgdb;
     include_once(dirname(__FILE__) . '/class_pg_lite.php');
     include_once(dirname(__FILE__) . '/lib_features.php');
 
-    $pgDB = new pg_lite();
-    $connected = $pgDB->connect();
-    $recourceid = $pgDB->connection;
+    $pgdb = new pg_lite();
+    $connected = $pgdb->connect();
+    $recourceid = $pgdb->connection;
 
     mtrace(
         '! = unknown category found, ? = unknown linkage found;' . 'Verbindung: ' .
@@ -387,5 +399,5 @@ function local_lsf_unification_cron() {
 
     insert_missing_helptable_entries(true, false);
 
-    $pgDB->dispose();
+    $pgdb->dispose();
 }

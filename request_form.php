@@ -21,7 +21,7 @@ require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 
 class lsf_course_request_form extends moodleform {
     protected $veranstid;
-    protected $lsf_course;
+    protected $lsfcourse;
 
     function definition() {
         global $USER, $CFG, $DB;
@@ -30,8 +30,8 @@ class lsf_course_request_form extends moodleform {
 
         $veranstid = $this->_customdata['veranstid']; // this contains the data of this form
         $this->veranstid = $veranstid;
-        $lsf_course = get_course_by_veranstid($veranstid);
-        $this->lsf_course = $lsf_course;
+        $lsfcourse = get_course_by_veranstid($veranstid);
+        $this->lsf_course = $lsfcourse;
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
@@ -46,13 +46,13 @@ class lsf_course_request_form extends moodleform {
         $mform->addHelpButton('fullname', 'fullnamecourse');
         $mform->addRule('fullname', get_string('missingfullname'), 'required', null, 'client');
         $mform->setType('fullname', PARAM_MULTILANG);
-        $mform->setDefault('fullname', get_default_fullname($lsf_course));
+        $mform->setDefault('fullname', get_default_fullname($lsfcourse));
 
-        $mform->addElement('text', 'shortname', get_string('shortnamecourse', 'local_lsf_unification', shortname_hint($lsf_course)), 'maxlength="100" size="30"');
+        $mform->addElement('text', 'shortname', get_string('shortnamecourse', 'local_lsf_unification', shortname_hint($lsfcourse)), 'maxlength="100" size="30"');
         $mform->addHelpButton('shortname', 'shortnamecourse');
         $mform->addRule('shortname', get_string('missingshortname'), 'required', null, 'client');
         $mform->setType('shortname', PARAM_MULTILANG);
-        $mform->setDefault('shortname', get_default_shortname($lsf_course));
+        $mform->setDefault('shortname', get_default_shortname($lsfcourse));
 
         $mform->addElement('text', 'idnumber', get_string('idnumbercourse'), 'maxlength="100"  size="10"');
         $mform->addHelpButton('idnumber', 'idnumbercourse');
@@ -62,11 +62,11 @@ class lsf_course_request_form extends moodleform {
 
         $mform->addElement('hidden', 'summary', null);
         $mform->setType('summary', PARAM_RAW);
-        $mform->setConstant('summary', get_default_summary($lsf_course));
+        $mform->setConstant('summary', get_default_summary($lsfcourse));
 
         $mform->addElement('date_selector', 'startdate', get_string('startdate'));
         $mform->addHelpButton('startdate', 'startdate');
-        $mform->setDefault('startdate', get_default_startdate($lsf_course));
+        $mform->setDefault('startdate', get_default_startdate($lsfcourse));
 
         $mform->addElement('header', 'enrol', get_string('config_enrol', 'local_lsf_unification'));
         $mform->setExpanded('enrol');

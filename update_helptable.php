@@ -27,12 +27,12 @@ set_time_limit(30 * 60);
 
 echo "<p>! = unknown category found, ? = unknown linkage found<br><a href='?tryeverything=100000'>TryEverything?</a> <i>(set tryeverything to a value x, to only check ids greater then x)</i></p>";
 
-$pgDB = new pg_lite();
-echo "<p>Verbindung: " . ($pgDB->connect() ? "ja" : "nein") . " (" . $pgDB->connection . ")</p>";
+$pgdb = new pg_lite();
+echo "<p>Verbindung: " . ($pgdb->connect() ? "ja" : "nein") . " (" . $pgdb->connection . ")</p>";
 
 flush();
 
 insert_missing_helptable_entries(true, $tryeverything);
 
-$pgDB->dispose();
-echo "<p>Verbindung geschlossen: " . (($pgDB->connection == null) ? "ja" : "nein") . "</p>";
+$pgdb->dispose();
+echo "<p>Verbindung geschlossen: " . (($pgdb->connection == null) ? "ja" : "nein") . "</p>";

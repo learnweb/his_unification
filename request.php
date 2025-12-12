@@ -74,7 +74,8 @@ function print_first_overview() {
     global $USER;
     $courselist = array_filter(
         get_teachers_course_list($USER->username, true),
-        function ($course) { return !course_exists($course->veranstid); }
+        function ($course) { return !course_exists($course->veranstid);
+        }
     );
     $output = $PAGE->get_renderer('core');
     echo $output->render(new first_overview($courselist));
@@ -123,7 +124,7 @@ function print_res_selection() {
     if (empty($backupfiles) && empty($templatefiles)) {
         print_final();
     } else if (!empty($templatefiles)) {
-        $alternative_counter = 1;
+        $alternativecounter = 1;
 
         // "Continue with the course template ..."
         if (get_config('local_lsf_unification', 'restore_templates') && !empty($templatefiles)) {
@@ -138,7 +139,7 @@ function print_res_selection() {
                 array_unshift($cats, array_pop($cats));
             }
             // render
-            echo "<b>" . get_string('pre_template', 'local_lsf_unification', $alternative_counter++) . '</b><ul style="list-style-type:none">';
+            echo "<b>" . get_string('pre_template', 'local_lsf_unification', $alternativecounter++) . '</b><ul style="list-style-type:none">';
             foreach ($cats as $name => $catfiles) {
                 if (!empty($name)) {
                     echo '<li style="list-style-image: url(' . $OUTPUT->image_url("t/collapsed")->out(true) . ')" id="reslistselector' . ++$i . '"><a onclick="' . "document.getElementById('reslist" . ($i) . "').style.display=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'block' : 'none'); document.getElementById('reslistselector" . ($i) . "').style.listStyleImage=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'url(" . $OUTPUT->image_url("t/collapsed")->out(true) . ")' : 'url(" . $OUTPUT->image_url("t/expanded")->out(true) . ")');" . '" style="cursor:default">[<b>' . $name . '</b>]</a></b><ul id="reslist' . $i . '" style="display:none">';
@@ -159,11 +160,11 @@ function print_res_selection() {
         }
 
         // "Continue with a blank course"
-        echo "<b>" . get_string('no_template', 'local_lsf_unification', $alternative_counter++) . "</b><ul><li><a href='request.php?courseid=" . $courseid . "&answer=7'>" . get_string('continue_with_empty_course', 'local_lsf_unification') . "</a></li></ul>";
+        echo "<b>" . get_string('no_template', 'local_lsf_unification', $alternativecounter++) . "</b><ul><li><a href='request.php?courseid=" . $courseid . "&answer=7'>" . get_string('continue_with_empty_course', 'local_lsf_unification') . "</a></li></ul>";
 
         // "Duplicate course from the course ..."
         if (get_config('local_lsf_unification', 'restore_old_courses') && !empty($backupfiles)) {
-            echo "<b>" . get_string('template_from_course', 'local_lsf_unification', $alternative_counter++) . "</b><ul>";
+            echo "<b>" . get_string('template_from_course', 'local_lsf_unification', $alternativecounter++) . "</b><ul>";
             // Sortiere die Backups alphabetisch.
             uasort($backupfiles, function ($a, $b) {
                 return strcmp($a->course->fullname, $b->course->fullname);
@@ -213,12 +214,12 @@ function print_coursecreation() {
     $editform = new lsf_course_request_form(null, ['veranstid' => $veranstid]);
     if (!($editform->is_cancelled()) && ($data = $editform->get_data())) {
         // dbenrolment enrolment can only be enabled if it is globally enabled
-        $ext_enabled_global = get_config('local_lsf_unification', 'enable_enrol_ext_db') == true;
-        $enable_dbenrolment = $ext_enabled_global ? $data->dbenrolment == 1 : false;
+        $extenabledglobal = get_config('local_lsf_unification', 'enable_enrol_ext_db') == true;
+        $enabledbenrolment = $extenabledglobal ? $data->dbenrolment == 1 : false;
         // enable self enrolment if dbenrolment is disabled globally
-        $enable_self_enrolment = !$ext_enabled_global ? true : ($data->selfenrolment == 1);
+        $enableselfenrolment = !$extenabledglobal ? true : ($data->selfenrolment == 1);
 
-        $result = create_lsf_course($veranstid, $data->fullname, $data->shortname, $data->summary, $data->startdate, $enable_dbenrolment, $enable_self_enrolment, empty($data->enrolment_key) ? "" : ($data->enrolment_key), $data->category);
+        $result = create_lsf_course($veranstid, $data->fullname, $data->shortname, $data->summary, $data->startdate, $enabledbenrolment, $enableselfenrolment, empty($data->enrolment_key) ? "" : ($data->enrolment_key), $data->category);
         $courseid = $result['course']->id;
         $event = \local_lsf_unification\event\course_imported::create([
             'objectid' => $courseid,

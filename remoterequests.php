@@ -55,8 +55,8 @@ if (establish_secondary_DB_connection() === true) {
             echo $OUTPUT->box("<b>Die folgende URL kann <u>nur vom Antragsteller</u> verwendet werden: <br>" . get_remote_creation_continue_link($veranstid) . "</b>");
         }
     }
-    $helpfuntion = function ($array_el) {
-        return $array_el->veranstid;
+    $helpfuntion = function ($arrayel) {
+        return $arrayel->veranstid;
     };
     $requests = get_course_requests();
     $courses = get_courses_by_veranstids(array_map($helpfuntion, $requests));

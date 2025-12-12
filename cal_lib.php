@@ -16,6 +16,7 @@
 
 /**
  * Functions for creating hislsf calendar instances
+ * @package local_lsf_unification
  */
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');    // It must be included from a Moodle page
@@ -29,6 +30,7 @@ require_once($CFG->libdir . '/bennu/bennu.inc.php');
 /**
  * Returns the CURRENT (because of the event ids instead of the user id being appended this URL changes when users subscribe to new events) userspecific ICal-URL
  * @param unknown_type $userid
+ * @package local_lsf_unification
  */
 function his_get_ical_url($userid) {
     global $DB, $CFG;
@@ -41,6 +43,7 @@ function his_get_ical_url($userid) {
 /**
  * returns a default hislsf calendar instance
  * @return stdClass
+ * @package local_lsf_unification
  */
 function create_default_his_subscription() {
     global $CFG;
@@ -54,6 +57,7 @@ function create_default_his_subscription() {
 
 /**
  * Checks if a hislsf calendar instance already exists for the current user. If it doesn't find one, then it tries to create a new one.
+ * @package local_lsf_unification
  */
 function his_add_cal() {
     global $PAGE;
@@ -74,6 +78,7 @@ function his_add_cal() {
 /**
  * Returns if a hislsf calendar instance already exists for the current user
  * @return boolean
+ * @package local_lsf_unification
  */
 function his_already_imported_cal() {
     global $USER, $DB;
@@ -83,6 +88,7 @@ function his_already_imported_cal() {
 /**
  * Adds a link to "cal_import.php" to the form
  * @param $mform
+ * @package local_lsf_unification
  */
 function his_print_cal_import_form($mform) {
     global $PAGE, $CFG;
