@@ -32,7 +32,8 @@ admin_externalpage_setup('local_lsf_unification_deeplink_remove');
 echo $OUTPUT->header();
 echo $OUTPUT->heading('HISLSF Deeplink Removal');
 
-$veranstid = optional_param('veranstid', -1, PARAM_INT);         // his course id
+// HIS course id.
+$veranstid = optional_param('veranstid', -1, PARAM_INT);
 
 $formcontent = "HisLSF-id: <input type='text' name='veranstid' value=''> &nbsp; <input type='submit' value='Remove Deeplink'>";
 echo "<form action='' method='get' class='mform'><p>" . $formcontent . "</p></form>";
