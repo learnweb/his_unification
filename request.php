@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+
 /**
  * Main page of lsf_unification.
  *
@@ -21,13 +22,14 @@
  * @copyright 2025 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use local_lsf_unification\form\lsf_course_request_form;
 use local_lsf_unification\output\first_overview;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 global $CFG, $USER, $DB, $PAGE, $SESSION, $OUTPUT;
 
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
-require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
 
 $veranstid = optional_param('veranstid', null, PARAM_INT);
 $questionsanswered = optional_param('questionsanswered', null, PARAM_INT);
