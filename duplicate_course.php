@@ -37,7 +37,7 @@ $returnurl = $CFG->wwwroot . '/course/index.php';
 // Check permissions.
 require_login();
 if (isguestuser()) {
-    print_error('guestsarenotallowed', '', $returnurl);
+    throw new moodle_exception('guestsarenotallowed', '', $returnurl);
 }
 $context = context_system::instance();
 $PAGE->set_context($context);
