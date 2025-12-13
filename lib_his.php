@@ -796,7 +796,7 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
                     }
                 } catch (Exception $e) {
                     if ($debugoutput) {
-                        print("<pre>FEHLER1 " . print_r($e, true) . "" . print_r($DB->get_last_error(), true));
+                        print("<pre>FEHLER1 " . var_export($e, true) . "" . var_export($DB->get_last_error(), true));
                     }
                 }
             }
@@ -835,8 +835,8 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
                         } catch (Exception $e) {
                             if ($debugoutput) {
                                 mtrace(
-                                    "<pre>FEHLER2 " . print_r($e, true) . "" .
-                                    print_r($DB->get_last_error(), true),
+                                    "<pre>FEHLER2 " . var_export($e, true) . "" .
+                                    var_export($DB->get_last_error(), true),
                                     ''
                                 );
                             }
@@ -860,8 +860,8 @@ function insert_missing_helptable_entries($debugoutput = false, $tryeverything =
                 } catch (Exception $e) {
                     if ($debugoutput) {
                         mtrace(
-                            "<pre>FEHLER2 " . print_r($e, true) . "" .
-                            print_r($DB->get_last_error(), true),
+                            "<pre>FEHLER2 " . var_export($e, true) . "" .
+                            var_export($DB->get_last_error(), true),
                             ''
                         );
                     }
