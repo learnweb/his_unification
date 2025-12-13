@@ -60,7 +60,8 @@ function create_default_his_subscription() {
 }
 
 /**
- * Checks if a hislsf calendar instance already exists for the current user. If it doesn't find one, then it tries to create a new one.
+ * Checks if a hislsf calendar instance already exists for the current user.
+ * If it doesn't find one, then it tries to create a new one.
  * @throws moodle_exception
  * @package local_lsf_unification
  */
@@ -103,6 +104,8 @@ function his_print_cal_import_form($mform) {
     if (getSSONo() < 0) {
         return;
     }
+    $href = $CFG->wwwroot . '/local/lsf_unification/cal_import.php?back=' . urlencode($PAGE->url);
+    $importical = get_string('importical', 'local_lsf_unification');
     $mform->addElement('header', 'addhissubscriptionform', get_string('importcalendar', 'local_lsf_unification'));
-    $mform->addElement('html', '<a class="btn" href="' . $CFG->wwwroot . '/local/lsf_unification/cal_import.php?back=' . urlencode($PAGE->url) . '">' . get_string('importical', 'local_lsf_unification') . '</a>');
+    $mform->addElement('html', '<a class="btn" href="' . $href . '">' . $importical . '</a>');
 }

@@ -57,7 +57,13 @@ class matchingtable_updated extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '{$this->userid}' updated a his category matching with id '{$this->objectid}'. Original mapping: '{$this->other["mappingold"]}'. New mapping: '{$this->other["mappingnew"]}'.";
+        $params = (object) [
+            'userid' => $this->userid,
+            'objectid' => $this->objectid,
+            'mappingold' => $this->other["mappingold"],
+            'mappingnew' => $this->other["mappingnew"],
+        ];
+        return get_string("eventmatchingtable_updated_desc", 'local_lsf_unification', $params);
     }
 
     /**

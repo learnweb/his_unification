@@ -63,7 +63,9 @@ if (!in_array($courseid, get_my_courses_as_teacher()) && !is_course_imported_by(
 }
 $course = $DB->get_record('course', ["id" => $courseid]);
 if (time() - $course->timecreated > 60 * 60 * get_config('local_lsf_unification', 'duplication_timeframe')) {
-    echo "<b>" . get_string('duplication_timeframe_error', 'local_lsf_unification', get_config('local_lsf_unification', 'duplication_timeframe')) . "</b><br>";
+    $duplicationconfig = get_config('local_lsf_unification', 'duplication_timeframe');
+    $duplicationstr = get_string('duplication_timeframe_error', 'local_lsf_unification', $duplicationconfig);
+    echo "<b>" . $duplicationstr . "</b><br>";
 } else {
     if (!empty($fileid)) {
         // Get rights.

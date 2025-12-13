@@ -71,7 +71,12 @@ class lsf_course_request_form extends moodleform {
         $mform->setType('fullname', PARAM_MULTILANG);
         $mform->setDefault('fullname', get_default_fullname($lsfcourse));
 
-        $mform->addElement('text', 'shortname', get_string('shortnamecourse', 'local_lsf_unification', shortname_hint($lsfcourse)), 'maxlength="100" size="30"');
+        $mform->addElement(
+            'text',
+            'shortname',
+            get_string('shortnamecourse', 'local_lsf_unification', shortname_hint($lsfcourse)),
+            'maxlength="100" size="30"'
+        );
         $mform->addHelpButton('shortname', 'shortnamecourse');
         $mform->addRule('shortname', get_string('missingshortname'), 'required', null, 'client');
         $mform->setType('shortname', PARAM_MULTILANG);
@@ -94,16 +99,35 @@ class lsf_course_request_form extends moodleform {
         $mform->addElement('header', 'enrol', get_string('config_enrol', 'local_lsf_unification'));
         $mform->setExpanded('enrol');
         if (get_config('local_lsf_unification', 'enable_enrol_ext_db')) {
-            $mform->addElement('advcheckbox', 'dbenrolment', get_string('config_dbenrolment', 'local_lsf_unification'), '', ['group' => 1], [0, 1]);
+            $mform->addElement(
+                'advcheckbox',
+                'dbenrolment',
+                get_string('config_dbenrolment', 'local_lsf_unification'),
+                '',
+                ['group' => 1],
+                [0, 1]
+            );
             $mform->addHelpButton('dbenrolment', 'config_dbenrolment', 'local_lsf_unification');
             $mform->setDefault('dbenrolment', 0);
 
-            $mform->addElement('advcheckbox', 'selfenrolment', get_string('config_selfenrolment', 'local_lsf_unification'), '', ['group' => 2], [0, 1]);
+            $mform->addElement(
+                'advcheckbox',
+                'selfenrolment',
+                get_string('config_selfenrolment', 'local_lsf_unification'),
+                '',
+                ['group' => 2],
+                [0, 1]
+            );
             $mform->setDefault('selfenrolment', 1);
             $mform->addHelpButton('selfenrolment', 'config_selfenrolment', 'local_lsf_unification');
         }
 
-        $mform->addElement('passwordunmask', 'enrolment_key', get_string('config_enrolment_key', 'local_lsf_unification'), 'maxlength="100"  size="10"');
+        $mform->addElement(
+            'passwordunmask',
+            'enrolment_key',
+            get_string('config_enrolment_key', 'local_lsf_unification'),
+            'maxlength="100"  size="10"'
+        );
         $mform->setType('enrolment_key', PARAM_RAW);
         $mform->addHelpButton('enrolment_key', 'config_enrolment_key', 'local_lsf_unification');
         $mform->disabledIf('enrolment_key', 'selfenrolment', 'neq', 1);

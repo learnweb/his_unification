@@ -40,7 +40,12 @@ $tryeverything = optional_param('tryeverything', false, PARAM_INT);
 
 set_time_limit(30 * 60);
 
-echo "<p>! = unknown category found, ? = unknown linkage found<br><a href='?tryeverything=100000'>TryEverything?</a> <i>(set tryeverything to a value x, to only check ids greater then x)</i></p>";
+echo "<p>
+        ! = unknown category found, ? = unknown linkage found
+        <br>
+        <a href='?tryeverything=100000'>TryEverything?</a>
+        <i>(set tryeverything to a value x, to only check ids greater then x)</i>
+      </p>";
 
 $pgdb = new pg_lite();
 echo "<p>Verbindung: " . ($pgdb->connect() ? "ja" : "nein") . " (" . $pgdb->connection . ")</p>";

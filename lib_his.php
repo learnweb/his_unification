@@ -409,7 +409,8 @@ function get_default_shortname($lsfcourse, $long = false) {
     foreach (explode(" ", $lsfcourse->titel) as $word) {
         $i .= strtoupper($word[0]) . (($long && !empty($word[1])) ? $word[1] : "");
     }
-    $name = mb_convert_encoding($i . "-" . substr($lsfcourse->semester, 0, 4) . "_" . substr($lsfcourse->semester, -1), 'UTF-8', 'ISO-8859-1');
+    $str = $i . "-" . substr($lsfcourse->semester, 0, 4) . "_" . substr($lsfcourse->semester, -1);
+    $name = mb_convert_encoding($str, 'UTF-8', 'ISO-8859-1');
     if (
         !$long && $DB->record_exists('course', ['shortname' => $name,
         ])

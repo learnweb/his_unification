@@ -48,18 +48,23 @@ if (establish_secondary_DB_connection() === true) {
             $requester = $DB->get_record("user", ["id" => $request->requesterid]);
             set_course_accepted($veranstid);
             $emailsent = send_course_creation_mail($requester, get_course_by_veranstid($veranstid));
-            echo $OUTPUT->box("<b>Anfrage (" . $rid . ") wurde zugelassen und es wurde versucht eine Email an (" . $requester->firstname . " " . $requester->lastname . ") zu senden.<b>");
+
+            $name = $requester->firstname . " " . $requester->lastname;
+            $anfrage = "Anfrage (" . $rid . ") wurde zugelassen und es wurde versucht eine Email an (" . $name . ") zu senden.";
+            $noemailadress = "(Der Benutzer (" . $name . ") hat keine Emailadresse)";
+            echo $OUTPUT->box("<b>" . $anfrage . "<b>");
             if ($emailsent) {
                 echo $OUTPUT->box("<b>Email erfolgreich versendet</b>");
             } else if (empty($user->email)) {
-                echo $OUTPUT->box("<b>Email versenden <u>fehlgeschlagen</u><br>(Der Benutzer (" . $requester->firstname . " " . $requester->lastname . ") hat keine Emailadresse)</b>");
+                echo $OUTPUT->box("<b>Email versenden <u>fehlgeschlagen</u><br>" . $noemailadress . "</b>");
             } else {
                 echo $OUTPUT->box("<b>Email versenden <u>fehlgeschlagen</u></b>");
             }
         } else if ($action == 4) {
             $request = get_course_request($rid);
             $veranstid = $request->veranstid;
-            echo $OUTPUT->box("<b>Die folgende URL kann <u>nur vom Antragsteller</u> verwendet werden: <br>" . get_remote_creation_continue_link($veranstid) . "</b>");
+            $link = get_remote_creation_continue_link($veranstid);
+            echo $OUTPUT->box("<b>Die folgende URL kann <u>nur vom Antragsteller</u> verwendet werden: <br>" . $link . "</b>");
         }
     }
     $helpfuntion = function ($arrayel) {
@@ -76,10 +81,13 @@ if (establish_secondary_DB_connection() === true) {
         $course = $courses[$request->veranstid];
         echo '<td><a href="' . $course->urlveranst . '">' . delete_bad_chars($course->titel) . "</a></td>";
         echo '<td nowrap>' . $course->semestertxt . "</td>";
-        echo '<td nowrap><a href="' . $CFG->wwwroot . '/user/view.php?id=' . $requester->id . '">' . $requester->firstname . " " . $requester->lastname . "</a>";
+        $fullname = $requester->firstname . " " . $requester->lastname;
+        echo '<td nowrap><a href="' . $CFG->wwwroot . '/user/view.php?id=' . $requester->id . '">' . $fullname . "</a>";
         if ($request->requeststate == 2) {
             $acceptor = $DB->get_record("user", ["id" => $request->acceptorid]);
-            echo '<br>zugelassen durch <a href="' . $CFG->wwwroot . '/user/view.php?id=' . $acceptor->id . '">' . $acceptor->firstname . " " . $acceptor->lastname . "</a>";
+            $href = $CFG->wwwroot . '/user/view.php?id=' . $acceptor->id;
+            $acceptorname = $acceptor->firstname . " " . $acceptor->lastname;
+            echo '<br>zugelassen durch <a href="' . $href . '">' . $acceptorname . "</a>";
         }
         echo "</td>";
         echo '<td nowrap><a href="remoterequests.php?action=1&requestid=' . $requestid . '">[loeschen]</a>';

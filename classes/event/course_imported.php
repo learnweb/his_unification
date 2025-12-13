@@ -58,7 +58,12 @@ class course_imported extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '{$this->userid}' imported the HISLSF-course with veranstid '{$this->other}' as a new moodle course with id '{$this->objectid}'.";
+        $params = (object) [
+            'userid' => $this->userid,
+            'other' => $this->other,
+            'objectid' => $this->objectid,
+        ];
+        return get_string('eventcourse_imported_desc', 'local_lsf_unification', $params);
     }
 
 

@@ -56,7 +56,12 @@ class course_duplicated extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '{$this->userid}' duplicated contents from course with id '{$this->other}' into a course with id '{$this->objectid}'.";
+        $params = (object) [
+            'userid' => $this->userid,
+            'other' => $this->other,
+            'objectid' => $this->objectid,
+        ];
+        return get_string('eventcourse_duplicated_desc', 'local_lsf_unification', $params);
     }
 
     /**
