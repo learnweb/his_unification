@@ -61,6 +61,7 @@ function create_default_his_subscription() {
 
 /**
  * Checks if a hislsf calendar instance already exists for the current user. If it doesn't find one, then it tries to create a new one.
+ * @throws moodle_exception
  * @package local_lsf_unification
  */
 function his_add_cal() {
@@ -75,7 +76,7 @@ function his_add_cal() {
     } catch (moodle_exception $e) {
         // Delete newly added subscription and show invalid url error.
         calendar_delete_subscription($subscriptionid);
-        print_error($e->errorcode, $e->module, $PAGE->url);
+        throw new moodle_exception($e->errorcode, $e->module, $PAGE->url);
     }
 }
 
