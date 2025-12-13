@@ -76,10 +76,10 @@ $string['defaultcategory_description'] = 'Falls keine Kategorie eingetragen werd
 $string['delete'] = 'l&ouml;schen';
 $string['duplication_timeframe_error'] = 'Aus Sicherheitsgr&uuml;nden ist es nicht erlaubt Kursdaten aus Musterkursen oder Kursbackups wiederherzustellen, falls die Kurserstellung mehr als {$a} Stunden zur&uuml;ckliegt.';
 $string['email'] = 'ABSENDER:
-{$a->a} (' . $CFG->wwwroot . '/user/view.php?id={$a->b})
+{$a->a} ({$a->b})
 
     KURS:
-    {$a->c} (' . $CFG->wwwroot . '/course/view.php?id={$a->d})
+    {$a->c} ({$a->d})
 
         NACHRICHT:
         {$a->e}';
@@ -89,7 +89,7 @@ $string['email3'] = 'Der Benutzer "{$a->a}" ({$a->userurl}) akzeptierte Ihre Kur
 $string['email3_title'] = "Anfrage zur Kurserstellungs akzeptiert";
 $string['email4'] = 'Der Benutzer "{$a->a}" ({$a->userurl}) verweigerte Ihre Kursanfrage "{$a->c}".';
 $string['email4_title'] = "Anfrage zur Kurserstellung verweigert";
-$string['email_error'] = 'Der Kategorieumzugswunsch konnte leider nicht automatisch versendet werden. Kontaktieren Sie den Support manuell! (' . $CFG->supportemail . ')';
+$string['email_error'] = 'Der Kategorieumzugswunsch konnte leider nicht automatisch versendet werden. Kontaktieren Sie den Support manuell!';
 $string['email_from'] = "HIS LSF Import";
 $string['email_success'] = 'Eine Email bzgl. des Kategoriewechsels wird an den Support gesendet.';
 $string['eventcourse_duplicated'] = 'Kursinhalte dupliziert';

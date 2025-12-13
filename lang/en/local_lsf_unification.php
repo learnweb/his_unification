@@ -80,10 +80,10 @@ $string['duplication_timeframe'] = 'Course Duplication Timeframe';
 $string['duplication_timeframe_description'] = 'The number of hours after course creation where restore-actions are allowed';
 $string['duplication_timeframe_error'] = 'Sorry but for safety reasons it is not allowed import course data from templates or backups more than {$a} hour(s) after course creation';
 $string['email'] = 'SENDER:
-{$a->a} (' . $CFG->wwwroot . '/user/view.php?id={$a->b})
+{$a->a} ({$a->b})
 
     COURSE:
-    {$a->c} (' . $CFG->wwwroot . '/course/view.php?id={$a->d})
+    {$a->c} ({$a->d})
 
         MESSAGE:
         {$a->e}';
