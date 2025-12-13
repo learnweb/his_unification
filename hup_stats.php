@@ -22,10 +22,15 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-include("../../config.php");
-include("./class_pg_lite.php");
-include("./lib.php");
-include("./lib_features.php");
+use local_lsf_unification\pg_lite;
+
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . "/config.php");
+require_once(dirname(__FILE__) . "/class_pg_lite.php");
+require_once(dirname(__FILE__) . ".lib.php");
+require_once(dirname(__FILE__) . "/lib_features.php");
 // Check permissions.
 require_login();
 if (!has_capability('moodle/site:config', context_system::instance())) {

@@ -20,7 +20,7 @@
  * @copyright  2025 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die;
+namespace local_lsf_unification;
 
 /**
  * Class that wraps a connection to psql.

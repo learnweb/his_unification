@@ -22,12 +22,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');
-}
+defined('MOODLE_INTERNAL') || die();
 
 define("HIS_CAL_IDENTIFIER", "hislsf");
-
+global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
 require_once($CFG->libdir . '/bennu/bennu.inc.php');
 
