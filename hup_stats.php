@@ -87,9 +87,18 @@ function get_cat_veranstids_and_count($ueids) {
     global $pgdb;
     $hupstatsveranstcounttable = [];
     if (!empty($ueids)) {
-        $qmain = pg_query($pgdb->connection, "SELECT veranstaltungsart, textcat_all(DISTINCT " . HIS_UEBERSCHRIFT . ".veranstid || ',') as veranstids, COUNT(DISTINCT " . HIS_UEBERSCHRIFT . ".veranstid) as c FROM " . HIS_UEBERSCHRIFT . " JOIN " . HIS_VERANSTALTUNG . " on " . HIS_UEBERSCHRIFT . ".veranstid = " . HIS_VERANSTALTUNG . ".veranstid WHERE ueid IN (" . $ueids . ") GROUP BY veranstaltungsart");
+        $sql = "SELECT veranstaltungsart,
+                       textcat_all(DISTINCT " . HIS_UEBERSCHRIFT . ".veranstid || ',') as veranstids,
+                       COUNT(DISTINCT " . HIS_UEBERSCHRIFT . ".veranstid) as c
+                FROM " . HIS_UEBERSCHRIFT . "
+                JOIN " . HIS_VERANSTALTUNG . "
+                ON " . HIS_UEBERSCHRIFT . ".veranstid = " . HIS_VERANSTALTUNG . ".veranstid
+                WHERE ueid IN (" . $ueids . ")
+                GROUP BY veranstaltungsart;";
+        $qmain = pg_query($pgdb->connection, $sql);
         while ($hislsftitle = pg_fetch_object($qmain)) {
-            $hupstatsveranstcounttable[$hislsftitle->veranstaltungsart] = ["veranstids" => explode(",", $hislsftitle->veranstids), "count" => $hislsftitle->c];
+            $veranstaltungsart = ["veranstids" => explode(",", $hislsftitle->veranstids), "count" => $hislsftitle->c];
+            $hupstatsveranstcounttable[$hislsftitle->veranstaltungsart] = $veranstaltungsart;
         }
     }
     return $hupstatsveranstcounttable;
@@ -115,7 +124,8 @@ foreach ($secondlevelorinins as $secondndlevel) {
         $secondlevelcopy->semester = get_cat_sem($secondlevelcopy->ueid);
         if (empty($reqsem) || ($reqsem == $secondlevelcopy->semester)) {
             // Alle Unterkategorien der jeweiligen Kategoriekopien sammeln.
-            $secondlevelcopy->subs = array_keys($DB->get_records("local_lsf_categoryparenthood", ["parent" => $secondlevelcopy->ueid], null, "child"));
+            $records = $DB->get_records("local_lsf_categoryparenthood", ["parent" => $secondlevelcopy->ueid], null, "child");
+            $secondlevelcopy->subs = array_keys($records);
             // Bestimme die Veranstatlungstypen und Anazahlen der jeweiligen Kategoriekopien.
             $secondlevelcopy->veranstcount = get_cat_veranstids_and_count(implode(",", $secondlevelcopy->subs));
             // Semesterarray erstellen (daten umformatieren).
@@ -127,13 +137,19 @@ foreach ($secondlevelorinins as $secondndlevel) {
             }
             foreach ($secondlevelcopy->veranstcount as $typ => $veranstidsandcount) {
                 if (!isset($semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ])) {
-                    $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ] = ["imported" => 0, "existing" => 0, "veranstids" => []];
+                    $arr = ["imported" => 0, "existing" => 0, "veranstids" => []];
+                    $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ] = $arr;
                 }
-                $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["veranstids"] = array_filter(array_merge($semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["veranstids"], $veranstidsandcount["veranstids"]));
+                $veranstids = array_merge(
+                    $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["veranstids"],
+                    $veranstidsandcount["veranstids"]
+                );
+                $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["veranstids"] = $veranstids;
                 $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["existing"] += $veranstidsandcount["count"];
                 // Zaehle bestehende kurse.
                 foreach ($semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["veranstids"] as $veranstid) {
-                    $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["imported"] += $DB->record_exists("course", ["idnumber" => $veranstid]) ? 1 : 0;
+                    $isimported = $DB->record_exists("course", ["idnumber" => $veranstid]) ? 1 : 0;
+                    $semstats[$secondlevelcopy->semester][$secondndlevel->txt][$typ]["imported"] += $isimported;
                 }
             }
         }

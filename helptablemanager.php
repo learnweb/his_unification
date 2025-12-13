@@ -39,8 +39,10 @@ $maxorigin        = optional_param('maxorigin', 0, PARAM_INT); // Max (his origi
 $delete           = optional_param('delete', 0, PARAM_INT);    // Category id where to remove a matching.
 
 if ($originid == -1) {
-    echo "<p>" . $OUTPUT->box('<a href="./update_helptable.php">' . get_string('update_helptable', 'local_lsf_unification') . '</a>') . "</p>";
-    echo "<p>" . $OUTPUT->box('<a href="?originid=0">' . get_string('create_mappings', 'local_lsf_unification') . '</a>') . "</p>";
+    $updatetable = get_string('update_helptable', 'local_lsf_unification');
+    $createmappings = get_string('create_mappings', 'local_lsf_unification');
+    echo "<p>" . $OUTPUT->box('<a href="./update_helptable.php">' . $updatetable . '</a>') . "</p>";
+    echo "<p>" . $OUTPUT->box('<a href="?originid=0">' . $createmappings . '</a>') . "</p>";
 } else if ($mainid == -1) {
     if (!empty($delete)) {
         set_cat_mapping($delete, 0);
@@ -68,7 +70,8 @@ if ($originid == -1) {
     }
     $parentstxt = "";
     foreach ($parents as $id => $txt) {
-        $parentstxt = " [<a href='?originid=" . $id . "'>" . get_string('navigate', 'local_lsf_unification') . "</a>] " . $txt . "<br>" . $parentstxt;
+        $navigate = get_string('navigate', 'local_lsf_unification');
+        $parentstxt = " [<a href='?originid=" . $id . "'>" . $navigate . "</a>] " . $txt . "<br>" . $parentstxt;
     }
     $sublevels = get_newest_sublevels($origins);
     $childlist = "";

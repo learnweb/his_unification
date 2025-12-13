@@ -102,7 +102,9 @@ function print_first_overview() {
  * @throws coding_exception
  */
 function print_helptext($t, $s = null) {
-    echo "<u>" . get_string('answer_' . $t, 'local_lsf_unification') . "</u><br>" . get_string('info_' . $t, 'local_lsf_unification', $s, true);
+    $answerstr = get_string('answer_' . $t, 'local_lsf_unification');
+    $infostr = get_string('info_' . $t, 'local_lsf_unification', $s, true);
+    echo "<u>" . $answerstr . "</u><br>" . $infostr;
     echo "<br><a href='request.php'>" . get_string('back', 'local_lsf_unification') . "</a>";
 }
 
@@ -130,7 +132,15 @@ function print_coursetable($teacher, $appendix = "") {
     echo "<table><tr><td colspan='2'><b>" . get_string('choose_course', 'local_lsf_unification') . "</b></td></tr>";
     foreach (get_teachers_course_list($teacher, true) as $course) {
         if (!course_exists($course->veranstid)) {
-            echo "<tr><td><input type='radio' name='veranstid' id='veranstid_" . ($course->veranstid) . "' value='" . ($course->veranstid) . "'></td><td><label for='veranstid_" . ($course->veranstid) . "'>" . ($course->info) . "</label></td></tr>";
+            $veranstid = $course->veranstid;
+            echo "<tr>
+                <td>
+                    <input type='radio' name='veranstid' id='veranstid_" . ($veranstid) . "' value='" . ($veranstid) . "'>
+                </td>
+                <td>
+                    <label for='veranstid_" . ($veranstid) . "'>" . ($course->info) . "</label>
+                </td>
+            </tr>";
         }
     }
     echo $appendix . "</table>";
@@ -143,9 +153,20 @@ function print_coursetable($teacher, $appendix = "") {
  */
 function print_final() {
     global $OUTPUT, $CFG, $courseid;
-    echo $OUTPUT->box("<b>" . get_string('next_steps', 'local_lsf_unification') . ":</b><br><a href='" . $CFG->wwwroot . "/user/index.php?id=" . ($courseid) . "'>" . get_string('linktext_users', 'local_lsf_unification') . "</a><br>
-    <a href='" . $CFG->wwwroot . "/backup/import.php?id=" . ($courseid) . "'>" . get_string('linktext_content', 'local_lsf_unification') . "</a><br>
-    <a href='" . $CFG->wwwroot . "/course/view.php?id=" . ($courseid) . "'>" . get_string('linktext_course', 'local_lsf_unification') . "</a><br>&nbsp;");
+    $nextsteps = get_string('next_steps', 'local_lsf_unification');
+    $linktext = [
+        'users' => get_string('linktext_users', 'local_lsf_unification'),
+        'content' => get_string('linktext_content', 'local_lsf_unification'),
+        'course' => get_string('linktext_course', 'local_lsf_unification'),
+    ];
+    $href = [
+        0 => $CFG->wwwroot . "/user/index.php?id=" . ($courseid),
+        1 => $CFG->wwwroot . "/backup/import.php?id=" . ($courseid),
+        2 => $CFG->wwwroot . "/course/view.php?id=" . ($courseid),
+    ];
+    echo $OUTPUT->box("<b>" . $nextsteps . ":</b><br><a href='" . $href[0] . "'>" . $linktext['users'] . "</a><br>
+    <a href='" . $href[1] . "'>" . $linktext['content'] . "</a><br>
+    <a href='" . $href[2] . "'>" . $linktext['course'] . "</a><br>&nbsp;");
 }
 
 /**
@@ -182,14 +203,18 @@ function print_res_selection() {
                 array_unshift($cats, array_pop($cats));
             }
             // Render.
-            echo "<b>" . get_string('pre_template', 'local_lsf_unification', $alternativecounter++) . '</b><ul style="list-style-type:none">';
+            $pretemplate = get_string('pre_template', 'local_lsf_unification', $alternativecounter++);
+            echo "<b>" . $pretemplate . '</b><ul style="list-style-type:none">';
             foreach ($cats as $name => $catfiles) {
                 if (!empty($name)) {
                     echo '<li style="list-style-image: url(' . $OUTPUT->image_url("t/collapsed")->out(true) . ')" id="reslistselector' . ++$i . '"><a onclick="' . "document.getElementById('reslist" . ($i) . "').style.display=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'block' : 'none'); document.getElementById('reslistselector" . ($i) . "').style.listStyleImage=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'url(" . $OUTPUT->image_url("t/collapsed")->out(true) . ")' : 'url(" . $OUTPUT->image_url("t/expanded")->out(true) . ")');" . '" style="cursor:default">[<b>' . $name . '</b>]</a></b><ul id="reslist' . $i . '" style="display:none">';
                 }
                 foreach ($catfiles as $id => $fileinfo) {
                     $lines = explode("\n", trim($fileinfo->info, " \t\r\n"), 2);
-                    echo '<li style="list-style-image: url(' . $OUTPUT->image_url("i/navigationitem")->out(true) . ')"><a href="duplicate_course.php?courseid=' . $courseid . "&filetype=t&fileid=" . $id . '">' . mb_convert_encoding($lines[0], 'UTF-8', 'ISO-8859-1') . "</a>";
+                    $text = mb_convert_encoding($lines[0], 'UTF-8', 'ISO-8859-1');
+                    $imgnavitem = $OUTPUT->image_url("i/navigationitem")->out();
+                    $href = "duplicate_course.php?courseid=" . $courseid . "&filetype=t&fileid=" . $id;
+                    echo '<li style="list-style-image: url(' . $imgnavitem . ')"><a href="' . $href . '">' . $text . "</a>";
                     if (count($lines) == 2) {
                         echo "<br/>" . mb_convert_encoding($lines[1], 'UTF-8', 'ISO-8859-1');
                     }
@@ -203,7 +228,10 @@ function print_res_selection() {
         }
 
         // Continue with a blank course.
-        echo "<b>" . get_string('no_template', 'local_lsf_unification', $alternativecounter++) . "</b><ul><li><a href='request.php?courseid=" . $courseid . "&answer=7'>" . get_string('continue_with_empty_course', 'local_lsf_unification') . "</a></li></ul>";
+        $notemplate = get_string('no_template', 'local_lsf_unification', $alternativecounter++);
+        $emptycourse = get_string('continue_with_empty_course', 'local_lsf_unification');
+        $href = "request.php?courseid=" . $courseid . "&answer=7";
+        echo "<b>" . $notemplate . "</b><ul><li><a href=" . $href . ">" . $emptycourse . "</a></li></ul>";
 
         // Duplicate course from the course .
         if (get_config('local_lsf_unification', 'restore_old_courses') && !empty($backupfiles)) {
@@ -213,7 +241,8 @@ function print_res_selection() {
                 return strcmp($a->course->fullname, $b->course->fullname);
             });
             foreach ($backupfiles as $id => $fileinfo) {
-                echo "<li><a href='duplicate_course.php?courseid=" . $courseid . "&filetype=b&fileid=" . $id . "'>" . $fileinfo->course->fullname . " (" . $fileinfo->datetime . ")</a></li>";
+                $href = "duplicate_course.php?courseid=" .  $courseid . "&filetype=b&fileid=" . $id;
+                echo "<li><a href='" . $href . "'>" . $fileinfo->course->fullname . " (" . $fileinfo->datetime . ")</a></li>";
             }
             echo "</ul>";
         }
@@ -234,12 +263,25 @@ function print_remote_creation() {
     if (empty($veranstid)) {
         echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='" . $answer . "'>";
         if (empty($teachername)) {
-            echo "<b>" . get_string('choose_teacher', 'local_lsf_unification') . "</b><input type='text' name='teachername' size='20' value='" . $teachername . "'>";
+            $chooseteacher = get_string('choose_teacher', 'local_lsf_unification');
+            echo "<b>" . $chooseteacher . "</b><input type='text' name='teachername' size='20' value='" . $teachername . "'>";
         } else {
             echo "<input type='hidden' name='teachername' value='" . $teachername . "'>";
-            print_coursetable($teachername, "<tr><td><input type='radio' name='veranstid' id='veranstid_' value='" . (-1) . "'></td><td><label for='veranstid_'>" . get_string('answer_course_in_lsf_but_invisible', 'local_lsf_unification', $teachername) . "</label></td></tr>");
+            $answercourselsf = get_string('answer_course_in_lsf_but_invisible', 'local_lsf_unification', $teachername);
+            $appendix = "
+                <tr>
+                    <td>
+                        <input type='radio' name='veranstid' id='veranstid_' value='" . (-1) . "'>
+                    </td>
+                    <td>
+                        <label for='veranstid_'>" . $answercourselsf . "</label>
+                    </td>
+                </tr>";
+            print_coursetable($teachername, $appendix);
         }
-        echo "<input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></form><br><a href='request.php'>" . get_string('back', 'local_lsf_unification') . "</a>";
+        $select = get_string('select', 'local_lsf_unification');
+        $back = get_string('back', 'local_lsf_unification');
+        echo "<input type='submit' value='" . $select . "'/></form><br><a href='request.php'>" . $back . "</a>";
     } else {
         if ($veranstid < 0) {
             echo get_string('his_info', 'local_lsf_unification');
@@ -275,7 +317,17 @@ function print_coursecreation() {
         // Enable self enrolment if dbenrolment is disabled globally.
         $enableselfenrolment = !$extenabledglobal ? true : ($data->selfenrolment == 1);
 
-        $result = create_lsf_course($veranstid, $data->fullname, $data->shortname, $data->summary, $data->startdate, $enabledbenrolment, $enableselfenrolment, empty($data->enrolment_key) ? "" : ($data->enrolment_key), $data->category);
+        $result = create_lsf_course(
+            $veranstid,
+            $data->fullname,
+            $data->shortname,
+            $data->summary,
+            $data->startdate,
+            $enabledbenrolment,
+            $enableselfenrolment,
+            empty($data->enrolment_key) ? "" : ($data->enrolment_key),
+            $data->category
+        );
         $courseid = $result['course']->id;
         $event = \local_lsf_unification\event\course_imported::create([
             'objectid' => $courseid,
@@ -285,7 +337,9 @@ function print_coursecreation() {
         $event->trigger();
         if (!empty($data->category_wish)) {
             if (!empty($CFG->supportemail)) {
-                $result['warnings'] .= (send_support_mail($result['course'], $data->category_wish) ? ("\n" . get_string('email_success', 'local_lsf_unification')) : ("\n" . get_string('email_error', 'local_lsf_unification')));
+                $emailsucc = "\n" . get_string('email_success', 'local_lsf_unification');
+                $emailerr = "\n" . get_string('email_error', 'local_lsf_unification');
+                $result['warnings'] .= (send_support_mail($result['course'], $data->category_wish) ? ($emailsucc) : ($emailerr));
             }
         }
         // Update customfield.
@@ -297,8 +351,9 @@ function print_coursecreation() {
             $datacontroller->set('contextid', $coursecontext->id);
             $datacontroller->instance_form_save($data);
         }
-
-        echo (!empty($result["warnings"])) ? ("<p>" . $OUTPUT->box("<b>" . get_string('warnings', 'local_lsf_unification') . "</b><br>" . "<pre>" . $result["warnings"] . "<pre>") . "</p>") : "";
+        $warnings = get_string('warnings', 'local_lsf_unification');
+        $out = "<p>" . $OUTPUT->box("<b>" . $warnings . "</b><br>" . "<pre>" . $result["warnings"] . "<pre>") . "</p>";
+        echo (!empty($result["warnings"])) ? $out : "";
         print_final($result["course"]->id);
     } else {
         $editform->display();
@@ -320,11 +375,12 @@ function print_request_handler() {
         $params = new stdClass();
         $params->a = $requester->firstname . " " . $requester->lastname;
         $params->b = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1');
+        $href = $CFG->wwwroot . "/local/lsf_unification/request.php?answer=" . $answer . "&requestid=" . $request->id;
+        $remoteaccept = get_string('remote_request_accept', 'local_lsf_unification', $params);
+        $remotedeclined = get_string('remote_request_decline', 'local_lsf_unification', $params);
         echo '<p>' .
-            '<a href="' . $CFG->wwwroot . '/local/lsf_unification/request.php?answer=' . $answer . '&requestid=' . $request->id . '&accept=1">' . get_string('remote_request_accept', 'local_lsf_unification', $params) . '</a>' .
-            '<br>';
-        echo '<a href="' . $CFG->wwwroot . '/local/lsf_unification/request.php?answer=' . $answer . '&requestid=' . $request->id . '&accept=2">' . get_string('remote_request_decline', 'local_lsf_unification', $params) . '</a>' .
-            '</p>';
+            "<a href='" . $href . "&accept=1'>" . $remoteaccept . "</a>" . "<br>";
+        echo "<a href='" . $href . "&accept=2'>" . $remotedeclined . "</a>" . "<br>";
     } else {
         if ($accept == 1) {
             set_course_accepted($veranstid);
