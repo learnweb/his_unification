@@ -17,7 +17,12 @@
 /**
  * This page adds a hislsf calendar instance to the users calendars. It is accessible from the manage_calendars site.
  * To limit the changes to original moodle-files, the call of his_add_cal() is done here.
+ *
+ * @package local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once('../../config.php');
 require_once('cal_lib.php');
 require_login();
