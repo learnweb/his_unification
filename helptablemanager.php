@@ -79,15 +79,57 @@ if ($originid == -1) {
         $child->mdlid = get_mdlid($child->origin);
         $child->name = empty($child->mdlid) ? "" : get_mdlname($child->origin);
         $maxorigin = ($child->origin > $maxorigin) ? $child->origin : $maxorigin;
-        $childlist .= "<tr>" . ((!has_sublevels($child->ueid)) ? "<td>&nbsp;</td>" : ("<td nowrap='nowrap'>&nbsp;[<a href='?originid=" . ($child->origin) . "'>" . get_string('navigate', 'local_lsf_unification') . "</a>]</td>")) . "<td><label for='idch_" . ($child->origin) . "'>" . $prefix . " " . ($child->txt) . "</label></td><td nowrap='nowrap'>&nbsp;[" . (empty($child->mdlid) ? get_string('not_mapped', 'local_lsf_unification') : ("<a href='../../course/category.php?id=" . ($child->mdlid) . "'>" . ($child->name) . "</a>")) . "]</td><td nowrap='nowrap'>&nbsp;[<input id='idch_" . ($child->origin) . "' type='checkbox' name='ch_" . ($child->origin) . "' value='x'><label for='idch_" . ($child->origin) . "'> " . get_string(empty($child->mdlid) ? 'map' : 'overwrite', 'local_lsf_unification') . "</label>]</td>" . ((empty($child->mdlid)) ? "<td>&nbsp;</td>" : ("<td nowrap='nowrap'>&nbsp;[<a href='?originid=" . $originid . "&delete=" . $child->origin . "'>" . get_string('delete', 'local_lsf_unification') . "</a>]</td>")) . "</tr>";
+        $str = [
+            0 => get_string('navigate', 'local_lsf_unification'),
+            1 => get_string('not_mapped', 'local_lsf_unification'),
+            2 => get_string(empty($child->mdlid) ? 'map' : 'overwrite', 'local_lsf_unification'),
+            3 => get_string('delete', 'local_lsf_unification'),
+        ];
+        $childlist .=
+            "<tr>" . (
+                (!has_sublevels($child->ueid))
+                ? "<td>&nbsp;</td>"
+                : ("<td nowrap='nowrap'>&nbsp;[
+                        <a href='?originid=" . ($child->origin) . "'>" . $str[0] . "</a>]
+                    </td>")
+            ) . "
+                <td>
+                    <label for='idch_" . ($child->origin) . "'>" . $prefix . " " . ($child->txt) . "</label>
+                </td>
+                <td nowrap='nowrap'>&nbsp;[" .
+                    (empty($child->mdlid)
+                    ? $str[1]
+                    : ("<a href='../../course/category.php?id=" . ($child->mdlid) . "'>" . ($child->name) . "</a>")) . "]
+                </td>
+                <td nowrap='nowrap'>&nbsp;[
+                        <input id='idch_" . ($child->origin) . "' type='checkbox' name='ch_" . ($child->origin) . "' value='x'>
+                        <label for='idch_" . ($child->origin) . "'> " . $str[2]  . "</label>
+                    ]
+                </td>" . (
+                    (empty($child->mdlid))
+                    ? "<td>&nbsp;</td>"
+                    : ("<td nowrap='nowrap'>&nbsp;[
+                            <a href='?originid=" . $originid . "&delete=" . $child->origin . "'>" . $str[3]  . "</a>
+                        ]
+                        </td>")
+                ) .
+            "</tr>";
     }
     $maincategories = get_mdl_toplevels();
     $options = "";
     foreach ($maincategories as $id => $txt) {
         $options .= "<option value='" . $id . "'>" . $txt->name . "</option>";
     }
-    $catchoice = "<b>" . get_string('main_category', 'local_lsf_unification') . "</b>: <select name='mainid'>" . $options . "</select> &nbsp; <input type='submit' value='" . get_string('map', 'local_lsf_unification') . "'><input type='hidden' name='originid' value='" . $originid . "'><input type='hidden' name='maxorigin' value='" . $maxorigin . "'>";
-    echo "<form action='' method='get' class='mform'><p>" . $OUTPUT->box($parentstxt) . "</p><p>" . $OUTPUT->box("<table>" . $childlist . "</table>") . "</p><p>" . $OUTPUT->box($catchoice) . "</p></form>";
+    $catchoice = "<b>" . get_string('main_category', 'local_lsf_unification') . "</b>:
+        <select name='mainid'>" . $options . "</select> &nbsp;
+        <input type='submit' value='" . get_string('map', 'local_lsf_unification') . "'>
+        <input type='hidden' name='originid' value='" . $originid . "'>
+        <input type='hidden' name='maxorigin' value='" . $maxorigin . "'>";
+    echo "<form action='' method='get' class='mform'>
+            <p>" . $OUTPUT->box($parentstxt) . "</p>
+            <p>" . $OUTPUT->box("<table>" . $childlist . "</table>") . "</p>
+            <p>" . $OUTPUT->box($catchoice) . "</p>
+          </form>";
 } else if ($mdlid == -1) {
     $hiddenfields = "";
     $childlist = "";
@@ -106,7 +148,19 @@ if ($originid == -1) {
             $options .= "<option value='" . $id . "'>" . $txt . "</option>";
         }
     }
-    echo "<form action='' method='get' class='mform'><p>" . $OUTPUT->box("<p>" . $childlist . "</p><b>=&gt;</b><p><b>" . get_string('sub_category', 'local_lsf_unification') . "</b>: <select name='mdlid'>" . $options . "</select></p>") . "</p><input type='hidden' name='originid' value='" . $originid . "'><input type='hidden' name='mainid' value='" . $mainid . "'><input type='hidden' name='maxorigin' value='" . $maxorigin . "'>" . $hiddenfields . "<input type='submit' value='" . get_string('map', 'local_lsf_unification') . "'></form>";
+    echo "<form action='' method='get' class='mform'>
+            <p>" . $OUTPUT->box("<p>" . $childlist . "</p><b>=&gt;</b>
+                <p>
+                    <b>" . get_string('sub_category', 'local_lsf_unification') . "</b>:
+                    <select name='mdlid'>" . $options . "</select>
+                </p>") .
+            "</p>
+            <input type='hidden' name='originid' value='" . $originid . "'>
+            <input type='hidden' name='mainid' value='" . $mainid . "'>
+            <input type='hidden' name='maxorigin' value='" . $maxorigin . "'>" .
+                $hiddenfields .
+            "<input type='submit' value='" . get_string('map', 'local_lsf_unification') . "'>
+          </form>";
 } else {
     $mapchilds = [];
     $maptxt = "";
