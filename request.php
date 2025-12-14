@@ -207,7 +207,17 @@ function print_res_selection() {
             echo "<b>" . $pretemplate . '</b><ul style="list-style-type:none">';
             foreach ($cats as $name => $catfiles) {
                 if (!empty($name)) {
-                    echo '<li style="list-style-image: url(' . $OUTPUT->image_url("t/collapsed")->out(true) . ')" id="reslistselector' . ++$i . '"><a onclick="' . "document.getElementById('reslist" . ($i) . "').style.display=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'block' : 'none'); document.getElementById('reslistselector" . ($i) . "').style.listStyleImage=((document.getElementById('reslist" . $i . "').style.display == 'none') ? 'url(" . $OUTPUT->image_url("t/collapsed")->out(true) . ")' : 'url(" . $OUTPUT->image_url("t/expanded")->out(true) . ")');" . '" style="cursor:default">[<b>' . $name . '</b>]</a></b><ul id="reslist' . $i . '" style="display:none">';
+                    // LEARNWEB-TODO: move the two js-lines to a new file.
+                    $jscheck = "(document.getElementById('reslist" . $i . "').style.display == 'none') ? 'block' : 'none'";
+                    $js = "document.getElementById('reslist" . ($i) . "').style.display=(" . $jscheck . ");";
+
+                    $exp = "'url(" . $OUTPUT->image_url("t/expanded")->out() . ")'";
+                    $col = "'url(" . $OUTPUT->image_url("t/collapsed")->out() . ")'";
+                    $js2check = "(document.getElementById('reslist" . $i . "').style.display == 'none') ? " . $col . ":" . $exp;
+                    $js2 = "document.getElementById('reslistselector" . ($i) . "').style.listStyleImage=(" . $js2check . ");";
+                    $alement = '<a onclick="' . $js  . $js2 . '" style="cursor:default">[<b>' . $name . '</b>]</a>';
+                    $reslist = '</b><ul id="reslist' . $i . '" style="display:none">';
+                    echo '<li style="list-style-image: url(' . $col . ')" id="reslistselector' . ++$i . '">' . $alement . $reslist;
                 }
                 foreach ($catfiles as $id => $fileinfo) {
                     $lines = explode("\n", trim($fileinfo->info, " \t\r\n"), 2);
