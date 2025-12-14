@@ -202,7 +202,7 @@ function get_courses_by_veranstids($veranstids) {
         FROM " . HIS_VERANSTALTUNG . " as veranst
         WHERE
           veranstid in ($veranstidsstring)
-          AND (CURRENTDATE - CAST(veranst.zeitstempel AS date)) < $maxage
+          AND (CURRENT_DATE - CAST(veranst.zeitstempel AS date)) < $maxage
         ORDER BY semester, titel;";
 
     $q = pg_query($pgdb->connection, $sql);

@@ -28,7 +28,6 @@ global $CFG, $USER, $DB, $PAGE, $SESSION, $OUTPUT;
 
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 require_once($CFG->dirroot . '/local/lsf_unification/request_form.php');
-require_once($CFG->dirroot . '/lib/outputlib.php');
 
 $veranstid = optional_param('veranstid', null, PARAM_INT);
 $questionsanswered = optional_param('questionsanswered', null, PARAM_INT);
