@@ -163,13 +163,13 @@ class lsf_course_request_form extends moodleform {
 
     /**
      * Perform some extra moodle validation.
-     * @param $data
-     * @param $files
+     * @param array $data
+     * @param array $files
      * @return array
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function validation($data, $files) {
+    public function validation(array $data, array $files): array {
         global $DB, $CFG;
 
         $errors = parent::validation($data, $files);

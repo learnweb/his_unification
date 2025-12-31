@@ -198,10 +198,10 @@ final class ad_hoc_task_test extends advanced_testcase {
     }
     /**
      * Trims all \n and \r characters from a string.
-     * @param $string
+     * @param string $string
      * @return string
      */
-    private function trim_string($string) {
+    private function trim_string(string $string): string {
         $returnstring = str_replace("\n", " ", $string);
         $returnstring = str_replace("\r", "", $returnstring);
         // Remove leading whitespaces at start and end of string.

@@ -60,10 +60,10 @@ function create_aggregate() {
 
 /**
  * Retrieves and saves all title-id (ueid) and semester from the learnweb_ueberschrift table.
- *
- * @return mixed|null the semester from a given title-id (ueid))
+ * @param int $ueid
+ * @return int|null the semester from a given title-id (ueid))
  */
-function get_cat_sem($ueid) {
+function get_cat_sem(int $ueid): int|null {
     // LEARNWEB-TODO: filter the right row directly in the query, then return it. Dont save all semester and search for it.
     global $pgdb, $hupstatssemtable;
     // Read or (if not existing) create array.
@@ -80,10 +80,10 @@ function get_cat_sem($ueid) {
 /**
  * Get an array that lists the veranstid and count for every type of 'veranstaltung'.
  *
- * @param $ueids
+ * @param string $ueids
  * @return array
  */
-function get_cat_veranstids_and_count($ueids) {
+function get_cat_veranstids_and_count(string $ueids): array {
     global $pgdb;
     $hupstatsveranstcounttable = [];
     if (!empty($ueids)) {

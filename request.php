@@ -80,7 +80,7 @@ if (!empty($requestid)) {
  * @return void
  * @throws \core\exception\coding_exception
  */
-function print_first_overview() {
+function print_first_overview(): void {
     global $PAGE;
     global $USER;
     $courselist = array_filter(
@@ -95,12 +95,12 @@ function print_first_overview() {
 
 /**
  * Print helptext.
- * @param $t
- * @param $s
+ * @param string $t
+ * @param string|null $s
  * @return void
  * @throws coding_exception
  */
-function print_helptext($t, $s = null) {
+function print_helptext(string $t, string|null $s = null): void {
     $answerstr = get_string('answer_' . $t, 'local_lsf_unification');
     $infostr = get_string('info_' . $t, 'local_lsf_unification', $s, true);
     echo "<u>" . $answerstr . "</u><br>" . $infostr;
@@ -112,7 +112,7 @@ function print_helptext($t, $s = null) {
  * @return void
  * @throws coding_exception
  */
-function print_courseselection() {
+function print_courseselection(): void {
     global $USER, $answer;
     echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='" . $answer . "'>";
     print_coursetable($USER->username);
@@ -122,12 +122,12 @@ function print_courseselection() {
 
 /**
  * Print the course table for a teacher.
- * @param $teacher
- * @param $appendix
+ * @param string $teacher
+ * @param string $appendix
  * @return void
  * @throws coding_exception
  */
-function print_coursetable($teacher, $appendix = "") {
+function print_coursetable(string $teacher, string $appendix = ""): void {
     echo "<table><tr><td colspan='2'><b>" . get_string('choose_course', 'local_lsf_unification') . "</b></td></tr>";
     foreach (get_teachers_course_list($teacher, true) as $course) {
         if (!course_exists($course->veranstid)) {

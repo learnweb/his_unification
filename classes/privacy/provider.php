@@ -24,10 +24,16 @@
 
 namespace local_lsf_unification\privacy;
 
+defined('MOODLE_INTERNAL') || die();
+
+use coding_exception;
+use context;
 use core_privacy\local\request\writer;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\contextlist;
+use dml_exception;
+
 /**
  * Privacy provider for lsf_unification implementing metadata\provider and plugin\provider.
  * Remark: This Plugin does not need to provide a export to external sources since data from the HisLSF system
@@ -41,10 +47,10 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
 
     /**
      * Provides a description of the data saved.
-     * @param $collection
-     * @return mixed
+     * @param collection $collection
+     * @return collection
      */
-    public static function get_metadata($collection) {
+    public static function _get_metadata(collection $collection): collection {
         $collection->add_database_table(
             'local_lsf_course',
             [
@@ -65,9 +71,9 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * Get the list of contexts that contain user information for the specified user.
      * @param int $userid The user to search.
      * @return contextlist $contextlist The list of contexts for a specific user.
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function _get_contexts_for_userid($userid) {
         global $DB;
         $contextlist = new contextlist();
 
@@ -90,10 +96,11 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
     /**
      * Export the user data to a given contextlist.
      * @param approved_contextlist $contextlist
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @return void
+     * @throws coding_exception
+     * @throws dml_exception
      */
-    public static function export_user_data(approved_contextlist $contextlist) {
+    public static function _export_user_data(approved_contextlist $contextlist): void {
         global $DB;
 
         if (empty($contextlist->count())) {
@@ -141,14 +148,14 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
 
     /**
      * Helper Function to build the data for a given courserequest.
-     * @param $action \string requester or acceptor
-     * @param $courserequest
-     * @param $username
+     * @param string $action requester or acceptor
+     * @param object $courserequest
+     * @param string $username
      * @return object
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @throws coding_exception
+     * @throws dml_exception
      */
-    private function create_data_to_write($action, $courserequest, $username) {
+    private function create_data_to_write(string $action, object $courserequest, string $username): object {
         global $DB;
         $status = '';
         switch ($courserequest->requeststate) {
@@ -180,10 +187,11 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
 
     /**
      * Deletes data from the table for all users in all contexts.
-     * @param $context
-     * @throws \dml_exception
+     * @param context $context
+     * @return void
+     * @throws dml_exception
      */
-    public static function delete_data_for_all_users_in_context($context) {
+    public static function _delete_data_for_all_users_in_context(context $context): void {
         global $DB;
 
         // Sanity check that context is at the System context level.
@@ -201,10 +209,11 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
 
     /**
      * Deletes all records belonging to a user of a contextlist.
-     * @param $contextlist
-     * @throws \dml_exception
+     * @param approved_contextlist $contextlist
+     * @return void
+     * @throws dml_exception
      */
-    public static function delete_data_for_user($contextlist) {
+    public static function _delete_data_for_user(approved_contextlist $contextlist): void {
         global $DB;
         $contexts = $contextlist->get_contexts();
         if (empty($contexts)) {
