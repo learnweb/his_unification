@@ -93,10 +93,11 @@ function his_already_imported_cal() {
 
 /**
  * Adds a link to "cal_import.php" to the form
- * @param $mform
+ * @param MoodleQuickForm $mform
+ * @return void
  * @package local_lsf_unification
  */
-function his_print_cal_import_form($mform) {
+function his_print_cal_import_form(MoodleQuickForm $mform): void {
     global $PAGE, $CFG;
     if (his_already_imported_cal()) {
         return;

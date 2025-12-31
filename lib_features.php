@@ -33,30 +33,30 @@ require_once($CFG->dirroot . '/course/format/lib.php');
  * creates a course
  * source code very close to course/lib.php: create_course()
  *
- * @param $veranstid idnumber
- * @param $fullname
- * @param $shortname
- * @param $summary
- * @param $startdate
- * @param $databaseenrol
- * @param $selfenrol
- * @param $password
- * @param $category
- * @throws moodle_exception
+ * @param int $veranstid
+ * @param string $fullname
+ * @param string $shortname
+ * @param string $summary
+ * @param int $startdate
+ * @param bool $databaseenrol
+ * @param bool $selfenrol
+ * @param string $password
+ * @param stdClass $category
  * @return array consisting of the course-object and warnings
+ * @throws moodle_exception
  * @package local_lsf_unification
  */
 function create_lsf_course(
-    $veranstid,
-    $fullname,
-    $shortname,
-    $summary,
-    $startdate,
-    $databaseenrol,
-    $selfenrol,
-    $password,
-    $category
-) {
+    int $veranstid,
+    string $fullname,
+    string $shortname,
+    string $summary,
+    int $startdate,
+    bool $databaseenrol,
+    bool $selfenrol,
+    string $password,
+    stdClass $category
+): array {
     global $DB, $USER, $CFG;
     $transaction = $DB->start_delegated_transaction();
     $warnings = "";
@@ -120,11 +120,11 @@ function create_lsf_course(
 /**
  * sends mail to support regarding category moving wishes
  *
- * @param $course
- * @param $text
+ * @param object $course
+ * @param string $text
  * @return bool
  */
-function send_support_mail($course, $text) {
+function send_support_mail(object $course, string $text): bool {
     global $USER;
     $supportuser = get_or_create_support_user();
     $params = new stdClass();
@@ -144,12 +144,12 @@ function send_support_mail($course, $text) {
 
 /**
  * Queues an adhoc task to send a request for a course creation.
- * @param $recipientusername
- * @param $course
- * @param $requestid
+ * @param string $recipientusername
+ * @param object $course
+ * @param int $requestid
  * @return bool
  */
-function send_course_request_mail($recipientusername, $course, $requestid) {
+function send_course_request_mail(string $recipientusername, object $course, int $requestid): bool {
     global $USER;
     $email = username_to_mail($recipientusername);
     $user = get_or_create_user($recipientusername, $email);
@@ -167,21 +167,22 @@ function send_course_request_mail($recipientusername, $course, $requestid) {
 
 /**
  * Creates link to request.php with a set veranstid.
- * @param $veranstid
+ * @param int $veranstid
+ * @return string
  *
  */
-function get_remote_creation_continue_link($veranstid) {
+function get_remote_creation_continue_link(int $veranstid): string {
     global $CFG;
     return $CFG->wwwroot . '/local/lsf_unification/request.php?answer=1&veranstid=' . $veranstid;
 }
 
 /**
  * Queues an adhoc task to send a mail that a requested course was accepted.
- * @param $recipient
- * @param $course
+ * @param object $recipient
+ * @param object $course
  * @return bool
  */
-function send_course_creation_mail($recipient, $course) {
+function send_course_creation_mail(object $recipient, object $course): bool {
     global $USER;
     $params = new stdClass();
     $params->a = $USER->firstname . " " . $USER->lastname;
@@ -197,11 +198,11 @@ function send_course_creation_mail($recipient, $course) {
 
 /**
  * Queues an adhoc task to send a mail that a requested course was declined.
- * @param $recipient
- * @param $course
+ * @param object $recipient
+ * @param object $course
  * @return bool
  */
-function send_sorry_mail($recipient, $course) {
+function send_sorry_mail(object $recipient, object $course): bool {
     global $USER;
     $params = new stdClass();
     $params->a = $USER->firstname . " " . $USER->lastname;
@@ -219,10 +220,10 @@ function send_sorry_mail($recipient, $course) {
 
 /**
  * Return an array of course's ids where $USER is teacher
- * @param $additionalid
+ * @param int|null $additionalid
  * @return array
  */
-function get_my_courses_as_teacher($additionalid = null) {
+function get_my_courses_as_teacher(int|null $additionalid = null): array {
     global $DB, $USER, $CFG;
     $helpfuntion1 = function ($arrayelement) {
         return $arrayelement->instanceid;
@@ -240,10 +241,10 @@ function get_my_courses_as_teacher($additionalid = null) {
 
 /**
  * return an array of fileinfo-objects that lists automated backup files of courses tought by $USER
- * @param $additionalid
+ * @param int|null $additionalid
  * @return array
  */
-function get_backup_files($additionalid = null) {
+function get_backup_files(int|null $additionalid = null): array {
     global $DB, $USER;
     // Disable restore feature temporarily.
     $backuppath = get_config('backup', 'backup_auto_destination') . '';
@@ -272,7 +273,7 @@ function get_backup_files($additionalid = null) {
  * return an array of fileinfo-objects that lists template files
  * @return array
  */
-function get_template_files() {
+function get_template_files(): array {
     global $DB, $USER;
     // Disable restore feature temporarily.
     $backuppath = get_config('backup', 'backup_auto_destination') . '/templates';
@@ -323,11 +324,11 @@ function get_template_files() {
  * SECURITY WARNING: For the time of the restore process (and only in the context of the target course)
  * the user will be assigned to a role that has the restoring-capability.
  *
- * @param $courseid target course
- * @param $foldername unziped backupfiles
+ * @param int $courseid target course
+ * @param string $foldername unziped backupfiles
  * @return void
  */
-function duplicate_course($courseid, $foldername) {
+function duplicate_course(int $courseid, string $foldername): void {
     global $DB, $USER;
 
     $transaction = $DB->start_delegated_transaction();
@@ -409,13 +410,11 @@ function duplicate_course($courseid, $foldername) {
 /**
  * Unzips a zip file.
  *
- * @param $zipfile
- * @param $destination
- * @param $showstatus
- * @param $showstatusignored
- * @return void
+ * @param stored_file|string $zipfile
+ * @param string $destination
+ * @return bool
  */
-function lsf_unification_unzip($zipfile, $destination = '', $showstatusignored = true) {
+function lsf_unification_unzip(stored_file|string $zipfile, string $destination = ''): bool {
     global $CFG, $USER;
     $fb = get_file_packer('application/vnd.moodle.backup');
     $result = $fb->extract_to_pathname(
@@ -425,5 +424,4 @@ function lsf_unification_unzip($zipfile, $destination = '', $showstatusignored =
         null
     );
     return $result != false;
-    return true;
 }
