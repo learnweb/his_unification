@@ -271,7 +271,7 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
             'local_lsf_unification/icalurl',
             get_string('icalurl', 'local_lsf_unification'),
             get_string('icalurl_description', 'local_lsf_unification'),
-            implode(null, $defaulsetting),
+            implode("", $defaulsetting),
             PARAM_RAW
         )
     );
