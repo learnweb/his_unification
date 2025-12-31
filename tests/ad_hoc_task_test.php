@@ -16,6 +16,10 @@
 
 namespace local_lsf_unification;
 
+use advanced_testcase;
+use coding_exception;
+use moodle_exception;
+
 /**
  * Test the ad_hoc tasks.
  *
