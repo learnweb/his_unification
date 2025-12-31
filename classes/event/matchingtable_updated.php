@@ -22,6 +22,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_lsf_unification\event;
+use core\exception\moodle_exception;
+use moodle_url;
+
+defined('MOODLE_INTERNAL') || die();
 /**
  * The matchingtableupdated event class.
  *
@@ -31,47 +35,34 @@ namespace local_lsf_unification\event;
  **/
 class matchingtable_updated extends \core\event\base {
     /**
-     * Init function.
-     *
-     * @return
+     * @return void
      */
-    protected function init() {
-        $this->data['crud'] = 'u';
+    protected function init(): void {
+        $this->data['crud'] = 'u'; // c(reate), r(ead), u(pdate), d(elete)
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'local_lsf_category';
     }
 
     /**
-     * Return the event name.
-     *
      * @return string
+     * @throws \coding_exception
      */
-    public static function get_name() {
+    public static function get_name(): string {
         return get_string('eventmatchingtable_updated', 'local_lsf_unification');
     }
 
-
     /**
-     * Return the event description.
-     *
      * @return string
      */
-    public function get_description() {
-        $params = (object) [
-            'userid' => $this->userid,
-            'objectid' => $this->objectid,
-            'mappingold' => $this->other["mappingold"],
-            'mappingnew' => $this->other["mappingnew"],
-        ];
-        return get_string("eventmatchingtable_updated_desc", 'local_lsf_unification', $params);
+    public function get_description(): string {
+        return "The user with id '{$this->userid}' updated a his category matching with id '{$this->objectid}'. Original mapping: '{$this->other["mappingold"]}'. New mapping: '{$this->other["mappingnew"]}'.";
     }
 
     /**
-     * Return the event url.
-     *
-     * @return \moodle_url
+     * @return moodle_url
+     * @throws moodle_exception
      */
-    public function get_url() {
-        return new \moodle_url('/local/lsf_unification/helptablemanager.php', ['originid' => $this->other["originid"]]);
+    public function get_url(): moodle_url {
+        return new moodle_url('/local/lsf_unification/helptablemanager.php', ['originid' => $this->other["originid"]]);
     }
 }

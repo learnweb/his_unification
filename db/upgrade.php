@@ -38,11 +38,11 @@
  */
 
 /**
- *
+ * Upgrade script for lsf_unification
  * @param int $oldversion
- * @param object $block
+ * @return bool
  */
-function xmldb_local_lsf_unification_upgrade($oldversion) {
+function xmldb_local_lsf_unification_upgrade(int $oldversion): bool {
     global $CFG, $DB;
 
     $dbman = $DB->get_manager();
