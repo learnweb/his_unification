@@ -113,5 +113,26 @@ function xmldb_local_lsf_unification_upgrade(int $oldversion): bool {
         upgrade_plugin_savepoint(true, 2013090300, 'local', 'lsf_unification');
     }
 
+    if ($oldversion < 2025123100) {
+        // Rename tables to use the correct plugin prefix.
+        $oldtable = new xmldb_table('local_lsf_category');
+        if ($dbman->table_exists($oldtable)) {
+            $dbman->rename_table($oldtable, 'local_lsf_unification_category');
+        }
+
+        $oldtable = new xmldb_table('local_lsf_categoryparenthood');
+        if ($dbman->table_exists($oldtable)) {
+            $dbman->rename_table($oldtable, 'local_lsf_unification_categoryparenthood');
+        }
+
+        $oldtable = new xmldb_table('local_lsf_course');
+        if ($dbman->table_exists($oldtable)) {
+            $dbman->rename_table($oldtable, 'local_lsf_unification_course');
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2025123100, 'local', 'lsf_unification');
+    }
+
     return true;
 }
