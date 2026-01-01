@@ -14,21 +14,44 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Form for requests.
+ *
+ * @package   local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 
+/**
+ * Form for the course request.
+ * @package   local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class lsf_course_request_form extends moodleform {
+    /** @var int The course that want to be created. */
     protected $veranstid;
-    protected $lsfcourse;
 
-    function definition() {
+    /**
+     * Define the form.
+     * @return void
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    public function definition() {
         global $USER, $CFG, $DB;
 
         $mform    = $this->_form;
 
-        $veranstid = $this->_customdata['veranstid']; // this contains the data of this form
+        // This contains the data of this form.
+        $veranstid = $this->_customdata['veranstid'];
+
         $this->veranstid = $veranstid;
         $lsfcourse = get_course_by_veranstid($veranstid);
         $this->lsf_course = $lsfcourse;
@@ -48,7 +71,12 @@ class lsf_course_request_form extends moodleform {
         $mform->setType('fullname', PARAM_MULTILANG);
         $mform->setDefault('fullname', get_default_fullname($lsfcourse));
 
-        $mform->addElement('text', 'shortname', get_string('shortnamecourse', 'local_lsf_unification', shortname_hint($lsfcourse)), 'maxlength="100" size="30"');
+        $mform->addElement(
+            'text',
+            'shortname',
+            get_string('shortnamecourse', 'local_lsf_unification', shortname_hint($lsfcourse)),
+            'maxlength="100" size="30"'
+        );
         $mform->addHelpButton('shortname', 'shortnamecourse');
         $mform->addRule('shortname', get_string('missingshortname'), 'required', null, 'client');
         $mform->setType('shortname', PARAM_MULTILANG);
@@ -71,32 +99,38 @@ class lsf_course_request_form extends moodleform {
         $mform->addElement('header', 'enrol', get_string('config_enrol', 'local_lsf_unification'));
         $mform->setExpanded('enrol');
         if (get_config('local_lsf_unification', 'enable_enrol_ext_db')) {
-            $mform->addElement('advcheckbox', 'dbenrolment', get_string('config_dbenrolment', 'local_lsf_unification'), '', ['group' => 1], [0, 1]);
+            $mform->addElement(
+                'advcheckbox',
+                'dbenrolment',
+                get_string('config_dbenrolment', 'local_lsf_unification'),
+                '',
+                ['group' => 1],
+                [0, 1]
+            );
             $mform->addHelpButton('dbenrolment', 'config_dbenrolment', 'local_lsf_unification');
             $mform->setDefault('dbenrolment', 0);
 
-            $mform->addElement('advcheckbox', 'selfenrolment', get_string('config_selfenrolment', 'local_lsf_unification'), '', ['group' => 2], [0, 1]);
+            $mform->addElement(
+                'advcheckbox',
+                'selfenrolment',
+                get_string('config_selfenrolment', 'local_lsf_unification'),
+                '',
+                ['group' => 2],
+                [0, 1]
+            );
             $mform->setDefault('selfenrolment', 1);
             $mform->addHelpButton('selfenrolment', 'config_selfenrolment', 'local_lsf_unification');
         }
 
-        $mform->addElement('passwordunmask', 'enrolment_key', get_string('config_enrolment_key', 'local_lsf_unification'), 'maxlength="100"  size="10"');
+        $mform->addElement(
+            'passwordunmask',
+            'enrolment_key',
+            get_string('config_enrolment_key', 'local_lsf_unification'),
+            'maxlength="100"  size="10"'
+        );
         $mform->setType('enrolment_key', PARAM_RAW);
         $mform->addHelpButton('enrolment_key', 'config_enrolment_key', 'local_lsf_unification');
         $mform->disabledIf('enrolment_key', 'selfenrolment', 'neq', 1);
-
-        /* Enrolment Settings (to be implemented)
-         $mform->addElement('header','', get_string('config_auto_update', 'local_lsf_unification'));
-        $choices = array(
-                        -1 => get_string('config_auto_update_duration-1', 'local_lsf_unification'),
-                        7 => get_string('config_auto_update_duration7', 'local_lsf_unification'),
-                        31 => get_string('config_auto_update_duration31', 'local_lsf_unification'),
-                        182 => get_string('config_auto_update_duration182', 'local_lsf_unification')
-        );
-        $mform->addElement('select', 'update_duration', get_string('config_auto_update_duration','local_lsf_unification'), $choices);
-        $mform->addRule('update_duration', '', 'required');
-        $mform->setDefault('update_duration', -1);
-        */
 
         $mform->addElement('header', 'categoryheader', get_string('config_category', 'local_lsf_unification'));
 
@@ -121,18 +155,21 @@ class lsf_course_request_form extends moodleform {
             $datacontroller->instance_form_definition($mform);
 
             $mform->setDefault('customfield_' . $datacontroller->get_default_value(), 27);
-            // TODO default <=> lsf data!
+            // LEARNWEB-TODO default <=> lsf data!
         }
 
         $this->add_action_buttons();
     }
 
-    function definition_after_data() {
-    }
-
-
-    /// perform some extra moodle validation
-    function validation($data, $files) {
+    /**
+     * Perform some extra moodle validation.
+     * @param array $data
+     * @param array $files
+     * @return array
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function validation(array $data, array $files): array {
         global $DB, $CFG;
 
         $errors = parent::validation($data, $files);

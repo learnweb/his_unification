@@ -52,9 +52,9 @@ class send_mail_category_wish extends \core\task\adhoc_task {
 
         // Expected params of $data->params are:
         // A) a -> (string) firstname + lastname of user requesting a category change,
-        // B) b -> userid of user requesting a category change,
+        // B) b -> link to the user requesting a category change,
         // C) c-> the (string) coursefullname,
-        // D) d-> the courseid, and
+        // D) d-> link to the course, and
         // E) e-> the text entered by the user regarding the category wish.
         $content = get_string('email', 'local_lsf_unification', $data->params);
 

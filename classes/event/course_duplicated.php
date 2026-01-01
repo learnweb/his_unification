@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_lsf_unification\event;
-defined('MOODLE_INTERNAL') || die();
 /**
  * The matchingtableupdated event class.
  *
@@ -31,20 +30,45 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 class course_duplicated extends \core\event\base {
+    /**
+     * Init function.
+     *
+     * @return void
+     */
     protected function init() {
-        $this->data['crud'] = 'c'; // c(reate), r(ead), u(pdate), d(elete)
+        $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = 'course';
     }
 
+    /**
+     * Return the event name.
+     *
+     * @return string
+     */
     public static function get_name() {
         return get_string('eventcourse_duplicated', 'local_lsf_unification');
     }
 
+    /**
+     * Return the event description.
+     *
+     * @return string
+     */
     public function get_description() {
-        return "The user with id '{$this->userid}' duplicated contents from course with id '{$this->other}' into a course with id '{$this->objectid}'.";
+        $params = (object) [
+            'userid' => $this->userid,
+            'other' => $this->other,
+            'objectid' => $this->objectid,
+        ];
+        return get_string('eventcourse_duplicated_desc', 'local_lsf_unification', $params);
     }
 
+    /**
+     * Return the event url.
+     *
+     * @return \moodle_url
+     */
     public function get_url() {
         return new \moodle_url('/course/view.php', ['id' => $this->objectid]);
     }

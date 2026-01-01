@@ -23,8 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-
 $string['ad_hoc_task_failed'] = 'The ad hoc task {$a} failed. It will be queued automatically and executed later again.';
 $string['add_features'] = 'Additional Features';
 $string['add_features_information'] = 'configure additional features here';
@@ -82,10 +80,10 @@ $string['duplication_timeframe'] = 'Course Duplication Timeframe';
 $string['duplication_timeframe_description'] = 'The number of hours after course creation where restore-actions are allowed';
 $string['duplication_timeframe_error'] = 'Sorry but for safety reasons it is not allowed import course data from templates or backups more than {$a} hour(s) after course creation';
 $string['email'] = 'SENDER:
-{$a->a} (' . $CFG->wwwroot . '/user/view.php?id={$a->b})
+{$a->a} ({$a->b})
 
     COURSE:
-    {$a->c} (' . $CFG->wwwroot . '/course/view.php?id={$a->d})
+    {$a->c} ({$a->d})
 
         MESSAGE:
         {$a->e}';
@@ -101,8 +99,11 @@ $string['email_success'] = 'Email regarding category wish will be sent.';
 $string['enable_enrol_ext_db'] = 'Enable external database enrolement';
 $string['enable_enrol_ext_db_description'] = 'Teacher can choose if he wants to use external database enrolement. External database enrolment must be enabled and it must be changed so that it can be enabled for particular courses only';
 $string['eventcourse_duplicated'] = 'Course duplicated';
+$string['eventcourse_duplicated_desc'] = 'The user with id {$a->userid} duplicated contents from course with id {$a->other} into a course with id {$a->objectid}.';
 $string['eventcourse_imported'] = 'Course imported';
+$string['eventcourse_imported_desc'] = 'The user with id {$a->userid} imported the HISLSF-course with veranstid {$a->other} as a new moodle course with id {$a->objectid}.';
 $string['eventmatchingtable_updated'] = 'Matchingtable updated';
+$string['eventmatchingtable_updated_desc'] = 'The user with id {$a->userid} updated a his category matching with id {$a->objectid}. Original mapping: {$a->mappingold}. New mapping: {$a->mappingnew}.';
 $string['his_deeplink_heading'] = 'HIS Deeplink Web Service settings';
 $string['his_deeplink_information'] = 'HIS Deeplink Web Service calls a HIS web service that adds a link to the his course pointing to the moodle course';
 $string['his_deeplink_via_soap'] = 'Enable HIS Deeplink';
@@ -135,8 +136,15 @@ $string['notice'] = 'Usually Learnweb copies course information from the HIS dat
 $string['overwrite'] = 'overwrite';
 $string['pluginname'] = 'LSF Unification';
 $string['plugintitle'] = 'LSF Unification';
-
 $string['pre_template'] = 'Alternative {$a}: Continue with content from a course template ...';
+$string['privacy:local_lsf_unification:acceptor'] = 'A course request was accepted or declined.';
+$string['privacy:local_lsf_unification:requester'] = 'The request for a course was saved.';
+$string['privacy:metadata:local_lsf_unification:acceptorid'] = 'Identifier of the person who accepted the course creation';
+$string['privacy:metadata:local_lsf_unification:mdlid'] = 'Identifier for the event from the moodle instance';
+$string['privacy:metadata:local_lsf_unification:requesterid'] = 'Identifier of the person who requested the course';
+$string['privacy:metadata:local_lsf_unification:requeststate'] = 'Request state of the course';
+$string['privacy:metadata:local_lsf_unification:timestamp'] = 'Timestamp when the course was imported';
+$string['privacy:metadata:local_lsf_unification:veranstid'] = 'Identifier for the event from the HISLSF system';
 $string['question'] = "Please select the first accurate statement:";
 $string['remote_creation'] = 'Remote Course Creation';
 $string['remote_creation_description'] = 'Allow everyone to request courses in the name of a teacher, who than has to confirm';
@@ -172,33 +180,3 @@ $string['warning_cannot_enrol_nologin'] = "person wasn't enrolled (no username f
 $string['warning_cannot_enrol_nouser'] = "person wasn't enrolled (no user found)";
 $string['warning_cannot_enrol_other'] = "person wasn't enrolled";
 $string['warnings'] = 'Warnings:';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Privacy API
-$string['privacy:metadata:local_lsf_unification:veranstid'] = 'Identifier for the event from the HISLSF system';
-$string['privacy:metadata:local_lsf_unification:mdlid'] = 'Identifier for the event from the moodle instance';
-$string['privacy:metadata:local_lsf_unification:timestamp'] = 'Timestamp when the course was imported';
-$string['privacy:metadata:local_lsf_unification:requeststate'] = 'Request state of the course';
-$string['privacy:metadata:local_lsf_unification:requesterid'] = 'Identifier of the person who requested the course';
-$string['privacy:metadata:local_lsf_unification:acceptorid'] = 'Identifier of the person who accepted the course creation';
-
-$string['privacy:local_lsf_unification:requester'] = 'The request for a course was saved.';
-$string['privacy:local_lsf_unification:acceptor'] = 'A course request was accepted or declined.';

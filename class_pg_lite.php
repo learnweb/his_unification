@@ -14,21 +14,52 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die;
+/**
+ * Class for database connection.
+ * @package    local_lsf_unification
+ * @copyright  2025 Tamaro Walter
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+namespace local_lsf_unification;
 
+/**
+ * Class that wraps a connection to psql.
+ * @package    local_lsf_unification
+ * @copyright  2025 Tamaro Walter
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class pg_lite {
+    /** @var null Represents the connection. */
     public $connection = null;
 
+    /**
+     * Connect to psql.
+     * @return bool|string
+     * @throws dml_exception
+     */
     public function connect() {
-        $config = "host='" . get_config('local_lsf_unification', 'dbhost') . "' port ='" . get_config('local_lsf_unification', 'dbport') . "' user='" . get_config('local_lsf_unification', 'dbuser') . "' password='" . get_config('local_lsf_unification', 'dbpass') . "' dbname='" . get_config('local_lsf_unification', 'dbname') . "'";
+        // Build the configuration of the connection to the PostgreSQL database.
+        $host = get_config('local_lsf_unification', 'dbhost');
+        $port = get_config('local_lsf_unification', 'dbport');
+        $user = get_config('local_lsf_unification', 'dbuser');
+        $pass = get_config('local_lsf_unification', 'dbpass');
+        $name = get_config('local_lsf_unification', 'dbname');
+        $config = "host='" . $host . "' port ='" . $port . "' user='" . $user . "' password='" . $pass . "' dbname='" . $name . "'";
+
         ob_start();
         $this->connection = pg_connect($config, PGSQL_CONNECT_FORCE_NEW);
         $dberr = ob_get_contents();
         ob_end_clean();
         echo $dberr;
-        return ((pg_connection_status($this->connection) === false) || (pg_connection_status($this->connection) === PGSQL_CONNECTION_BAD)) ? $dberr : true;
+        $failedconnection = (pg_connection_status($this->connection) == false)
+            || (pg_connection_status($this->connection) === PGSQL_CONNECTION_BAD);
+        return ($failedconnection) ? $dberr : true;
     }
 
+    /**
+     * Dispose connection to psql.
+     * @return void
+     */
     public function dispose() {
         if ($this->connection) {
             pg_close($this->connection);

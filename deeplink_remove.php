@@ -14,6 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Page for Deeplink Removal process.
+ * @package local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 define('NO_OUTPUT_BUFFERING', true);
 require_once("../../config.php");
 require_once("$CFG->libdir/adminlib.php");
@@ -25,7 +32,8 @@ admin_externalpage_setup('local_lsf_unification_deeplink_remove');
 echo $OUTPUT->header();
 echo $OUTPUT->heading('HISLSF Deeplink Removal');
 
-$veranstid = optional_param('veranstid', -1, PARAM_INT);         // his course id
+// HIS course id.
+$veranstid = optional_param('veranstid', -1, PARAM_INT);
 
 $formcontent = "HisLSF-id: <input type='text' name='veranstid' value=''> &nbsp; <input type='submit' value='Remove Deeplink'>";
 echo "<form action='' method='get' class='mform'><p>" . $formcontent . "</p></form>";
