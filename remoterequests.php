@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+use core\output\single_button;
+use core_table\flexible_table;
+use core\url;
+
 define('NO_OUTPUT_BUFFERING', true);
 require_once("../../config.php");
 require_once("$CFG->libdir/adminlib.php");
@@ -55,36 +59,46 @@ if (establish_secondary_DB_connection() === true) {
             echo $OUTPUT->box("<b>Die folgende URL kann <u>nur vom Antragsteller</u> verwendet werden: <br>" . get_remote_creation_continue_link($veranstid) . "</b>");
         }
     }
+
+    $table = new flexible_table("remoterequests");
+    $table->define_baseurl(new url('remoterequests.php'));
+    $table->define_columns(['requestid', 'course', 'requester', 'actions']);
+    $table->define_headers(['Antrag Nr.', 'Veranstaltung', 'Personen', 'Aktionen']);
+    $requests = $DB->get_records('local_lsf_course', ['mdlid' => 0], 'id');
+    $table->setup();
+
     $helpfuntion = function ($arrayel) {
         return $arrayel->veranstid;
     };
-    $requests = get_course_requests();
     $courses = get_courses_by_veranstids(array_map($helpfuntion, $requests));
-    echo "<p>&nbsp;<br><table>";
-    $i = 0;
+
     foreach ($requests as $requestid => $request) {
-        echo '<tr bgcolor="' . (($i++ % 2 == 0) ? "#FFFFFF" : "#CCCCCC") . '">';
-        echo "<td>" . $requestid . "</td>";
-        $requester = $DB->get_record("user", ["id" => $request->requesterid]);
         $course = $courses[$request->veranstid];
-        echo '<td><a href="' . $course->urlveranst . '">' . delete_bad_chars($course->titel) . "</a></td>";
-        echo '<td nowrap>' . $course->semestertxt . "</td>";
-        echo '<td nowrap><a href="' . $CFG->wwwroot . '/user/view.php?id=' . $requester->id . '">' . $requester->firstname . " " . $requester->lastname . "</a>";
+        $courseinfo = '<a href="' . $course->urlveranst . '">' . delete_bad_chars($course->titel) . "</a><br>" . $course->semestertxt;
+
+        $requester = $DB->get_record("user", ["id" => $request->requesterid]);
+        $person = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $requester->id . '">' . $requester->firstname . " " . $requester->lastname . "</a>";
         if ($request->requeststate == 2) {
             $acceptor = $DB->get_record("user", ["id" => $request->acceptorid]);
-            echo '<br>zugelassen durch <a href="' . $CFG->wwwroot . '/user/view.php?id=' . $acceptor->id . '">' . $acceptor->firstname . " " . $acceptor->lastname . "</a>";
+            $person .= '<br>zugelassen durch <a href="' . $CFG->wwwroot . '/user/view.php?id=' . $acceptor->id . '">' . $acceptor->firstname . " " . $acceptor->lastname . "</a>";
         }
-        echo "</td>";
-        echo '<td nowrap><a href="remoterequests.php?action=1&requestid=' . $requestid . '">[loeschen]</a>';
+
+        $actions = [];
+        $baseurl = new url('remoterequests.php', ['requestid' => $requestid]);
         if ($request->requeststate == 1) {
-            echo '<br><a href="remoterequests.php?action=2&requestid=' . $requestid . '">[erlaubnis geben]</a>';
+            $actions[] = new single_button(new url($baseurl, ['action' => 2]), 'Erlaubnis geben', 'get', single_button::BUTTON_PRIMARY);
         } else if ($request->requeststate == 2) {
-            echo '<br><a href="remoterequests.php?action=3&requestid=' . $requestid . '">[email erneut senden]</a>';
-            echo '<br><a href="remoterequests.php?action=4&requestid=' . $requestid . '">[erstellungs-url anzeigen]</a>';
+            $actions[] = new single_button(new url($baseurl, ['action' => 3]), 'Email erneut senden', 'get');
+            $actions[] = new single_button(new url($baseurl, ['action' => 4]), 'Erstellungs-URL anzeigen', 'get');
         }
-        echo "</tr>";
+        $actions[] = new single_button(new url($baseurl, ['action' => 1]), 'Löschen', 'get', single_button::BUTTON_DANGER);
+        $actioncol = '';
+        foreach ($actions as $action) {
+            $actioncol .= '<p>' . $OUTPUT->render($action) . '</p>';
+        }
+        $table->add_data([$requestid, $courseinfo, $person, $actioncol]);
     }
-    echo "</table></p>";
     close_secondary_DB_connection();
+    $table->finish_output();
 }
 echo $OUTPUT->footer();
