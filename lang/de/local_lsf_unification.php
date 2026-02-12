@@ -149,6 +149,7 @@ $string['skip'] = '&Uuml;berspringen';
 $string['sub_category'] = 'Unterkategorie';
 $string['subcategories'] = 'Unterkategorien freischalten';
 $string['subcategories_description'] = 'Erlaubt das einordnen nicht zugeordneter Unterkategorien zu Oberkategorien';
+$string['task_missing_helptable_entries'] = 'Tabellen der LSF-Veranstaltungsüberschriften aktualisieren.';
 $string['template_from_course'] = 'Alternative {$a}: Fortfahren mit den Inhalten eines existierenden Kurses...';
 $string['update_helptable'] = 'Hilfstabelle automatisch aktualisieren';
 $string['warning_cannot_enrol_nologin'] = "Person wurde nicht hinzugef&uuml;gt (kein Benutzername gefunden)";

@@ -405,29 +405,3 @@ function add_path_description(array $choices): array {
     }
     return $result;
 }
-
-/**
- * Function to be run periodically according to the scheduled task.
- *
- * LEARNWEB-TODO: Since 2.7.2 this function is run by scheduled task rather
- * than standard cron.
- * @return void
- */
-function local_lsf_unification_cron(): void {
-    global $CFG, $pgdb;
-    include_once(dirname(__FILE__) . '/class_pg_lite.php');
-    include_once(dirname(__FILE__) . '/lib_features.php');
-
-    $pgdb = new pg_lite();
-    $connected = $pgdb->connect();
-    $recourceid = $pgdb->connection;
-
-    mtrace(
-        '! = unknown category found, ? = unknown linkage found;' . 'Verbindung: ' .
-        ($connected ? 'ja' : 'nein') . ' (' . $recourceid . ')'
-    );
-
-    insert_missing_helptable_entries(true, false);
-
-    $pgdb->dispose();
-}

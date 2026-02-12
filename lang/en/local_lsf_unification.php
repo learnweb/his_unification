@@ -174,6 +174,7 @@ $string['soapwsdl_description'] = 'Wdsl link for the HIS Deeplink service';
 $string['sub_category'] = 'Subcategory';
 $string['subcategories'] = 'Unlock Subcategories';
 $string['subcategories_description'] = 'Enable choosing not mapped subcategories of mapped categories';
+$string['task_missing_helptable_entries'] = 'Update table of LSF categories.';
 $string['template_from_course'] = 'Alternative {$a}: Include contents from an existing course ...';
 $string['update_helptable'] = 'Update Helptable With HIS-LSF data';
 $string['warning_cannot_enrol_nologin'] = "person wasn't enrolled (no username found)";
