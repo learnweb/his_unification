@@ -761,7 +761,7 @@ function insert_missing_helptable_entries(bool $debugoutput = false, bool $tryev
             $entry->parent = empty($hislsftitle->uebergeord) ? ($hislsftitle->ueid) : ($hislsftitle->uebergeord);
             $entry->origin = find_origin_category($hislsftitle->ueid);
             $entry->mdlid = 0;
-            $entry->timestamp = strtotime($hislsftitle->zeitstempel);
+            $entry->timestamp = isset($hislsftitle->zeitstempel) ? strtotime($hislsftitle->zeitstempel) : null;
             $entry->txt = mb_convert_encoding($hislsftitle->txt, 'UTF-8', 'ISO-8859-1');
             if ($debugoutput) {
                 echo "!";
