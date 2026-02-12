@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2025121200;
+$plugin->version   = 2025123100;
 $plugin->component = 'local_lsf_unification';
 $plugin->cron      = 86400;      // Once a day.
 $plugin->requires  = 2024100700; // Require Moodle 4.5.

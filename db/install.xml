@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="local_lsf_category" COMMENT="table containing his categories and info about their learnweb equivalent" NEXT="local_lsf_categoryparenthood">
+    <TABLE NAME="local_lsf_unification_category" COMMENT="table containing his categories and info about their learnweb equivalent" NEXT="local_lsf_categoryparenthood">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="moodle dumbness" NEXT="ueid"/>
         <FIELD NAME="ueid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id from his" PREVIOUS="id" NEXT="parent"/>
@@ -20,7 +20,7 @@
         <KEY NAME="realkey" TYPE="unique" FIELDS="ueid" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_lsf_categoryparenthood" COMMENT="relations between his-categories" PREVIOUS="local_lsf_category" NEXT="local_lsf_course">
+    <TABLE NAME="local_lsf_unification_categoryparenthood" COMMENT="relations between his-categories" PREVIOUS="local_lsf_category" NEXT="local_lsf_course">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="moodle dumbness" NEXT="child"/>
         <FIELD NAME="child" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="parent"/>
@@ -32,7 +32,7 @@
         <KEY NAME="realkey" TYPE="unique" FIELDS="child, parent" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_lsf_course" COMMENT="course matching table" PREVIOUS="local_lsf_categoryparenthood">
+    <TABLE NAME="local_lsf_unification_course" COMMENT="course matching table" PREVIOUS="local_lsf_categoryparenthood">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="veranstid"/>
         <FIELD NAME="veranstid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="mdlid"/>

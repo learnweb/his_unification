@@ -14,18 +14,38 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-include("../../config.php");
-include("./class_pg_lite.php");
-include("./lib.php");
-include("./lib_features.php");
-/// Check permissions.
+/**
+ * Page that shows the update_helptable process.
+ *
+ * @package local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+use local_lsf_unification\pg_lite;
+
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . "/config.php");
+require_once(dirname(__FILE__) . "/class_pg_lite.php");
+require_once(dirname(__FILE__) . "/lib.php");
+require_once(dirname(__FILE__) . "/lib_features.php");
+
+// Check permissions.
 require_admin();
 
-$tryeverything         = optional_param('tryeverything', false, PARAM_INT);       // his category origin id
+// HIS category origin id.
+$tryeverything = optional_param('tryeverything', false, PARAM_INT);
 
 set_time_limit(30 * 60);
 
-echo "<p>! = unknown category found, ? = unknown linkage found<br><a href='?tryeverything=100000'>TryEverything?</a> <i>(set tryeverything to a value x, to only check ids greater then x)</i></p>";
+echo "<p>
+        ! = unknown category found, ? = unknown linkage found
+        <br>
+        <a href='?tryeverything=100000'>TryEverything?</a>
+        <i>(set tryeverything to a value x, to only check ids greater then x)</i>
+      </p>";
 
 $pgdb = new pg_lite();
 echo "<p>Verbindung: " . ($pgdb->connect() ? "ja" : "nein") . " (" . $pgdb->connection . ")</p>";

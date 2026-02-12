@@ -16,7 +16,11 @@
 
 /**
  * Functions that are used by request.php
- * @package local_lsf_unification
+ *
+ * @package     local_lsf_unification
+ * @copyright   2025 Tamaro Walter
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  **/
 defined('MOODLE_INTERNAL') || die;
 
@@ -29,40 +33,50 @@ require_once($CFG->dirroot . '/course/format/lib.php');
  * creates a course
  * source code very close to course/lib.php: create_course()
  *
- * @param $veranstid idnumber
- * @param $fullname
- * @param $shortname
- * @param $summary
- * @param $startdate
- * @param $database_enrol
- * @param $self_enrol
- * @param $password
- * @param $category
- * @throws moodle_exception
+ * @param int $veranstid
+ * @param string $fullname
+ * @param string $shortname
+ * @param string $summary
+ * @param int $startdate
+ * @param bool $databaseenrol
+ * @param bool $selfenrol
+ * @param string $password
+ * @param stdClass $category
  * @return array consisting of the course-object and warnings
+ * @throws moodle_exception
  * @package local_lsf_unification
  */
-function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startdate, $databaseenrol, $selfenrol, $password, $category) {
+function create_lsf_course(
+    int $veranstid,
+    string $fullname,
+    string $shortname,
+    string $summary,
+    int $startdate,
+    bool $databaseenrol,
+    bool $selfenrol,
+    string $password,
+    stdClass $category
+): array {
     global $DB, $USER, $CFG;
     $transaction = $DB->start_delegated_transaction();
     $warnings = "";
     if (course_exists($veranstid)) {
         die("course already exists");
     }
-    // create course
+    // Create course.
     $course = get_default_course($fullname, $veranstid, $summary, $shortname);
     $course->category = empty($category) ? (find_or_create_category("HISLSF", null)->id) : ($category);
     $course->startdate = $startdate;
-    // TODO: In future versions, better use `create_course()` in course/lib.php instead of several of the following lines.
+    // LEARNWEB-TODO: In the future, better use `create_course()` in course/lib.php instead of several of the following lines.
     $numsections = isset($course->numsections) ? $course->numsections : 0;
     $course->id = $DB->insert_record('course', $course);
     if ($course->id == false) {
         throw new moodle_exception('course not created: ' . $DB->get_last_error());
     }
     $course = $DB->get_record("course", ["id" => $course->id]);
-    // create context
+    // Create context.
     $context = context_course::instance($course->id);
-    // setup default blocks
+    // Setup default blocks.
     blocks_add_default_course_blocks($course);
     // Create default section and initial sections if specified (unless they've already been created earlier).
     // We do not want to call course_create_sections_if_missing() because to avoid creating course cache.
@@ -72,20 +86,18 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
         course_create_section($course->id, $sectionnum, true);
     }
 
-    // enable enrollment
+    // Enable enrollment.
     enable_manual_enrolment($course);
 
-    // enrole creator
+    // Enrole creator.
     enrol_try_internal_enrol($course->id, $USER->id, get_config('local_lsf_unification', 'roleid_teacher'));
-    // enrol_try_internal_enrol($course->id, $USER->id, get_config('local_lsf_unification', 'roleid_teacher'), time() - 1, time() + 60 * 60 * get_config('local_lsf_unification', 'duplication_timeframe'));
-
-    // enrole teachers
+    // Enrole teachers.
     $warnings .= enrole_teachers($veranstid, $course->id);
 
-    // create guest-enrolment
+    // Create guest-enrolment.
     create_guest_enrolment($course, $enable = false);
 
-    // enable enrolment-plugins
+    // Enable enrolment-plugins.
     if ($databaseenrol) {
         enable_database_enrolment($course);
     }
@@ -93,10 +105,10 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
         enable_self_enrolment($course, $password);
     }
 
-    // create course in helptable
+    // Create course in helptable.
     set_course_created($veranstid, $course->id);
 
-    // create deeplink
+    // Create deeplink.
     if (get_config('local_lsf_unification', 'his_deeplink_via_soap')) {
         $warnings .= setHisLink($veranstid, $course->id) ? "" : ( (empty($warnings) ? "" : "\n") . "Deeplink-Error");
     }
@@ -108,12 +120,11 @@ function create_lsf_course($veranstid, $fullname, $shortname, $summary, $startda
 /**
  * sends mail to support regarding category moving wishes
  *
- * @param $course
- * @param $text
+ * @param object $course
+ * @param string $text
  * @return bool
- * @package local_lsf_unification
  */
-function send_support_mail($course, $text) {
+function send_support_mail(object $course, string $text): bool {
     global $USER;
     $supportuser = get_or_create_support_user();
     $params = new stdClass();
@@ -133,13 +144,12 @@ function send_support_mail($course, $text) {
 
 /**
  * Queues an adhoc task to send a request for a course creation.
- * @param $recipientusername
- * @param $course
- * @param $requestid
+ * @param string $recipientusername
+ * @param object $course
+ * @param int $requestid
  * @return bool
- * @package local_lsf_unification
  */
-function send_course_request_mail($recipientusername, $course, $requestid) {
+function send_course_request_mail(string $recipientusername, object $course, int $requestid): bool {
     global $USER;
     $email = username_to_mail($recipientusername);
     $user = get_or_create_user($recipientusername, $email);
@@ -155,19 +165,24 @@ function send_course_request_mail($recipientusername, $course, $requestid) {
     return true;
 }
 
-function get_remote_creation_continue_link($veranstid) {
+/**
+ * Creates link to request.php with a set veranstid.
+ * @param int $veranstid
+ * @return string
+ *
+ */
+function get_remote_creation_continue_link(int $veranstid): string {
     global $CFG;
     return $CFG->wwwroot . '/local/lsf_unification/request.php?answer=1&veranstid=' . $veranstid;
 }
 
 /**
  * Queues an adhoc task to send a mail that a requested course was accepted.
- * @param $recipient
- * @param $course
+ * @param object $recipient
+ * @param object $course
  * @return bool
- * @package local_lsf_unification
  */
-function send_course_creation_mail($recipient, $course) {
+function send_course_creation_mail(object $recipient, object $course): bool {
     global $USER;
     $params = new stdClass();
     $params->a = $USER->firstname . " " . $USER->lastname;
@@ -183,12 +198,11 @@ function send_course_creation_mail($recipient, $course) {
 
 /**
  * Queues an adhoc task to send a mail that a requested course was declined.
- * @param $recipient
- * @param $course
+ * @param object $recipient
+ * @param object $course
  * @return bool
- * @package local_lsf_unification
  */
-function send_sorry_mail($recipient, $course) {
+function send_sorry_mail(object $recipient, object $course): bool {
     global $USER;
     $params = new stdClass();
     $params->a = $USER->firstname . " " . $USER->lastname;
@@ -204,25 +218,35 @@ function send_sorry_mail($recipient, $course) {
 
 
 
-/*
- * return an array of course's ids where $USER is teacher
-*/
-function get_my_courses_as_teacher($additionalid = null) {
+/**
+ * Return an array of course's ids where $USER is teacher
+ * @param int|null $additionalid
+ * @return array
+ */
+function get_my_courses_as_teacher(int|null $additionalid = null): array {
     global $DB, $USER, $CFG;
-    $helpfuntion1 = function ($arrayel) {
-        return $arrayel->instanceid;
+    $helpfuntion1 = function ($arrayelement) {
+        return $arrayelement->instanceid;
     };
     $addsql = empty($additionalid) ? "" : "OR " . $CFG->prefix . "role_assignments.userid=$additionalid";
-    $sql = "SELECT " . $CFG->prefix . "role_assignments.id, instanceid, roleid FROM " . $CFG->prefix . "role_assignments JOIN " . $CFG->prefix . "context ON " . $CFG->prefix . "role_assignments.contextid = " . $CFG->prefix . "context.id WHERE " . $CFG->prefix . "role_assignments.roleid=" . $CFG->creatornewroleid . " AND ( " . $CFG->prefix . "role_assignments.userid=$USER->id " . $addsql . " ) AND " . $CFG->prefix . "context.contextlevel=50";
+    $sql = "SELECT " . $CFG->prefix . "role_assignments.id, instanceid, roleid
+    		FROM " . $CFG->prefix . "role_assignments
+    		JOIN " . $CFG->prefix . "context
+    		ON " . $CFG->prefix . "role_assignments.contextid = " . $CFG->prefix . "context.id
+    		WHERE " . $CFG->prefix . "role_assignments.roleid=" . $CFG->creatornewroleid . "
+    		AND ( " . $CFG->prefix . "role_assignments.userid=$USER->id " . $addsql . " )
+    		AND " . $CFG->prefix . "context.contextlevel=50";
     return array_map($helpfuntion1, $DB->get_records_sql($sql));
 }
 
-/*
+/**
  * return an array of fileinfo-objects that lists automated backup files of courses tought by $USER
-*/
-function get_backup_files($additionalid = null) {
+ * @param int|null $additionalid
+ * @return array
+ */
+function get_backup_files(int|null $additionalid = null): array {
     global $DB, $USER;
-    // disable restore feature temporarily
+    // Disable restore feature temporarily.
     $backuppath = get_config('backup', 'backup_auto_destination') . '';
     $result = [];
     $copies = implode("|", get_my_courses_as_teacher($additionalid));
@@ -231,7 +255,8 @@ function get_backup_files($additionalid = null) {
     }
     while (false !== ($entry = readdir($handle))) {
         $matches = [];
-        if (preg_match('/^sicherung-moodle2-course-(' . $copies . ')-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})\.mbz$/mi', $entry, $matches)) {
+        $str = '/^sicherung-moodle2-course-(' . $copies . ')-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})\.mbz$/mi';
+        if (preg_match($str, $entry, $matches)) {
             $file = new stdClass();
             $file->name = $entry;
             $file->path = $backuppath;
@@ -244,19 +269,20 @@ function get_backup_files($additionalid = null) {
     return $result;
 }
 
-/*
+/**
  * return an array of fileinfo-objects that lists template files
-*/
-function get_template_files() {
+ * @return array
+ */
+function get_template_files(): array {
     global $DB, $USER;
-    // disable restore feature temporarily
+    // Disable restore feature temporarily.
     $backuppath = get_config('backup', 'backup_auto_destination') . '/templates';
     $result = [];
     $files = [];
     if (!($handle = opendir($backuppath))) {
         return $result;
     }
-    // read filetree
+    // Read filetree.
     $filenames = [];
     while (false !== ($entry = readdir($handle))) {
         if ($entry != "." && $entry != ".." && is_dir($backuppath . "/" . $entry)) {
@@ -268,7 +294,7 @@ function get_template_files() {
             $filenames[] = $entry;
         }
     }
-    // build file-info objects
+    // Build file-info objects.
     foreach ($filenames as $entry) {
         $matches = [];
         if (preg_match('/^((.+)\/)?template(\d{1,})\.mbz$/mi', $entry, $matches)) {
@@ -285,7 +311,7 @@ function get_template_files() {
         }
     }
     closedir($handle);
-    // sort files and prepare output
+    // Sort files and prepare output.
     ksort($files);
     foreach ($files as $file) {
         $result[md5($file->name . "_" . $USER->id)] = $file;
@@ -293,28 +319,24 @@ function get_template_files() {
     return $result;
 }
 
-/*
+/**
  * Restores a some course data into a newly created course.
-*
-* SECURITY WARNING: For the time of the restore process (and only in the context of the target course) the user will be assigned to a role that has the restoring-capability.
-*
-* @param $courseid target course
-* @param $foldername unziped backupfiles
-*/
-function duplicate_course($courseid, $foldername) {
+ * SECURITY WARNING: For the time of the restore process (and only in the context of the target course)
+ * the user will be assigned to a role that has the restoring-capability.
+ *
+ * @param int $courseid target course
+ * @param string $foldername unziped backupfiles
+ * @return void
+ */
+function duplicate_course(int $courseid, string $foldername): void {
     global $DB, $USER;
 
     $transaction = $DB->start_delegated_transaction();
 
     try {
-        // Get required capability by temporarily assigning a role
-        // $context = context_course::instance($courseid);
-        // $roleid = 14;// array_shift(get_roles_with_capability("moodle/restore:restorecourse", CAP_ALLOW ,$context))->id;
-        // enrol_try_internal_enrol($courseid, $USER->id, $roleid);
-
         $USER->access = null;
 
-        // Init Restore Process
+        // Init Restore Process.
         $controller = new restore_controller(
             $foldername,
             $courseid,
@@ -324,17 +346,17 @@ function duplicate_course($courseid, $foldername) {
             backup::TARGET_EXISTING_ADDING
         );
 
-        // Restore bachup into course
+        // Restore bachup into course.
         $restoresettings = [
-                        'role_assignments' => 0, // Include user role assignments (default = 1)
-                        'activities' => 1, // Include activities (default = 1)
-                        'blocks' => 1, // Include blocks (default = 1)
-                        'filters' => 1, // Include filters (default = 1)
-                        'comments' => 0, // Include comments (default = 1)
-                        'userscompletion' => 0, // Include user completion details (default = 1)
-                        'logs' => 0, // Include course logs (default = 0)
-                        'grade_histories' => 0, // Include grade history (default = 0)
-                        'users' => 0, // Include user data (default = 0)
+                        'role_assignments' => 0, // Include user role assignments (default is 1).
+                        'activities' => 1, // Include activities (default is 1).
+                        'blocks' => 1, // Include blocks (default is 1).
+                        'filters' => 1, // Include filters (default is 1).
+                        'comments' => 0, // Include comments (default is 1).
+                        'userscompletion' => 0, // Include user completion details (default is 1).
+                        'logs' => 0, // Include course logs (default is 0).
+                        'grade_histories' => 0, // Include grade history (default is 0).
+                        'users' => 0, // Include user data (default is 0).
         ];
 
         foreach ($controller->get_plan()->get_tasks() as $taskindex => $task) {
@@ -355,10 +377,10 @@ function duplicate_course($courseid, $foldername) {
         $controller->execute_precheck();
         $controller->execute_plan();
 
-        // Delete temporary assignment and force capability cache to reload
+        // Delete temporary assignment and force capability cache to reload.
         $USER->access = null;
 
-        // Update SectionCount
+        // Update SectionCount.
         $format = $DB->get_record("course", ["id" => $courseid], "id, format")->format;
         if ($format == "topics" || $format == "weeks") {
             $sectioncount = $DB->count_records("course_sections", ["course" => $courseid]);
@@ -366,22 +388,33 @@ function duplicate_course($courseid, $foldername) {
             $format->update_course_format_options(["numsections" => ($sectioncount - 1)]);
         }
 
-        // Restore Course Summary
-        $DB->update_record("course", (object) ["id" => $courseid, "summaryformat" => 1, "summary" => get_default_summary(get_course_by_veranstid($DB->get_record("course", ["id" => $courseid], "id, idnumber")->idnumber))]);
+        // Restore Course Summary.
+        $veranstid = $DB->get_record("course", ["id" => $courseid], "id, idnumber")->idnumber;
+        $obj = (object) [
+            "id" => $courseid,
+            "summaryformat" => 1,
+            "summary" => get_default_summary(get_course_by_veranstid($veranstid)),
+        ];
+        $DB->update_record("course", $obj);
 
-        // Commit
+        // Commit.
         $transaction->allow_commit();
     } catch (Exception $e) {
-        // Oops
         $transaction->rollback($e);
 
-        // Delete temporary assignment and force capability cache to reload
+        // Delete temporary assignment and force capability cache to reload.
         $USER->access = null;
     }
 }
 
-
-function lsf_unification_unzip($zipfile, $destination = '', $showstatusignored = true) {
+/**
+ * Unzips a zip file.
+ *
+ * @param stored_file|string $zipfile
+ * @param string $destination
+ * @return bool
+ */
+function lsf_unification_unzip(stored_file|string $zipfile, string $destination = ''): bool {
     global $CFG, $USER;
     $fb = get_file_packer('application/vnd.moodle.backup');
     $result = $fb->extract_to_pathname(
@@ -391,5 +424,4 @@ function lsf_unification_unzip($zipfile, $destination = '', $showstatusignored =
         null
     );
     return $result != false;
-    return true;
 }

@@ -17,21 +17,26 @@
 /**
  * Functions that aid core functionality
  * @package local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use local_lsf_unification\pg_lite;
+
 defined('MOODLE_INTERNAL') || die();
 
-// require_once("$CFG->dirroot/group/lib.php");
+
 require_once($CFG->libdir . '/enrollib.php');
 require_once($CFG->dirroot . '/user/lib.php');
 
 /**
  * get_course_by_idnumber returns the course's id, where idnumber fits $courseid
  *
- * @param $courseid
- * @return $externid | -1
- * @package local_lsf_unification
+ * @param int $courseid
+ * @param bool $silent
+ * @return int
  */
-function get_course_by_idnumber($courseid, $silent = false) {
+function get_course_by_idnumber(int $courseid, bool $silent = false): int {
     global $DB;
     $result = $DB->get_record('course', ['idnumber' => $courseid,
     ], 'id');
@@ -45,11 +50,11 @@ function get_course_by_idnumber($courseid, $silent = false) {
 /**
  * creates a category by title
  *
- * @param $title
- * @return $parent_title | null
- * @package local_lsf_unification
+ * @param string $title
+ * @param string $parenttitle
+ * @return stdClass
  */
-function find_or_create_category($title, $parenttitle) {
+function find_or_create_category(string $title, string $parenttitle): stdClass {
     global $DB;
     if (
         $category = $DB->get_record("course_categories", ["name" => $title,
@@ -74,7 +79,14 @@ function find_or_create_category($title, $parenttitle) {
     return $newcategory;
 }
 
-function has_course_import_rights($veranstid, $user) {
+/**
+ * Check if user has the right to import a course.
+ * @param int $veranstid
+ * @param object $user
+ * @return bool
+ * @throws dml_exception
+ */
+function has_course_import_rights(int $veranstid, object $user): bool {
     global $DB;
     if (!is_course_of_teacher($veranstid, $user->username)) {
         if (
@@ -85,25 +97,31 @@ function has_course_import_rights($veranstid, $user) {
             )
         ) {
             if ($courseentry->requeststate == 1) {
-                echo ("Course cannot be requested."); // The user shouldn't be on this website
-                                                      // because this link isn't known to him
+                // The user shouldn't be on this website because this link isn't known to him.
+                echo ("Course cannot be requested.");
                 return false;
             } else if ($courseentry->requeststate != 2) {
-                echo ("Course already created."); // The course already exists, so the user
-                                                  // shouldn't get here
+                // The course already exists, so the user shouldn't get here.
+                echo ("Course already created.");
                 return false;
             }
         } else {
-            echo ("Course cannot be requested."); // The course isn't in the user's list and isn't
-                                                  // requested by him remotely, so he shouldn't be
-                                                  // here
+            // The course isn't in the user's list and isn't requested by him remotely, so he shouldn't be here.
+            echo ("Course cannot be requested.");
             return false;
         }
     }
     return true;
 }
 
-function is_course_imported_by($mdlid, $user) {
+/**
+ * Checks if a course was imported by the user.
+ * @param int $mdlid
+ * @param object $user
+ * @return bool
+ * @throws dml_exception
+ */
+function is_course_imported_by(int $mdlid, object $user): bool {
     global $DB;
     if (
         $courseentry = $DB->get_record(
@@ -117,7 +135,13 @@ function is_course_imported_by($mdlid, $user) {
     return false;
 }
 
-function get_course_acceptor($mdlid) {
+/**
+ * Get the acceptorid from a moodle course.
+ * @param int $mdlid
+ * @return int|null
+ * @throws dml_exception
+ */
+function get_course_acceptor(int $mdlid): int|null {
     global $DB;
 
     if (
@@ -135,11 +159,10 @@ function get_course_acceptor($mdlid) {
 /**
  * enable_manual_enrolment does just what it sounds like
  *
- * @param $id
- * @return null
- * @package local_lsf_unification
+ * @param object $course
+ * @return void
  */
-function enable_manual_enrolment($course) {
+function enable_manual_enrolment(object $course): void {
     global $DB;
 
     $plugin = enrol_get_plugin('manual');
@@ -158,11 +181,14 @@ function enable_manual_enrolment($course) {
 /**
  * enable_lsf_enrolment does just what it sounds like
  *
- * @param $id
- * @return null
- * @package local_lsf_unification
+ * @param int $id
+ * @param int $enrolmentstart
+ * @param int $enrolmentend
+ * @return void
+ * @throws coding_exception
+ * @throws dml_exception
  */
-function enable_lsf_enrolment($id, $enrolmentstart, $enrolmentend) {
+function enable_lsf_enrolment(int $id, int $enrolmentstart, int $enrolmentend): void {
     global $DB;
 
     $course = $DB->get_record('course', ['id' => $id,
@@ -181,12 +207,11 @@ function enable_lsf_enrolment($id, $enrolmentstart, $enrolmentend) {
 /**
  * enable_self_enrolment deletes old and creates a new self enrolment instance
  *
- * @param $course
- * @param $password
- * @return null
- * @package local_lsf_unification
+ * @param object $course
+ * @param string $password
+ * @return void
  */
-function enable_self_enrolment($course, $password) {
+function enable_self_enrolment(object $course, string $password): void {
     global $DB;
 
     $plugin = enrol_get_plugin('self');
@@ -208,18 +233,25 @@ function enable_self_enrolment($course, $password) {
  * enable_database_enrolment deletes old and creates a new ext.
  * database enrolment instance
  *
- * @param $course
- * @return null
- * @package local_lsf_unification
+ * @param object $course
+ * @return void
  */
-function enable_database_enrolment($course) {
+function enable_database_enrolment(object $course): void {
     global $DB;
 
     $plugin = enrol_get_plugin('database');
     $instanceid = $plugin->add_default_instance($course);
 }
 
-function create_guest_enrolment($course, $password = "", $enable = false) {
+/**
+ * Creates a guest enrolment.
+ * @param object $course
+ * @param string $password
+ * @param bool $enable
+ * @return void
+ * @throws dml_exception
+ */
+function create_guest_enrolment(object $course, string $password = "", bool $enable = false): void {
     global $DB;
 
     $plugin = enrol_get_plugin("guest");
@@ -241,11 +273,10 @@ function create_guest_enrolment($course, $password = "", $enable = false) {
 /**
  * self_enrolment_status returns the password for a course if possible, otherwise ""
  *
- * @param $courseid
- * @return $password | ""
- * @package local_lsf_unification
+ * @param int $courseid
+ * @return string $password | ""
  */
-function self_enrolment_status($courseid) {
+function self_enrolment_status(int $courseid): string {
     global $DB;
     return ($a = $DB->get_record('enrol', ["courseid" => $courseid, "enrol" => 'self',
     ])) ? ($a->password) : "";
@@ -254,16 +285,14 @@ function self_enrolment_status($courseid) {
 /**
  * get_default_course returns a default course object
  *
- * @param $fullname
- * @param $idnumber
- * @param $summary
- * @param $shortname
- * @param $startdate
- * @return $course
- * @package local_lsf_unification
+ * @param string $fullname
+ * @param int $idnumber
+ * @param string $summary
+ * @param string $shortname
+ * @return stdClass $course
  */
-function get_default_course($fullname, $idnumber, $summary, $shortname) {
-    // check&format content
+function get_default_course(string $fullname, int $idnumber, string $summary, string $shortname): stdClass {
+    // Check and format content.
     if (empty($shortname)) {
         $shortname = (strlen($fullname) < 20) ? $fullname : substr(
             $fullname,
@@ -271,7 +300,7 @@ function get_default_course($fullname, $idnumber, $summary, $shortname) {
             strpos($fullname . ' ', ' ', 20)
         );
     }
-        // create default object
+    // Create default object.
     $course = new stdClass();
     $course->fullname = substr($fullname, 0, 254);
     $course->idnumber = $idnumber;
@@ -304,21 +333,23 @@ function get_default_course($fullname, $idnumber, $summary, $shortname) {
  * get_or_create_support_user (creates if necessary and) returns a user with the correct
  * supportemail
  *
- * @param $fullname
- * @param $idnumber
- * @param $summary
- * @param $shortname
- * @param $startdate
- * @return $course
- * @package local_lsf_unification
+ * @return false|stdClass
  */
-function get_or_create_support_user() {
+function get_or_create_support_user(): false|stdClass {
     global $DB, $CFG;
     $support = get_or_create_user("support." . md5($CFG->supportemail), $CFG->supportemail);
     return $support;
 }
 
-function get_or_create_user($username, $email) {
+/**
+ * Creates a new user or return existing one.
+ * @param string $username
+ * @param string $email
+ * @return false|stdClass
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
+function get_or_create_user(string $username, string $email): false|stdClass {
     global $DB, $CFG;
     if (!empty($username) && ($usr = $DB->get_record('user', ['username' => $username]))) {
         if (empty($usr->email)) {
@@ -332,9 +363,9 @@ function get_or_create_user($username, $email) {
         $user['lastname'] = "";
         $user['username'] = $username;
         $user['email'] = $email;
-        $user['confirmed'] = true; // if confirmation is neccessary, confirm-key is needed
+        $user['confirmed'] = true; // If confirmation is neccessary, confirm-key is needed.
         $user['mnethostid'] = $CFG->mnet_localhost_id;
-        $user['auth'] = 'ldap'; // TODO default auth method should be configurable
+        $user['auth'] = 'ldap'; // LEARNWEB-TODO default auth method should be configurable.
         $user['lang'] = $CFG->lang;
         $user['id'] = user_create_user($user);
         return $DB->get_record('user', ['id' => $user['id']]);
@@ -344,11 +375,10 @@ function get_or_create_user($username, $email) {
 /**
  * add_path_description adds path-descriptions to an array of categories
  *
- * @param array that maps id to name
+ * @param array $choices that maps id to name
  * @return array that maps id to path
- * @package local_lsf_unification
  */
-function add_path_description($choices) {
+function add_path_description(array $choices): array {
     global $DB;
     $result = [];
     foreach ($choices as $id => $name) {
@@ -379,11 +409,11 @@ function add_path_description($choices) {
 /**
  * Function to be run periodically according to the scheduled task.
  *
- * NOTE: Since 2.7.2 this function is run by scheduled task rather
+ * LEARNWEB-TODO: Since 2.7.2 this function is run by scheduled task rather
  * than standard cron.
- * @package local_lsf_unification
+ * @return void
  */
-function local_lsf_unification_cron() {
+function local_lsf_unification_cron(): void {
     global $CFG, $pgdb;
     include_once(dirname(__FILE__) . '/class_pg_lite.php');
     include_once(dirname(__FILE__) . '/lib_features.php');

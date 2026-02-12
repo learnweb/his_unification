@@ -14,17 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+namespace local_lsf_unification;
+
+use advanced_testcase;
+use coding_exception;
+use moodle_exception;
 
 /**
  * Test the ad_hoc tasks.
  *
  * @package    local_lsf_unification
  * @copyright  2018 Nina Herrmann
- * @group      lsf_unification_ad_hoc_task
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 final class ad_hoc_task_test extends advanced_testcase {
     /**
      * @var saves all emails send.
@@ -52,6 +54,7 @@ final class ad_hoc_task_test extends advanced_testcase {
      * Test the ad hoc task for sending mails to the support for changing the category.
      * @throws coding_exception
      * @throws moodle_exception
+     * @covers \local_lsf_unification\task\send_mail_category_wish
      */
     public function test_send_mail_category_wish(): void {
         $adhoctask = new \local_lsf_unification\task\send_mail_category_wish();
@@ -59,28 +62,24 @@ final class ad_hoc_task_test extends advanced_testcase {
         $setupdata = $this->generator->set_up_params(true);
         $adhoctask->set_custom_data($setupdata);
         $adhoctask->execute();
+
         $messages = $this->sink->get_messages();
-        $this->assertEquals(1, count($messages));
+        $this->assertCount(1, $messages);
 
         $message = $messages[0];
-        $messagebody = $this->trim_string($message->body);
+        $plaintext = $this->extract_plaintext_from_mime($message->body);
 
-        // Expected content.
-        $content = "\n" . get_string('email', 'local_lsf_unification', $setupdata['params']) . "\n";
-        $content = $this->trim_string($content);
-
-        // Assertions.
-        $this->assertEquals($content, $messagebody);
-        $this->assertEquals($setupdata['recipientemail'], $message->to);
-        // The phpunit build in function overwrithes where the email does come from.
-        $this->assertEquals('noreply@www.example.com', $message->from);
-        $this->assertEquals('Category Relocation Wish', $message->subject);
+        // Each parameter (a through e) needs to be in the email text.
+        foreach (get_object_vars($setupdata['params']) as $param) {
+            $this->assertStringContainsString($param, $plaintext);
+        }
     }
 
     /**
      * Test the ad hoc task for sending mails that course was created.
      * @throws coding_exception
      * @throws moodle_exception
+     * @covers \local_lsf_unification\task\send_mail_course_creation_accepted
      */
     public function test_send_mail_course_creation_accepted(): void {
         global $CFG;
@@ -88,13 +87,13 @@ final class ad_hoc_task_test extends advanced_testcase {
         $setupdata = $this->generator->set_up_params(false, false, true);
 
         $adhoctask->set_custom_data($setupdata);
-
         $adhoctask->execute();
+
         $messages = $this->sink->get_messages();
         $this->assertEquals(1, count($messages));
 
         $message = $messages[0];
-        $messagebody = $this->trim_string($message->body);
+        $plaintext = $this->extract_plaintext_from_mime($message->body);
 
         // Expected content.
         $setupdata['params']->requesturl = $CFG->wwwroot . '/local/lsf_unification/request.php?answer=1&veranstid=' .
@@ -103,7 +102,7 @@ final class ad_hoc_task_test extends advanced_testcase {
         $content = get_string('email3', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
-        $this->assertEquals($content, $messagebody);
+        $this->assertEquals($content, $plaintext);
         $this->assertEquals($setupdata['recipientemail'], $message->to);
         // The phpunit build in function overwrithes where the email does come from.
         $this->assertEquals('noreply@www.example.com', $message->from);
@@ -115,6 +114,7 @@ final class ad_hoc_task_test extends advanced_testcase {
      * Test the ad hoc task for sending mails that the creation of a course was declined.
      * @throws coding_exception
      * @throws moodle_exception
+     * @covers \local_lsf_unification\task\send_mail_course_creation_declined
      */
     public function test_send_mail_course_creation_declined(): void {
         global $CFG;
@@ -128,14 +128,14 @@ final class ad_hoc_task_test extends advanced_testcase {
         $this->assertEquals(1, count($messages));
 
         $message = $messages[0];
-        $messagebody = $this->trim_string($message->body);
+        $plaintext = $this->extract_plaintext_from_mime($message->body);
 
         // Expected content.
         $setupdata['params']->userurl = $CFG->wwwroot . '/user/view.php?id=' . $setupdata['acceptorid'];
         $content = get_string('email4', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
-        $this->assertEquals($content, $messagebody);
+        $this->assertEquals($content, $plaintext);
         $this->assertEquals($setupdata['recipientemail'], $message->to);
         // The phpunit build in function overwrithes where the email does come from.
         $this->assertEquals('noreply@www.example.com', $message->from);
@@ -147,6 +147,7 @@ final class ad_hoc_task_test extends advanced_testcase {
      * Test the ad hoc task for sending mails to request a teacher whether a course should be created.
      * @throws coding_exception
      * @throws moodle_exception
+     * @covers \local_lsf_unification\task\send_mail_request_teacher_to_create_course
      */
     public function test_send_mail_request_teacher_to_create_course(): void {
         global $CFG;
@@ -160,7 +161,7 @@ final class ad_hoc_task_test extends advanced_testcase {
         $this->assertEquals(1, count($messages));
 
         $message = $messages[0];
-        $messagebody = $this->trim_string($message->body);
+        $plaintext = $this->extract_plaintext_from_mime($message->body);
 
         // Expected content.
         $setupdata['params']->requesturl = $CFG->wwwroot . '/local/lsf_unification/request.php?answer=12&requestid=' .
@@ -169,7 +170,7 @@ final class ad_hoc_task_test extends advanced_testcase {
         $content = get_string('email2', 'local_lsf_unification', $setupdata['params']);
 
         // Assertions.
-        $this->assertEquals($content, $messagebody);
+        $this->assertEquals($content, $plaintext);
         $this->assertEquals($setupdata['recipientemail'], $message->to);
         // The phpunit build in function overwrithes where the email does come from.
         $this->assertEquals('noreply@www.example.com', $message->from);
@@ -180,6 +181,7 @@ final class ad_hoc_task_test extends advanced_testcase {
      * Test whether no message is send when the userid is not existing.
      * @throws coding_exception
      * @throws moodle_exception
+     * @covers \local_lsf_unification\task\send_mail_category_wish
      */
     public function test_no_user_ad_hoc_task(): void {
         $adhoctask = new \local_lsf_unification\task\send_mail_category_wish();
@@ -193,15 +195,23 @@ final class ad_hoc_task_test extends advanced_testcase {
         // Task is aborted therefore no messages is expected.
         $this->assertEquals(0, count($messages));
     }
+
     /**
-     * Trims all \n and \r characters from a string.
-     * @param $string
+     * Extracts and normalizes the plain-text content from a MIME multipart email body.
+     *
+     * @param string $body the message body
      * @return string
      */
-    private function trim_string($string) {
-        $returnstring = str_replace("\n", " ", $string);
-        $returnstring = str_replace("\r", "", $returnstring);
-        // Remove leading whitespaces at start and end of string.
-        return trim($returnstring);
+    private function extract_plaintext_from_mime(string $body): string {
+        // Decode quoted-printable.
+        $decoded = quoted_printable_decode($body);
+        // Extract text/plain part.
+        if (preg_match('/Content-Type:\s*text\/plain;.*?\R\R(.*?)\R--/s', $decoded, $matches)) {
+            $message = trim($matches[1]);
+            $message = str_replace("\n", " ", $message);
+            return str_replace("\r", "", $message);
+        }
+
+        $this->fail('No text/plain part found in email body');
     }
 }

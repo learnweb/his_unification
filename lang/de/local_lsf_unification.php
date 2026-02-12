@@ -23,8 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-
 $string['ad_hoc_task_failed'] = 'Der Adhoc-Task {$a} ist fehlgeschlagen. Er wird neu geplant und später erneut versucht.';
 $string['already_requested'] = 'Diesr Kurs wurde bereits angefragt. Der/die Lehrende muss erst die bestehende Anfrage beantworten, bevor neue Anfragen get&auml;tigt werden k&ouml;nnen.';
 $string['answer_course_found'] = "Der zu beantragende Kurs befindet sich in der nachfolgenden Liste:";
@@ -78,10 +76,10 @@ $string['defaultcategory_description'] = 'Falls keine Kategorie eingetragen werd
 $string['delete'] = 'l&ouml;schen';
 $string['duplication_timeframe_error'] = 'Aus Sicherheitsgr&uuml;nden ist es nicht erlaubt Kursdaten aus Musterkursen oder Kursbackups wiederherzustellen, falls die Kurserstellung mehr als {$a} Stunden zur&uuml;ckliegt.';
 $string['email'] = 'ABSENDER:
-{$a->a} (' . $CFG->wwwroot . '/user/view.php?id={$a->b})
+{$a->a} ({$a->b})
 
     KURS:
-    {$a->c} (' . $CFG->wwwroot . '/course/view.php?id={$a->d})
+    {$a->c} ({$a->d})
 
         NACHRICHT:
         {$a->e}';
@@ -91,7 +89,7 @@ $string['email3'] = 'Der Benutzer "{$a->a}" ({$a->userurl}) akzeptierte Ihre Kur
 $string['email3_title'] = "Anfrage zur Kurserstellungs akzeptiert";
 $string['email4'] = 'Der Benutzer "{$a->a}" ({$a->userurl}) verweigerte Ihre Kursanfrage "{$a->c}".';
 $string['email4_title'] = "Anfrage zur Kurserstellung verweigert";
-$string['email_error'] = 'Der Kategorieumzugswunsch konnte leider nicht automatisch versendet werden. Kontaktieren Sie den Support manuell! (' . $CFG->supportemail . ')';
+$string['email_error'] = 'Der Kategorieumzugswunsch konnte leider nicht automatisch versendet werden. Kontaktieren Sie den Support manuell!';
 $string['email_from'] = "HIS LSF Import";
 $string['email_success'] = 'Eine Email bzgl. des Kategoriewechsels wird an den Support gesendet.';
 $string['eventcourse_duplicated'] = 'Kursinhalte dupliziert';
@@ -124,8 +122,15 @@ $string['notice'] = 'Im Normalfall &uuml;bernimmt Learnweb die Kursinformationen
 $string['overwrite'] = '&uuml;berschreiben';
 $string['pluginname'] = 'LSF Unification';
 $string['plugintitle'] = 'LSF Unification';
-
 $string['pre_template'] = 'Alternative {$a}: Kurs mit Inhalten aus einer Vorlage vorbereiten...';
+$string['privacy:local_lsf_unification:acceptor'] = 'Eine Kursanfrage wurde akzeptiert oder abgelehnt.';
+$string['privacy:local_lsf_unification:requester'] = 'Die Anfrage f&uuml;r einen Kurs wurde gespeichert.';
+$string['privacy:metadata:local_lsf_unification:acceptorid'] = 'ID der Person die den Kurs akzeptiert hat';
+$string['privacy:metadata:local_lsf_unification:mdlid'] = 'ID der Veranstaltung im Moodle System';
+$string['privacy:metadata:local_lsf_unification:requesterid'] = 'ID der Person die den Kurs angefragt hat';
+$string['privacy:metadata:local_lsf_unification:requeststate'] = 'Status der Kursanfrage';
+$string['privacy:metadata:local_lsf_unification:timestamp'] = 'Zeitpunkt zu dem der Kurs importiert wurde';
+$string['privacy:metadata:local_lsf_unification:veranstid'] = 'ID der Veranstaltung im HISLSF System';
 $string['question'] = "Bitte w&auml;hlen Sie die erste zutreffende Aussage:";
 $string['remote_request_accept'] = 'Akzeptiere die Anfrage von "{$a->a}" den Kurs "{$a->b}" zu erstellen';
 $string['remote_request_decline'] = 'Verweigere die Anfrage von "{$a->a}"';
@@ -150,32 +155,4 @@ $string['warning_cannot_enrol_nologin'] = "Person wurde nicht hinzugef&uuml;gt (
 $string['warning_cannot_enrol_nouser'] = "Person wurde nicht hinzugef&uuml;gt (kein Benutzer gefunden)";
 $string['warning_cannot_enrol_other'] = "Person wurde nicht hinzugef&uuml;gt";
 $string['warnings'] = 'Hinweise:';
-
-
-
-
-
-
-
-
-
-
 $string['yes'] = 'Ja';
-
-
-
-
-
-
-
-
-// Privacy API
-$string['privacy:metadata:local_lsf_unification:veranstid'] = 'ID der Veranstaltung im HISLSF System';
-$string['privacy:metadata:local_lsf_unification:mdlid'] = 'ID der Veranstaltung im Moodle System';
-$string['privacy:metadata:local_lsf_unification:timestamp'] = 'Zeitpunkt zu dem der Kurs importiert wurde';
-$string['privacy:metadata:local_lsf_unification:requeststate'] = 'Status der Kursanfrage';
-$string['privacy:metadata:local_lsf_unification:requesterid'] = 'ID der Person die den Kurs angefragt hat';
-$string['privacy:metadata:local_lsf_unification:acceptorid'] = 'ID der Person die den Kurs akzeptiert hat';
-
-$string['privacy:local_lsf_unification:requester'] = 'Die Anfrage f&uuml;r einen Kurs wurde gespeichert.';
-$string['privacy:local_lsf_unification:acceptor'] = 'Eine Kursanfrage wurde akzeptiert oder abgelehnt.';

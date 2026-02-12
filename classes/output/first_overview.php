@@ -29,7 +29,6 @@ use stdClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class first_overview implements renderable, templatable {
-
     /**
      * Constructor for first_overview.
      *
@@ -43,7 +42,7 @@ class first_overview implements renderable, templatable {
 
     #[\Override]
     public function export_for_template(renderer_base $output): stdClass {
-        $courselist = array_map(function($course) {
+        $courselist = array_map(function ($course) {
             return (object) ["title" => $course->info];
         }, array_values($this->courses));
         $showremotecreation = get_config("local_lsf_unification", "remote_creation");
