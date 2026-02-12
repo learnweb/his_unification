@@ -70,7 +70,7 @@ $PAGE->navbar->add($strtitle);
 echo $OUTPUT->header();
 
 if (!empty($requestid)) {
-    if (($request = $DB->get_record("local_lsf_course", ["id" => $requestid])) && ($request->requeststate == 1)) {
+    if (($request = $DB->get_record("local_lsf_unification_course", ["id" => $requestid])) && ($request->requeststate == 1)) {
         $veranstid = $request->veranstid;
     }
 }

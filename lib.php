@@ -91,7 +91,7 @@ function has_course_import_rights(int $veranstid, object $user): bool {
     if (!is_course_of_teacher($veranstid, $user->username)) {
         if (
             $courseentry = $DB->get_record(
-                "local_lsf_course",
+                "local_lsf_unification_course",
                 ["veranstid" => $veranstid, "requesterid" => $user->id,
                 ]
             )
@@ -125,7 +125,7 @@ function is_course_imported_by(int $mdlid, object $user): bool {
     global $DB;
     if (
         $courseentry = $DB->get_record(
-            "local_lsf_course",
+            "local_lsf_unification_course",
             ["mdlid" => $mdlid, "requesterid" => $user->id, "requeststate" => 2,
             ]
         )
@@ -146,7 +146,7 @@ function get_course_acceptor(int $mdlid): int|null {
 
     if (
         $courseentry = $DB->get_record(
-            "local_lsf_course",
+            "local_lsf_unification_course",
             ["mdlid" => $mdlid, "requeststate" => 2,
             ]
         )

@@ -40,7 +40,7 @@ if (establish_secondary_DB_connection() === true) {
 
     if ($rid != -1 && $action != -1) {
         if ($action == 1) {
-            $DB->delete_records("local_lsf_course", ["id" => $rid, "mdlid" => 0]);
+            $DB->delete_records("local_lsf_unification_course", ["id" => $rid, "mdlid" => 0]);
             echo $OUTPUT->box("<b>Anfrage (" . $rid . ") geloescht</b>");
         } else if ($action == 2 || $action == 3) {
             $request = get_course_request($rid);

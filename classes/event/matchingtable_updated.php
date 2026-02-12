@@ -40,7 +40,7 @@ class matchingtable_updated extends \core\event\base {
     protected function init(): void {
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->data['objecttable'] = 'local_lsf_category';
+        $this->data['objecttable'] = 'local_lsf_unification_category';
     }
 
     /**

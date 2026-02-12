@@ -50,7 +50,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      */
     public static function get_metadata(collection $collection): collection {
         $collection->add_database_table(
-            'local_lsf_course',
+            'local_lsf_unification_course',
             [
                 'veranstid' => 'privacy:metadata:local_lsf_unification:veranstid',
                 'mdlid' => 'privacy:metadata:local_lsf_unification:mdlid',
@@ -76,7 +76,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         $contextlist = new contextlist();
 
         $sql = "SELECT *
-                  FROM {local_lsf_course}
+                  FROM {local_lsf_unification_course}
                  WHERE (requesterid = :requesterid OR
                  acceptorid = :acceptorid)";
         $contextparams['requesterid'] = $userid;
@@ -114,13 +114,13 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
                 continue;
             }
             $sql = "SELECT *
-                  FROM {local_lsf_course}
+                  FROM {local_lsf_unification_course}
                  WHERE (requesterid = :userid)";
             $contextparams['userid'] = $user->id;
 
             $coursesrequested = $DB->get_recordset_sql($sql, $contextparams);
             $sql = "SELECT *
-                  FROM {local_lsf_course}
+                  FROM {local_lsf_unification_course}
                  WHERE (acceptorid = :userid)";
             $coursesaccepted = $DB->get_recordset_sql($sql, $contextparams);
 
@@ -194,14 +194,14 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
 
         // Sanity check that context is at the System context level.
         if ($context->contextlevel == CONTEXT_SYSTEM) {
-            $DB->delete_records("local_lsf_course");
+            $DB->delete_records("local_lsf_unification_course");
             return;
         }
         // Sanity check that context is at the User context level.
         if ($context->contextlevel == CONTEXT_USER) {
             $userid = $context->instanceid;
-            $DB->delete_records("local_lsf_course", ['acceptorid' => $userid]);
-            $DB->delete_records("local_lsf_course", ['requesterid' => $userid]);
+            $DB->delete_records("local_lsf_unification_course", ['acceptorid' => $userid]);
+            $DB->delete_records("local_lsf_unification_course", ['requesterid' => $userid]);
         }
     }
 
@@ -225,8 +225,8 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
             }
 
             $userid = $context->instanceid;
-            $DB->delete_records("local_lsf_course", ['acceptorid' => $userid]);
-            $DB->delete_records("local_lsf_course", ['requesterid' => $userid]);
+            $DB->delete_records("local_lsf_unification_course", ['acceptorid' => $userid]);
+            $DB->delete_records("local_lsf_unification_course", ['requesterid' => $userid]);
         }
     }
 }

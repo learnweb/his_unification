@@ -52,8 +52,8 @@ function xmldb_local_lsf_unification_upgrade(int $oldversion): bool {
         require_once($CFG->dirroot . '/local/lsf_unification/db/install.php');
         xmldb_local_lsf_unification_install_course_creator_role();
 
-        // Define key uni2 (unique) to be dropped form local_lsf_course.
-        $table = new xmldb_table('local_lsf_course');
+        // Define key uni2 (unique) to be dropped form local_lsf_unification_course.
+        $table = new xmldb_table('local_lsf_unification_course');
         $key = new xmldb_key('uni2', XMLDB_KEY_UNIQUE, ['mdlid']);
 
         // Launch drop key uni2.
@@ -64,8 +64,8 @@ function xmldb_local_lsf_unification_upgrade(int $oldversion): bool {
     }
 
     if ($oldversion < 2013060400) {
-        // Define field requeststate to be added to local_lsf_course.
-        $table = new xmldb_table('local_lsf_course');
+        // Define field requeststate to be added to local_lsf_unification_course.
+        $table = new xmldb_table('local_lsf_unification_course');
         $field = new xmldb_field('requeststate', XMLDB_TYPE_INTEGER, '5', null, XMLDB_NOTNULL, null, '0', 'ueid');
 
         // Conditionally launch add field requeststate.
@@ -78,8 +78,8 @@ function xmldb_local_lsf_unification_upgrade(int $oldversion): bool {
     }
 
     if ($oldversion < 2013061100) {
-        // Define field requeststate to be added to local_lsf_course.
-        $table = new xmldb_table('local_lsf_course');
+        // Define field requeststate to be added to local_lsf_unification_course.
+        $table = new xmldb_table('local_lsf_unification_course');
         $field = new xmldb_field('ueid');
 
         // Conditionally launch drop field ueid.
@@ -115,17 +115,17 @@ function xmldb_local_lsf_unification_upgrade(int $oldversion): bool {
 
     if ($oldversion < 2025123100) {
         // Rename tables to use the correct plugin prefix.
-        $oldtable = new xmldb_table('local_lsf_category');
+        $oldtable = new xmldb_table('local_lsf_unification_category');
         if ($dbman->table_exists($oldtable)) {
             $dbman->rename_table($oldtable, 'local_lsf_unification_category');
         }
 
-        $oldtable = new xmldb_table('local_lsf_categoryparenthood');
+        $oldtable = new xmldb_table('local_lsf_unification_categoryparenthood');
         if ($dbman->table_exists($oldtable)) {
             $dbman->rename_table($oldtable, 'local_lsf_unification_categoryparenthood');
         }
 
-        $oldtable = new xmldb_table('local_lsf_course');
+        $oldtable = new xmldb_table('local_lsf_unification_course');
         if ($dbman->table_exists($oldtable)) {
             $dbman->rename_table($oldtable, 'local_lsf_unification_course');
         }

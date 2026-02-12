@@ -118,13 +118,14 @@ $secondlevelorinins = get_newest_sublevels(implode(", ", $toplevelorigins));
 foreach ($secondlevelorinins as $secondndlevel) {
     // Kategoriekopien herausfinden.
     $secondndlevel->txt = mb_convert_encoding($secondndlevel->txt, 'UTF-8', 'ISO-8859-1');
-    $secondndlevel->copies = $DB->get_records("local_lsf_category", ["origin" => $secondndlevel->origin], null, "ueid");
+    $secondndlevel->copies = $DB->get_records("local_lsf_unification_category", ["origin" => $secondndlevel->origin], null, "ueid");
     foreach ($secondndlevel->copies as $secondlevelcopy) {
         // Semester bestimmen.
         $secondlevelcopy->semester = get_cat_sem($secondlevelcopy->ueid);
         if (empty($reqsem) || ($reqsem == $secondlevelcopy->semester)) {
             // Alle Unterkategorien der jeweiligen Kategoriekopien sammeln.
-            $records = $DB->get_records("local_lsf_categoryparenthood", ["parent" => $secondlevelcopy->ueid], null, "child");
+            $params = ["parent" => $secondlevelcopy->ueid];
+            $records = $DB->get_records("local_lsf_unification_categoryparenthood", $params, null, "child");
             $secondlevelcopy->subs = array_keys($records);
             // Bestimme die Veranstatlungstypen und Anazahlen der jeweiligen Kategoriekopien.
             $secondlevelcopy->veranstcount = get_cat_veranstids_and_count(implode(",", $secondlevelcopy->subs));
