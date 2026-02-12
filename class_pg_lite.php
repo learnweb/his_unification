@@ -22,6 +22,8 @@
  */
 namespace local_lsf_unification;
 
+use PgSql\Connection;
+
 /**
  * Class that wraps a connection to psql.
  * @package    local_lsf_unification
@@ -29,7 +31,7 @@ namespace local_lsf_unification;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pg_lite {
-    /** @var null Represents the connection. */
+    /** @var null|Connection Represents the connection. */
     public $connection = null;
 
     /**
