@@ -49,10 +49,10 @@ function xmldb_local_lsf_unification_install_course_creator_role() {
     // Fully setup the restore role.
     if (!$mrole = $DB->get_record('role', ['shortname' => 'lsfunificationcourseimporter'])) {
         if ($rid = create_role('LSF Unification Course Importer', 'lsfunificationcourseimporter', '', 'coursecreator')) {
-            $result = $result & assign_capability('moodle/restore:restorecourse', CAP_ALLOW, $rid, $sysctx->id);
-            $result = $result & assign_capability('moodle/restore:restoreactivity', CAP_ALLOW, $rid, $sysctx->id);
-            $result = $result & assign_capability('moodle/restore:restoresection', CAP_ALLOW, $rid, $sysctx->id);
-            $result = $result & assign_capability('moodle/restore:configure', CAP_ALLOW, $rid, $sysctx->id);
+            $result = $result && assign_capability('moodle/restore:restorecourse', CAP_ALLOW, $rid, $sysctx->id);
+            $result = $result && assign_capability('moodle/restore:restoreactivity', CAP_ALLOW, $rid, $sysctx->id);
+            $result = $result && assign_capability('moodle/restore:restoresection', CAP_ALLOW, $rid, $sysctx->id);
+            $result = $result && assign_capability('moodle/restore:configure', CAP_ALLOW, $rid, $sysctx->id);
             set_role_contextlevels($rid, $levels);
         } else {
             $result = false;
