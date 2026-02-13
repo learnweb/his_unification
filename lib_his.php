@@ -672,16 +672,16 @@ function get_courses_categories(int $veranstid, bool $updatehelptablesifnecessar
     while ($hislsftitle = pg_fetch_object($q)) {
         $ueids = (empty($ueids) ? "" : ($ueids . ", ")) . ("" . $hislsftitle->ueid . "");
     }
-    $otherueidssql = "SELECT parent FROM " . $CFG->prefix .
-             "local_lsf_unification_categoryparenthood WHERE child in (" . $ueids . ")";
-    $originssql = "SELECT origin FROM " . $CFG->prefix . "local_lsf_unification_category WHERE ueid in (" .
+    $otherueidssql = "SELECT parent FROM {local_lsf_unification_categoryparenthood} WHERE child in (" . $ueids . ")";
+    $originssql = "SELECT origin FROM {local_lsf_unification_category} WHERE ueid in (" .
              $otherueidssql . ") OR ueid in (" . $ueids . ")";
     $origins = implode(", ", array_map($helpfuntion1, $DB->get_records_sql($originssql)));
     if (!empty($origins)) {
-        $categoriessql = "SELECT mdlid, name FROM (" . $CFG->prefix . "local_lsf_unification_category JOIN " .
-                 $CFG->prefix . "course_categories ON " . $CFG->prefix .
-                 "local_lsf_unification_category.mdlid = " . $CFG->prefix .
-                 "course_categories.id) WHERE ueid in (" . $origins . ") ORDER BY sortorder";
+        $categoriessql = "SELECT lsfcat.mdlid, coursecat.name
+            FROM {local_lsf_unification_category} lsfcat
+            JOIN {course_categories} coursecat ON lsfcat.mdlid = coursecat.id
+            WHERE lsfcat.ueid in (" . $origins . ")
+            ORDER BY coursecat.sortorder";
         if (get_config('local_lsf_unification', 'subcategories')) {
             $maincourses = implode(
                 ", ",
@@ -690,17 +690,20 @@ function get_courses_categories(int $veranstid, bool $updatehelptablesifnecessar
             if (empty($maincourses)) {
                 $maincourses = get_config('local_lsf_unification', 'defaultcategory');
             }
-            $categoriessqlmain = "SELECT id, name FROM " . $CFG->prefix .
-                     "course_categories WHERE id in (" . $maincourses . ") ORDER BY sortorder";
+            $categoriessqlmain = "SELECT id, name
+                                  FROM {course_categories}
+                                  WHERE id in (" . $maincourses . ") ORDER BY sortorder";
             $categories = array_map($helpfuntion2, $DB->get_records_sql($categoriessqlmain));
-            $categoriessqlchild = "SELECT id, name FROM " . $CFG->prefix .
-                "course_categories WHERE parent in (" . $maincourses . ") ORDER BY sortorder";
+            $categoriessqlchild = "SELECT id, name
+                                   FROM {course_categories}
+                                   WHERE parent in (" . $maincourses . ") ORDER BY sortorder";
             $categorieschild = $DB->get_records_sql($categoriessqlchild);
             $categories = $categories + array_map($helpfuntion2, $categorieschild);
             foreach ($categorieschild as $child) {
                 if (!str_contains($child->name, 'Archiv')) {
-                    $categoriessqliterative = "SELECT id, name FROM " . $CFG->prefix .
-                        "course_categories WHERE path like '%" . $child->id . "/%' ORDER BY sortorder";
+                    $categoriessqliterative = "SELECT id, name
+                                               FROM {course_categories}
+                                               WHERE path like '%" . $child->id . "/%' ORDER BY sortorder";
                     $categories = array_map($helpfuntion2, $DB->get_records_sql($categoriessqliterative)) + $categories;
                 }
             }
@@ -888,22 +891,18 @@ function get_newest_sublevels(string|int $origins): array {
         return $arrayel->ueid;
     };
     // Get all copies of current category.
-    $originssql = "SELECT ueid FROM " . $CFG->prefix . "local_lsf_unification_category WHERE origin in (" .
-             $origins . ")";
+    $originssql = "SELECT ueid FROM {local_lsf_unification_category} WHERE origin in (" . $origins . ")";
     $copies = implode(", ", array_map($helpfuntion1, $DB->get_records_sql($originssql)));
-    // Get all their childcategories, that newest copy is not older than 2 years.
-    $sublevelsallsql = "SELECT * FROM (SELECT max(ueid) as max_ueid, origin FROM " . $CFG->prefix .
-             "local_lsf_unification_category WHERE parent in (" . $copies . ") AND ueid not in (" . $origins .
-             ") GROUP BY origin) AS a JOIN " . $CFG->prefix . "local_lsf_unification_category ON a.max_ueid = " .
-             $CFG->prefix . "local_lsf_unification_category.ueid ";
-    $sublevelsyoungsql = $sublevelsallsql . "WHERE " . $CFG->prefix .
-             "local_lsf_unification_category.timestamp >= (" . (time() - 2 * 365 * 24 * 60 * 60) .
-             ") ORDER BY txt";
-    $result = $DB->get_records_sql($sublevelsyoungsql);
-    // Get all their childcategories, if there is no childcategory with a copy, that is not older than 2 years.
-    if (empty($result)) {
-        $result = $DB->get_records_sql($sublevelsallsql . "ORDER BY txt");
-    }
+    // Get all their childcategories.
+    $sublevelsallsql = "SELECT *
+            FROM (
+                SELECT max(ueid) as max_ueid, origin
+                FROM {local_lsf_unification_category}
+                WHERE parent in (" . $copies . ") AND ueid not in (" . $origins . ") GROUP BY origin
+                ) AS a
+            JOIN {local_lsf_unification_category} lsfcat ON a.max_ueid = lsfcat.ueid
+            ORDER BY lsfcat.txt";
+    $result = $DB->get_records_sql($sublevelsallsql);
     return $result;
 }
 
@@ -914,8 +913,9 @@ function get_newest_sublevels(string|int $origins): array {
  */
 function has_sublevels(string|int $origins): bool {
     global $CFG, $DB;
-    $sublevelssql = "SELECT id FROM " . $CFG->prefix . "local_lsf_unification_category WHERE parent in (" .
-             $origins . ") AND ueid not in (" . $origins . ")";
+    $sublevelssql = "SELECT id
+        FROM {local_lsf_unification_category}
+        WHERE parent in (" . $origins . ") AND ueid not in (" . $origins . ")";
     return (count($DB->get_records_sql($sublevelssql)) > 0);
 }
 
@@ -928,8 +928,9 @@ function get_newest_element(int $id): false|stdClass {
     global $CFG, $DB;
     $origins = $DB->get_record("local_lsf_unification_category", ["ueid" => $id,
     ], "origin")->origin;
-    $sublevelssql = "SELECT max(ueid) as max_ueid, origin FROM " . $CFG->prefix .
-             "local_lsf_unification_category WHERE origin in (" . $origins . ") GROUP BY origin";
+    $sublevelssql = "SELECT max(ueid) as max_ueid, origin
+        FROM {local_lsf_unification_category}
+        WHERE origin in (" . $origins . ") GROUP BY origin";
     $sublevels = $DB->get_records_sql($sublevelssql);
     $ueid = array_shift($sublevels)->max_ueid;
     return $DB->get_record("local_lsf_unification_category", ["ueid" => $ueid,
@@ -1001,8 +1002,7 @@ function get_his_toplevel_originids(): array {
     $helpfuntion1 = function ($arrayel) {
         return $arrayel->origin;
     };
-    $originssql = "SELECT origin FROM " . $CFG->prefix .
-             "local_lsf_unification_category WHERE ueid = origin AND parent = ueid";
+    $originssql = "SELECT origin FROM {local_lsf_unification_category} WHERE ueid = origin AND parent = ueid";
     return array_map($helpfuntion1, $DB->get_records_sql($originssql));
 }
 
@@ -1012,8 +1012,7 @@ function get_his_toplevel_originids(): array {
  */
 function get_mdl_toplevels(): array {
     global $DB, $CFG;
-    $maincategoriessql = "SELECT id, name FROM " . $CFG->prefix .
-             "course_categories WHERE parent=0 ORDER BY sortorder";
+    $maincategoriessql = "SELECT id, name FROM {course_categories} WHERE parent=0 ORDER BY sortorder";
     return $DB->get_records_sql($maincategoriessql);
 }
 
@@ -1024,8 +1023,7 @@ function get_mdl_toplevels(): array {
  */
 function get_mdl_sublevels(int $mainid): array {
     global $DB, $CFG;
-    $subcatssql = "SELECT id, name, path FROM " . $CFG->prefix .
-             "course_categories WHERE path LIKE '/" . $mainid . "/%' OR id=" . $mainid .
+    $subcatssql = "SELECT id, name, path FROM {course_categories} WHERE path LIKE '/" . $mainid . "/%' OR id=" . $mainid .
              " ORDER BY sortorder";
     return $DB->get_records_sql($subcatssql);
 }

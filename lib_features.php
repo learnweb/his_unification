@@ -228,14 +228,13 @@ function get_my_courses_as_teacher(int|null $additionalid = null): array {
     $helpfuntion1 = function ($arrayelement) {
         return $arrayelement->instanceid;
     };
-    $addsql = empty($additionalid) ? "" : "OR " . $CFG->prefix . "role_assignments.userid=$additionalid";
-    $sql = "SELECT " . $CFG->prefix . "role_assignments.id, instanceid, roleid
-    		FROM " . $CFG->prefix . "role_assignments
-    		JOIN " . $CFG->prefix . "context
-    		ON " . $CFG->prefix . "role_assignments.contextid = " . $CFG->prefix . "context.id
-    		WHERE " . $CFG->prefix . "role_assignments.roleid=" . $CFG->creatornewroleid . "
-    		AND ( " . $CFG->prefix . "role_assignments.userid=$USER->id " . $addsql . " )
-    		AND " . $CFG->prefix . "context.contextlevel=50";
+    $addsql = empty($additionalid) ? "" : "OR assignments.userid=$additionalid";
+    $sql = "SELECT assignments.id, c.instanceid, assignments.roleid
+    		FROM {role_assignments} assignments
+    		JOIN {context} c ON assignments.contextid = c.id
+    		WHERE assignments.roleid=" . $CFG->creatornewroleid . "
+    		AND ( assignments.userid=" . $USER->id . $addsql . " )
+    		AND c.contextlevel=50";
     return array_map($helpfuntion1, $DB->get_records_sql($sql));
 }
 
