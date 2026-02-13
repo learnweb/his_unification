@@ -37,6 +37,9 @@ class lsf_course_request_form extends moodleform {
     /** @var int The course that want to be created. */
     protected $veranstid;
 
+    /** @var mixed|object */
+    protected $lsfcourse;
+
     /**
      * Define the form.
      * @return void
@@ -54,7 +57,7 @@ class lsf_course_request_form extends moodleform {
 
         $this->veranstid = $veranstid;
         $lsfcourse = get_course_by_veranstid($veranstid);
-        $this->lsf_course = $lsfcourse;
+        $this->lsfcourse = $lsfcourse;
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
@@ -186,8 +189,8 @@ class lsf_course_request_form extends moodleform {
             }
         }
 
-        if (!is_shortname_valid($this->lsf_course, $data['shortname'])) {
-            $errors['shortname'] = get_string('shortnameinvalid', 'local_lsf_unification', shortname_hint($this->lsf_course));
+        if (!is_shortname_valid($this->lsfcourse, $data['shortname'])) {
+            $errors['shortname'] = get_string('shortnameinvalid', 'local_lsf_unification', shortname_hint($this->lsfcourse));
         }
 
         $categories = get_courses_categories($this->veranstid, false);
