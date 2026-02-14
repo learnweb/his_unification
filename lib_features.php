@@ -41,7 +41,7 @@ require_once($CFG->dirroot . '/course/format/lib.php');
  * @param bool $databaseenrol
  * @param bool $selfenrol
  * @param string $password
- * @param stdClass $category
+ * @param string $category
  * @return array consisting of the course-object and warnings
  * @throws moodle_exception
  * @package local_lsf_unification
@@ -55,7 +55,7 @@ function create_lsf_course(
     bool $databaseenrol,
     bool $selfenrol,
     string $password,
-    stdClass $category
+    string $category
 ): array {
     global $DB, $USER, $CFG;
     $transaction = $DB->start_delegated_transaction();
