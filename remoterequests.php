@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Remote request file.
+ *
+ * @package   local_lsf_unification
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 use core\output\single_button;
 use core_table\flexible_table;
 use core\url;
@@ -45,18 +53,21 @@ if (establish_secondary_DB_connection() === true) {
             $requester = $DB->get_record("user", ["id" => $request->requesterid]);
             set_course_accepted($veranstid);
             $emailsent = send_course_creation_mail($requester, get_course_by_veranstid($veranstid));
-            echo $OUTPUT->box("<b>Anfrage (" . $rid . ") wurde zugelassen und es wurde versucht eine Email an (" . $requester->firstname . " " . $requester->lastname . ") zu senden.<b>");
+            echo $OUTPUT->box("<b>Anfrage (" . $rid . ") wurde zugelassen und es wurde versucht eine Email an (" .
+                $requester->firstname . " " . $requester->lastname . ") zu senden.<b>");
             if ($emailsent) {
                 echo $OUTPUT->box("<b>Email erfolgreich versendet</b>");
             } else if (empty($user->email)) {
-                echo $OUTPUT->box("<b>Email versenden <u>fehlgeschlagen</u><br>(Der Benutzer (" . $requester->firstname . " " . $requester->lastname . ") hat keine Emailadresse)</b>");
+                echo $OUTPUT->box("<b>Email versenden <u>fehlgeschlagen</u><br>(Der Benutzer (" .
+                    $requester->firstname . " " . $requester->lastname . ") hat keine Emailadresse)</b>");
             } else {
                 echo $OUTPUT->box("<b>Email versenden <u>fehlgeschlagen</u></b>");
             }
         } else if ($action == 4) {
             $request = get_course_request($rid);
             $veranstid = $request->veranstid;
-            echo $OUTPUT->box("<b>Die folgende URL kann <u>nur vom Antragsteller</u> verwendet werden: <br>" . get_remote_creation_continue_link($veranstid) . "</b>");
+            echo $OUTPUT->box("<b>Die folgende URL kann <u>nur vom Antragsteller</u> verwendet werden: <br>" .
+                get_remote_creation_continue_link($veranstid) . "</b>");
         }
     }
 
@@ -74,19 +85,23 @@ if (establish_secondary_DB_connection() === true) {
 
     foreach ($requests as $requestid => $request) {
         $course = $courses[$request->veranstid];
-        $courseinfo = '<a href="' . $course->urlveranst . '">' . delete_bad_chars($course->titel) . "</a><br>" . $course->semestertxt;
+        $courseinfo = '<a href="' . $course->urlveranst . '">' . delete_bad_chars($course->titel) . "</a><br>" .
+            $course->semestertxt;
 
         $requester = $DB->get_record("user", ["id" => $request->requesterid]);
-        $person = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $requester->id . '">' . $requester->firstname . " " . $requester->lastname . "</a>";
+        $person = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $requester->id . '">' . $requester->firstname . " " .
+            $requester->lastname . "</a>";
         if ($request->requeststate == 2) {
             $acceptor = $DB->get_record("user", ["id" => $request->acceptorid]);
-            $person .= '<br>zugelassen durch <a href="' . $CFG->wwwroot . '/user/view.php?id=' . $acceptor->id . '">' . $acceptor->firstname . " " . $acceptor->lastname . "</a>";
+            $person .= '<br>zugelassen durch <a href="' . $CFG->wwwroot . '/user/view.php?id=' . $acceptor->id . '">' .
+                $acceptor->firstname . " " . $acceptor->lastname . "</a>";
         }
 
         $actions = [];
         $baseurl = new url('remoterequests.php', ['requestid' => $requestid]);
         if ($request->requeststate == 1) {
-            $actions[] = new single_button(new url($baseurl, ['action' => 2]), 'Erlaubnis geben', 'get', single_button::BUTTON_PRIMARY);
+            $url = new url($baseurl, ['action' => 2]);
+            $actions[] = new single_button($url, 'Erlaubnis geben', 'get', single_button::BUTTON_PRIMARY);
         } else if ($request->requeststate == 2) {
             $actions[] = new single_button(new url($baseurl, ['action' => 3]), 'Email erneut senden', 'get');
             $actions[] = new single_button(new url($baseurl, ['action' => 4]), 'Erstellungs-URL anzeigen', 'get');
