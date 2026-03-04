@@ -44,5 +44,4 @@ insert_missing_helptable_entries(false, $tryeverything);
 $pgdb->dispose();
 
 $returnto = new moodle_url('/local/lsf_unification/helptablemanager.php');
-redirect($returnto, get_string('update_helptable_notification', 'local_lsf_unification') );
-
+redirect($returnto, get_string('update_helptable_notification', 'local_lsf_unification'));
