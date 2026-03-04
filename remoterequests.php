@@ -75,7 +75,7 @@ if (establish_secondary_DB_connection() === true) {
     $table->define_baseurl(new url('remoterequests.php'));
     $table->define_columns(['requestid', 'course', 'requester', 'actions']);
     $table->define_headers(['Antrag Nr.', 'Veranstaltung', 'Personen', 'Aktionen']);
-    $requests = $DB->get_records('local_lsf_course', ['mdlid' => 0], 'id');
+    $requests = $DB->get_records('local_lsf_unification_course', ['mdlid' => 0], 'id');
     $table->setup();
 
     $helpfuntion = function ($arrayel) {
