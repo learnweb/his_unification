@@ -677,7 +677,7 @@ function get_courses_categories(int $veranstid, bool $updatehelptablesifnecessar
              $otherueidssql . ") OR ueid in (" . $ueids . ")";
     $origins = implode(", ", array_map($helpfuntion1, $DB->get_records_sql($originssql)));
     if (!empty($origins)) {
-        $categoriessql = "SELECT lsfcat.mdlid, coursecat.name
+        $categoriessql = "SELECT DISTINCT lsfcat.mdlid, coursecat.name
             FROM {local_lsf_unification_category} lsfcat
             JOIN {course_categories} coursecat ON lsfcat.mdlid = coursecat.id
             WHERE lsfcat.ueid in (" . $origins . ")
