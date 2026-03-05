@@ -121,6 +121,8 @@ $string['linktext_users'] = "Edit the assigned teachers and students, ...";
 $string['main_category'] = 'Maincateogry';
 $string['map'] = 'map';
 $string['map_done'] = 'mapping(s) saved';
+$string['map_list_empty'] = "No items selected";
+$string['map_submit'] = "You are about to map the following courses:";
 $string['mapped'] = 'mapped';
 $string['max_import_age'] = 'Max Import Age';
 $string['max_import_age_description'] = 'The maximum age, a course may have before being imported.';
@@ -177,7 +179,8 @@ $string['subcategories_description'] = 'Enable choosing not mapped subcategories
 $string['task_missing_helptable_entries'] = 'Update table of LSF categories.';
 $string['template_from_course'] = 'Alternative {$a}: Include contents from an existing course ...';
 $string['update_helptable'] = 'Update Helptable With HIS-LSF data';
-$string['update_helptable_notification'] = 'All tables of lsf_unification were updated';
+$string['update_helptable_already_queued'] = 'Task to update tables is already queued. Click <a href="{$a->link}">here</a> for more information.';
+$string['update_helptable_notification'] = 'The Tables will be updated at {$a->time}. Click <a href="{$a->link}">here</a> for more information.';
 $string['warning_cannot_enrol_nologin'] = "person wasn't enrolled (no username found)";
 $string['warning_cannot_enrol_nouser'] = "person wasn't enrolled (no user found)";
 $string['warning_cannot_enrol_other'] = "person wasn't enrolled";
