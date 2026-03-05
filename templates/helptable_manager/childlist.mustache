@@ -1,0 +1,99 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_lsf_unification/helptable_manager/childlist
+
+    This template renders the Admin settings page to create/edit/delete category matching from the lsf to moodle.
+
+    Example (json):
+    {
+
+    }
+}}
+
+<form action='' method='get' class='mform'>
+    <div class="box">
+        {{#parents}}
+            [<a href="{{{parentlink}}}">{{#str}} navigate, local_lsf_unification {{/str}}</a>]
+            {{parenttext}}
+            <br>
+        {{/parents}}
+    </div>
+    <div class="box">
+        <table>
+            {{#childs}}
+                <tr>
+                    {{^sublevels}}
+                        <td>&nbsp;</td>
+                    {{/sublevels}}
+                    {{#sublevels}}
+                        <td nowrap="nowrap">
+                            &nbsp;[<a href="{{{childoriginlink}}}"> {{#str}} navigate, local_lsf_unification {{/str}}</a>]
+                        </td>
+                    {{/sublevels}}
+                    <td>
+                        <label for="{{idchildorigin}}">{{prefixchildtxt}}</label>
+                    </td>
+                    <td nowrap='nowrap'>&nbsp;[
+                        {{#emptychildmdlid}}
+                            {{#str}} not_mapped, local_lsf_unification {{/str}}
+                        {{/emptychildmdlid}}
+                        {{^emptychildmdlid}}
+                            <a href="{{{categorylink}}}"> {{childname}} </a>
+                        {{/emptychildmdlid}}
+                        ]
+                    </td>
+                    <td nowrap='nowrap'>&nbsp;[
+                        <input id="{{idchildorigin}}" type="checkbox" name="{{namechildorigin}}" value="x">
+                        <label for="{{idchildorigin}}">
+                            {{#emptychildmdlid}}
+                                {{#str}} map, local_lsf_unification {{/str}}
+                            {{/emptychildmdlid}}
+                            {{^emptychildmdlid}}
+                                {{#str}} overwrite, local_lsf_unification {{/str}}
+                            {{/emptychildmdlid}}
+                        </label>
+                        ]
+                    </td>
+                    {{#emptychildmdlid}}
+                        <td>&nbsp;</td>
+                    {{/emptychildmdlid}}
+                    {{^emptychildmdlid}}
+                        <td nowrap='nowrap'>
+                            &nbsp;[
+                            <a href="{{{deletelink}}}"> {{#str}} delete, local_lsf_unification {{/str}} </a>
+                            ]
+                        </td>
+                    {{/emptychildmdlid}}
+                </tr>
+            {{/childs}}
+        </table>
+    </div>
+    <div class="box">
+        <b>
+            {{#str}} main_category, local_lsf_unification {{/str}}
+        </b>:
+        <select name="mainid">
+            {{#options}}
+                <option value="{{value}}">{{text}}</option>
+            {{/options}}
+        </select> &nbsp;
+        <input type="submit" value="{{#str}} map, local_lsf_unification {{/str}}">
+        <input type="hidden" name="originid" value="{{originid}}">
+        <input type="hidden" name="maxorigin" value="{{maxorigin}}">
+    </div>
+</form>
