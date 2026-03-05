@@ -727,8 +727,21 @@ function get_courses_categories(int $veranstid, bool $updatehelptablesifnecessar
  * @return void
  */
 function insert_missing_helptable_entries(bool $debugoutput = false, bool $tryeverything = false): void {
+    // LEARNWEB-TODO: Please refactor this horrible function.
+    global $pgdb, $DB, $CFG;
+    require_once($CFG->dirroot . '/local/lsf_unification/class_pg_lite.php');
+    require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
+
+    // Build db connection.
+    $pgdb = new pg_lite();
+    $connected = $pgdb->connect();
+    $recourceid = pg_connection_status($pgdb->connection);
+    if ($debugoutput) {
+        mtrace('! = unknown category found, ? = unknown linkage found;' . 'Verbindung: ' .
+            ($connected ? 'ja' : 'nein') . ' (' . $recourceid . ')');
+    }
+
     $a = 1;
-    global $pgdb, $DB;
     $list1 = "";
     $list2 = "";
     $records1 = $DB->get_recordset('local_lsf_unification_category', null, '', 'ueid');
@@ -755,7 +768,9 @@ function insert_missing_helptable_entries(bool $debugoutput = false, bool $tryev
                  $records2unique[$hislsftitle->ueid][$hislsftitle->uebergeord] != true)
         ) {
             $a++;
-            echo $hislsftitle->ueid . " ";
+            if ($debugoutput) {
+                echo $hislsftitle->ueid . " ";
+            }
         }
         if (!isset($records1unique[$hislsftitle->ueid])) {
             // Create match-table-entry if not existing.
@@ -863,6 +878,7 @@ function insert_missing_helptable_entries(bool $debugoutput = false, bool $tryev
             flush();
         }
     }
+    $pgdb->dispose();
 }
 
 /**

@@ -36,15 +36,8 @@ class insert_missing_helptable_entries extends scheduled_task {
 
     #[\Override]
     public function execute(): void {
-        global $pgdb, $CFG;
-        include_once($CFG->dirroot . '/local/lsf_unification/class_pg_lite.php');
-        include_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
-        $pgdb = new pg_lite();
-        $connected = $pgdb->connect();
-        $recourceid = pg_connection_status($pgdb->connection);
-        mtrace('! = unknown category found, ? = unknown linkage found;' . 'Verbindung: ' .
-            ($connected ? 'ja' : 'nein') . ' (' . $recourceid . ')');
+        global $CFG;
+        require_once($CFG->dirroot . '/local/lsf_unification/lib_his.php');
         insert_missing_helptable_entries(true);
-        $pgdb->dispose();
     }
 }
