@@ -21,7 +21,10 @@
  * @copyright 2025 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 define('NO_OUTPUT_BUFFERING', true);
+
+global $CFG, $OUTPUT, $PAGE;
 require_once("../../config.php");
 require_once("$CFG->libdir/adminlib.php");
 require_once("./lib_his.php");
@@ -39,10 +42,14 @@ $maxorigin        = optional_param('maxorigin', 0, PARAM_INT); // Max (his origi
 $delete           = optional_param('delete', 0, PARAM_INT);    // Category id where to remove a matching.
 
 if ($originid == -1) {
-    $updatetable = get_string('update_helptable', 'local_lsf_unification');
-    $createmappings = get_string('create_mappings', 'local_lsf_unification');
-    echo "<p>" . $OUTPUT->box('<a href="./update_helptable.php">' . $updatetable . '</a>') . "</p>";
-    echo "<p>" . $OUTPUT->box('<a href="?originid=0">' . $createmappings . '</a>') . "</p>";
+    require_capability('moodle/site:config', context_system::instance());
+    $isadmin = has_capability('moodle/site:config', context_system::instance());
+    $mustachedata = [
+        'isadmin' => $isadmin,
+        'createmappings' => new moodle_url('/local/lsf_unification/helptablemanager.php', ['originid' => 0]),
+    ];
+    $PAGE->requires->js_call_amd('local_lsf_unification/update_helptable', 'init');
+    echo $OUTPUT->render_from_template('local_lsf_unification/helptable_manager', $mustachedata);
 } else if ($mainid == -1) {
     if (!empty($delete)) {
         set_cat_mapping($delete, 0);
