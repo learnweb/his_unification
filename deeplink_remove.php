@@ -16,6 +16,9 @@
 
 /**
  * Page for Deeplink Removal process.
+ *
+ * When a moodle course gets created a link of the course can be saved in the his/lsf system. This page allows to deletes
+ * that link. This can be used if the moodle course is for example deleted.
  * @package local_lsf_unification
  * @copyright 2025 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

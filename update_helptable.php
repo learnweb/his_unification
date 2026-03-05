@@ -24,10 +24,8 @@
 
 use local_lsf_unification\pg_lite;
 
-defined('MOODLE_INTERNAL') || die();
-
+require_once("../../config.php");
 global $CFG;
-require_once($CFG->dirroot . "/config.php");
 require_once(dirname(__FILE__) . "/class_pg_lite.php");
 require_once(dirname(__FILE__) . "/lib.php");
 require_once(dirname(__FILE__) . "/lib_features.php");
@@ -40,19 +38,10 @@ $tryeverything = optional_param('tryeverything', false, PARAM_INT);
 
 set_time_limit(30 * 60);
 
-echo "<p>
-        ! = unknown category found, ? = unknown linkage found
-        <br>
-        <a href='?tryeverything=100000'>TryEverything?</a>
-        <i>(set tryeverything to a value x, to only check ids greater then x)</i>
-      </p>";
-
 $pgdb = new pg_lite();
-echo "<p>Verbindung: " . ($pgdb->connect() ? "ja" : "nein") . " (" . $pgdb->connection . ")</p>";
-
-flush();
-
-insert_missing_helptable_entries(true, $tryeverything);
-
+$pgdb->connect();
+insert_missing_helptable_entries(false, $tryeverything);
 $pgdb->dispose();
-echo "<p>Verbindung geschlossen: " . (($pgdb->connection == null) ? "ja" : "nein") . "</p>";
+
+$returnto = new moodle_url('/local/lsf_unification/helptablemanager.php');
+redirect($returnto, get_string('update_helptable_notification', 'local_lsf_unification'));

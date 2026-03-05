@@ -77,12 +77,11 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
         )
     );
     $settings->add(
-        new admin_setting_configtext(
+        new admin_setting_configpasswordunmask(
             'local_lsf_unification/dbpass',
             get_string('dbpass', 'local_lsf_unification'),
             get_string('dbpass_description', 'local_lsf_unification'),
-            '',
-            PARAM_RAW
+            ''
         )
     );
     $settings->add(
