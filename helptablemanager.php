@@ -21,7 +21,13 @@
  * @copyright 2025 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use core\output\notification;
+use core\task\manager;
+use local_lsf_unification\task\insert_missing_helptable_entries_adhoc;
+
 define('NO_OUTPUT_BUFFERING', true);
+
 require_once("../../config.php");
 require_once("$CFG->libdir/adminlib.php");
 require_once("./lib_his.php");
@@ -29,38 +35,52 @@ require_once($CFG->dirroot . '/course/lib.php');
 require_login();
 admin_externalpage_setup('local_lsf_unification_helptable');
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading('HISLSF Helptable Management');
-
 $originid         = optional_param('originid', -1, PARAM_INT); // HIS category origin id.
 $mainid           = optional_param('mainid', -1, PARAM_INT);   // HIS catecory id.
 $mdlid            = optional_param('mdlid', -1, PARAM_INT);    // Moodle category id.
 $maxorigin        = optional_param('maxorigin', 0, PARAM_INT); // Max (his origin ids).
 $delete           = optional_param('delete', 0, PARAM_INT);    // Category id where to remove a matching.
+$updatehelptable = optional_param('updatehelptable', 0, PARAM_BOOL);
 
+$basepath = '/local/lsf_unification/helptablemanager.php';
+$output = "";
 if ($originid == -1) {
-    $updatetable = get_string('update_helptable', 'local_lsf_unification');
-    $createmappings = get_string('create_mappings', 'local_lsf_unification');
-    echo "<p>" . $OUTPUT->box('<a href="./update_helptable.php">' . $updatetable . '</a>') . "</p>";
-    echo "<p>" . $OUTPUT->box('<a href="?originid=0">' . $createmappings . '</a>') . "</p>";
+    require_capability('moodle/site:config', context_system::instance());
+    if ($updatehelptable) {
+        $existingtasks = \core\task\manager::get_adhoc_tasks(insert_missing_helptable_entries_adhoc::class);
+        if (empty($existingtasks)) {
+            $updatetime = time() + 60;
+            $task = new insert_missing_helptable_entries_adhoc();
+            $task->set_next_run_time($updatetime);
+            manager::queue_adhoc_task($task, true);
+            $params = ['time' => userdate($updatetime), 'link' => (new moodle_url("/admin/tool/task/adhoctasks.php"))->out()];
+            $info = get_string('update_helptable_notification', 'local_lsf_unification', $params);
+        } else {
+            $params = ['link' => (new moodle_url("/admin/tool/task/adhoctasks.php"))->out()];
+            $info = get_string('update_helptable_already_queued', 'local_lsf_unification', $params);
+        }
+        redirect(new moodle_url($basepath), $info);
+    }
+    $mustachedata = [
+        'isadmin' => has_capability('moodle/site:config', context_system::instance()),
+        'createmappings' => new moodle_url($basepath, ['originid' => 0]),
+    ];
+    $output = $OUTPUT->render_from_template('local_lsf_unification/helptable_manager/overview', $mustachedata);
 } else if ($mainid == -1) {
     if (!empty($delete)) {
         set_cat_mapping($delete, 0);
     }
-    $prefix = "-";
     if (empty($originid)) {
         $origins = implode(", ", get_his_toplevel_originids());
-        $parents = ["" => "- Lehrveranstaltungen"];
-        $prefix .= "-";
+        $parents = ["" => "Lehrveranstaltungen"];
     } else {
         $origins = $originid;
         $id = $originid;
         $parents = [$id => " " . get_newest_element($id)->txt];
         while ($parent = get_newest_parent($id)) {
             foreach ($parents as $key => $txt) {
-                $parents[$key] = "-" . $parents[$key];
+                $parents[$key] = $parents[$key];
             }
-            $prefix .= "-";
             if (($id == $parent->ueid) || ($id == $parent->origin)) {
                 break;
             }
@@ -68,111 +88,89 @@ if ($originid == -1) {
             $parents[$id] = " " . $parent->txt;
         }
     }
-    $parentstxt = "";
-    foreach ($parents as $id => $txt) {
+    $parentstxt = [];
+    foreach (array_reverse($parents, true) as $id => $txt) {
         $navigate = get_string('navigate', 'local_lsf_unification');
-        $parentstxt = " [<a href='?originid=" . $id . "'>" . $navigate . "</a>] " . $txt . "<br>" . $parentstxt;
+        $parentstxt[] = [
+            'parentlink' => new moodle_url($basepath, ['originid' => $id]),
+            'parenttext' => $txt,
+        ];
     }
     $sublevels = get_newest_sublevels($origins);
-    $childlist = "";
+    $childs = [];
     foreach ($sublevels as $child) {
         $child->mdlid = get_mdlid($child->origin);
         $child->name = empty($child->mdlid) ? "" : get_mdlname($child->origin);
         $maxorigin = ($child->origin > $maxorigin) ? $child->origin : $maxorigin;
-        $str = [
-            0 => get_string('navigate', 'local_lsf_unification'),
-            1 => get_string('not_mapped', 'local_lsf_unification'),
-            2 => get_string(empty($child->mdlid) ? 'map' : 'overwrite', 'local_lsf_unification'),
-            3 => get_string('delete', 'local_lsf_unification'),
+        $childs[] = [
+            'sublevels' => has_sublevels($child->ueid),
+            'childoriginlink' => new moodle_url($basepath, ['originid' => $child->origin]),
+            'idchildorigin' => "idch_" . ($child->origin),
+            'prefixchildtxt' => $child->txt,
+            'emptychildmdlid' => empty($child->mdlid),
+            'categorylink' => new moodle_url('/course/index.php', ['categoryid' => $child->mdlid]),
+            'childname' => $child->name,
+            'namechildorigin' => 'ch_' . ($child->origin),
+            'deletelink' => new moodle_url($basepath, ['originid' => $originid, 'delete' => $child->origin]),
         ];
-        $childlist .=
-            "<tr>" . (
-                (!has_sublevels($child->ueid))
-                ? "<td>&nbsp;</td>"
-                : ("<td nowrap='nowrap'>&nbsp;[
-                        <a href='?originid=" . ($child->origin) . "'>" . $str[0] . "</a>]
-                    </td>")
-            ) . "
-                <td>
-                    <label for='idch_" . ($child->origin) . "'>" . $prefix . " " . ($child->txt) . "</label>
-                </td>
-                <td nowrap='nowrap'>&nbsp;[" .
-                    (empty($child->mdlid)
-                    ? $str[1]
-                    : ("<a href='../../course/category.php?id=" . ($child->mdlid) . "'>" . ($child->name) . "</a>")) . "]
-                </td>
-                <td nowrap='nowrap'>&nbsp;[
-                        <input id='idch_" . ($child->origin) . "' type='checkbox' name='ch_" . ($child->origin) . "' value='x'>
-                        <label for='idch_" . ($child->origin) . "'> " . $str[2]  . "</label>
-                    ]
-                </td>" . (
-                    (empty($child->mdlid))
-                    ? "<td>&nbsp;</td>"
-                    : ("<td nowrap='nowrap'>&nbsp;[
-                            <a href='?originid=" . $originid . "&delete=" . $child->origin . "'>" . $str[3]  . "</a>
-                        ]
-                        </td>")
-                ) .
-            "</tr>";
     }
     $maincategories = get_mdl_toplevels();
-    $options = "";
+    $options = [];
     foreach ($maincategories as $id => $txt) {
-        $options .= "<option value='" . $id . "'>" . $txt->name . "</option>";
+        $options[] = ['value' => $id, 'text' => $txt->name];
     }
-    $catchoice = "<b>" . get_string('main_category', 'local_lsf_unification') . "</b>:
-        <select name='mainid'>" . $options . "</select> &nbsp;
-        <input type='submit' value='" . get_string('map', 'local_lsf_unification') . "'>
-        <input type='hidden' name='originid' value='" . $originid . "'>
-        <input type='hidden' name='maxorigin' value='" . $maxorigin . "'>";
-    echo "<form action='' method='get' class='mform'>
-            <p>" . $OUTPUT->box($parentstxt) . "</p>
-            <p>" . $OUTPUT->box("<table>" . $childlist . "</table>") . "</p>
-            <p>" . $OUTPUT->box($catchoice) . "</p>
-          </form>";
+    $mustachedata = [
+        'parents' => $parentstxt,
+        'childs' => $childs,
+        'options' => $options,
+        'originid' => $originid,
+        'maxorigin' => $maxorigin,
+    ];
+    $output = $OUTPUT->render_from_template('local_lsf_unification/helptable_manager/childlist', $mustachedata);
 } else if ($mdlid == -1) {
     $hiddenfields = "";
-    $childlist = "";
+    $childs = [];
+    $hiddenfields = [];
     for ($i = 0; $i <= $maxorigin; $i++) {
         if (isset($_GET["ch_" . $i])) {
-            $hiddenfields .= "<input type='hidden' name='ch_" . $i . "' value='x'>";
-            $childlist .= (empty($childlist) ? "" : "<br>") . "-" . (get_newest_element($i)->txt) . "";
+            $hiddenfields[] = ['hiddenname' => 'ch_' . $i];
+            $childs[] = ['childtext' => get_newest_element($i)->txt];
         }
     }
     $subcats = get_mdl_sublevels($mainid);
     $displaylist = [];
-        $displaylist = core_course_category::make_categories_list();
-    $options = "";
+    $displaylist = core_course_category::make_categories_list();
+    $options = [];
     foreach ($displaylist as $id => $txt) {
         if (isset($subcats[$id])) {
-            $options .= "<option value='" . $id . "'>" . $txt . "</option>";
+            $options[] = ['optionid' => $id, 'optiontext' => $txt];
         }
     }
-    echo "<form action='' method='get' class='mform'>
-            <p>" . $OUTPUT->box("<p>" . $childlist . "</p><b>=&gt;</b>
-                <p>
-                    <b>" . get_string('sub_category', 'local_lsf_unification') . "</b>:
-                    <select name='mdlid'>" . $options . "</select>
-                </p>") .
-            "</p>
-            <input type='hidden' name='originid' value='" . $originid . "'>
-            <input type='hidden' name='mainid' value='" . $mainid . "'>
-            <input type='hidden' name='maxorigin' value='" . $maxorigin . "'>" .
-                $hiddenfields .
-            "<input type='submit' value='" . get_string('map', 'local_lsf_unification') . "'>
-          </form>";
+    // Additional variable if only 1 category is available for mapping.
+    $singlecat = count($options) == 1 ? ['category' => $options[0]['optiontext'], 'categoryid' => $options[0]['optionid']] : [];
+    $mustachedata = [
+        'childs' => $childs,
+        'options' => $options,
+        'originid' => $originid,
+        'mainid' => $mainid,
+        'maxorigin' => $maxorigin,
+        'hiddenfields' => $hiddenfields,
+        'single_category' => $singlecat,
+    ];
+    $output = $OUTPUT->render_from_template('local_lsf_unification/helptable_manager/mapping_submit', $mustachedata);
 } else {
-    $mapchilds = [];
-    $maptxt = "";
     $count = 0;
     for ($i = 0; $i <= $maxorigin; $i++) {
         if (isset($_GET["ch_" . $i])) {
-            $maptxt .= $i . "-" . $mdlid . "<br>";
             set_cat_mapping($i, $mdlid);
             $count++;
         }
     }
-    echo "<p>" . $OUTPUT->box($maptxt . "<b>" . $count . " " . get_string('map_done', 'local_lsf_unification')) . "</b></p>";
-    echo "<p>" . $OUTPUT->box('<a href="?originid=0">' . get_string('create_mappings', 'local_lsf_unification') . '</a>') . "</p>";
+    $string = $count . " " . get_string('map_done', 'local_lsf_unification');
+    redirect(new moodle_url($basepath, ['originid' => 0]), $string);
 }
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading('HISLSF Helptable Management');
+echo $output;
 echo $OUTPUT->footer();

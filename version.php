@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2025123101;
+$plugin->version   = 2025123102;
 $plugin->component = 'local_lsf_unification';
 $plugin->requires  = 2024100700; // Require Moodle 4.5.
 $plugin->supported  = [405, 501];
