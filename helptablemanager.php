@@ -55,20 +55,17 @@ if ($originid == -1) {
     if (!empty($delete)) {
         set_cat_mapping($delete, 0);
     }
-    $prefix = "-";
     if (empty($originid)) {
         $origins = implode(", ", get_his_toplevel_originids());
-        $parents = ["" => "- Lehrveranstaltungen"];
-        $prefix .= "-";
+        $parents = ["" => "Lehrveranstaltungen"];
     } else {
         $origins = $originid;
         $id = $originid;
         $parents = [$id => " " . get_newest_element($id)->txt];
         while ($parent = get_newest_parent($id)) {
             foreach ($parents as $key => $txt) {
-                $parents[$key] = "-" . $parents[$key];
+                $parents[$key] = $parents[$key];
             }
-            $prefix .= "-";
             if (($id == $parent->ueid) || ($id == $parent->origin)) {
                 break;
             }
@@ -94,7 +91,7 @@ if ($originid == -1) {
             'sublevels' => has_sublevels($child->ueid),
             'childoriginlink' => new moodle_url($basepath, ['originid' => $child->origin]),
             'idchildorigin' => "idch_" . ($child->origin),
-            'prefixchildtxt' => $prefix . " " . ($child->txt),
+            'prefixchildtxt' => $child->txt,
             'emptychildmdlid' => empty($child->mdlid),
             'categorylink' => new moodle_url('/course/index.php', ['categoryid' => $child->mdlid]),
             'childname' => $child->name,
