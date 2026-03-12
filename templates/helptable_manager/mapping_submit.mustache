@@ -15,33 +15,54 @@
     along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_lsf_unification/helptable_manager/mapping_submot
+    @template local_lsf_unification/helptable_manager/mapping_submit
 
-    This template renders the Admin settings page to create/edit/delete category matching from the lsf to moodle.
-
-    Example (json):
-    {
-
-    }
+    This template renders the mapping submit step.
 }}
 
-<form action="" method="get" class="mform">
-    <div>
-        {{#childs}}
-            - {{childtext}}<br>
-        {{/childs}}
-        <b> {{#str}} sub_category, local_lsf_unification {{/str}} </b>
-        <select name="mdlid">
-            {{#options}}
-                <option value="{{optionid}}"> {{optiontext}}</option>
-            {{/options}}
-        </select>
-    </div>
-    <input type="hidden" name="originid" value="{{originid}}">
-    <input type="hidden" name="mainid" value="{{mainid}}">
-    <input type="hidden" name="maxorigin" value="{{maxorigin}}">
-    {{#hiddenfields}}
-        <input type="hidden" name="{{hiddenname}}" value="x">
-    {{/hiddenfields}}
-    <input type="submit" value="{{#str}} map, local_lsf_unification {{/str}}">
-</form>
+<div class="container mt-3">
+    <form action="" method="get" class="mform">
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover table-sm mb-0">
+                    <thead>
+                    <tr>
+                        <th>{{#str}} map_submit, local_lsf_unification {{/str}}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#childs}}
+                        <tr>
+                            <td class="align-middle"> {{childtext}}</td>
+                        </tr>
+                    {{/childs}}
+                    {{^childs}}
+                        <tr>
+                            <td class="align-middle text-muted">{{#str}} map_list_empty, local_lsf_unification {{/str}}</td>
+                        </tr>
+                    {{/childs}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex align-items-center gap-2 flex-wrap">
+            <label for="id_mdlid" class="mb-0">
+                <b>{{#str}} sub_category, local_lsf_unification {{/str}}</b>
+            </label>
+            <select id="id_mdlid" name="mdlid" class="form-select form-select-sm w-auto">
+                {{#options}}
+                    <option value="{{optionid}}">{{optiontext}}</option>
+                {{/options}}
+            </select>
+            <input type="submit" class="btn btn-primary btn-sm" value="{{#str}} map, local_lsf_unification {{/str}}">
+        </div>
+
+        <input type="hidden" name="originid" value="{{originid}}">
+        <input type="hidden" name="mainid" value="{{mainid}}">
+        <input type="hidden" name="maxorigin" value="{{maxorigin}}">
+        {{#hiddenfields}}
+            <input type="hidden" name="{{hiddenname}}" value="x">
+        {{/hiddenfields}}
+    </form>
+</div>
