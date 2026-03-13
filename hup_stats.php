@@ -32,7 +32,7 @@ require_once(dirname(__FILE__) . "/class_pg_lite.php");
 require_once(dirname(__FILE__) . ".lib.php");
 require_once(dirname(__FILE__) . "/lib_features.php");
 
-// Konstanten für Fachbereiche
+// Konstanten für Fachbereiche.
 define("FB1", "FB1: Evangelisch-Theologische Fakultät");
 define("FB2", "FB2: Katholisch-Theologische Fakultät");
 define("FB3", "FB3: Rechtswissenschaftliche Fakultät");
@@ -50,7 +50,7 @@ define("FB14", "FB14: Geowissenschaften");
 define("FB15", "FB15: Musikhochschule");
 define("FUV", "Fachbereichsunabhängige Veranstaltungen");
 
-/// Check permissions.
+// Check permissions.
 require_login();
 if (!has_capability('moodle/site:config', context_system::instance())) {
     die("no access");
@@ -67,9 +67,9 @@ set_time_limit(30 * 60);
  * @return void
  */
 function create_aggregate() {
-    global $pgDB;
-    pg_query($pgDB->connection, "DROP AGGREGATE textcat_all(text);");
-    pg_query($pgDB->connection, "CREATE AGGREGATE textcat_all(
+    global $pgdb;
+    pg_query($pgdb->connection, "DROP AGGREGATE textcat_all(text);");
+    pg_query($pgdb->connection, "CREATE AGGREGATE textcat_all(
             basetype    = text,
             sfunc       = textcat,
             stype       = text,
@@ -114,15 +114,15 @@ function get_cat_veranstids_and_count(string $ueids): array {
                 WHERE ueid IN (" . $ueids . ");";
         $qmain = pg_query($pgdb->connection, $sql);
         while ($hislsftitle = pg_fetch_object($qmain)) {
-            $hupstatsveranstcounttable = ["veranstids" => explode(",",$hislsftitle->veranstids), "count" => $hislsftitle->c];
+            $hupstatsveranstcounttable = ["veranstids" => explode(",", $hislsftitle->veranstids), "count" => $hislsftitle->c];
         }
     }
     return $hupstatsveranstcounttable;
 }
 
 
-$pgDB = new pg_lite();
-echo "<p>Verbindung: " . ($pgDB->connect() ? "ja" : "nein") . "</p>";
+$pgdb = new pg_lite();
+echo "<p>Verbindung: " . ($pgdb->connect() ? "ja" : "nein") . "</p>";
 create_aggregate();
 
 echo "<p><pre>";
@@ -148,28 +148,34 @@ foreach ($secondlevelorinins as $secondndlevel) {
             if (!isset($semstats[$secondlevelcopy->semester])) {
                 $semstats[$secondlevelcopy->semester] = [];
             }
-            if (!isset($sem_stats[$secondlevelcopy->semester][$secondndlevel->txt])) {
-                $sem_stats[$secondlevelcopy->semester][$secondndlevel->txt] = ["imported" => 0 ,"existing" => 0, "veranstids" => []];
-           }
-           if(!empty($secondlevelcopy->veranstcount) && key_exists("veranstids",
-                    $secondlevelcopy->veranstcount) &&key_exists("count",
-                   $secondlevelcopy->veranstcount)) {
-               $array1 = $sem_stats[$secondlevelcopy->semester][$secondndlevel->txt]["veranstids"];
-               $arrayfilter = array_filter(array_merge($array1,$secondlevelcopy->veranstcount["veranstids"]));
-               $sem_stats[$secondlevelcopy->semester][$secondndlevel->txt]["veranstids"] = $arrayfilter;
-               $sem_stats[$secondlevelcopy->semester][$secondndlevel->txt]["existing"] += $secondlevelcopy->veranstcount["count"];
-               // zaehle bestehende kurse
-               foreach ($sem_stats[$secondlevelcopy->semester][$secondndlevel->txt]["veranstids"] as $veranstid) {
-                   $exists = $DB->record_exists("course", ["idnumber" => $veranstid]) ? 1 : 0;
-                   $sem_stats[$secondlevelcopy->semester][$secondndlevel->txt]["imported"] += $exists;
-               }
-           }
-            $transformedstats = transform_fbs($sem_stats);
+            if (!isset($semstats[$secondlevelcopy->semester][$secondndlevel->txt])) {
+                $semstats[$secondlevelcopy->semester][$secondndlevel->txt] = ["imported" => 0, "existing" => 0, "veranstids" => []];
+            }
+            if (
+                !empty($secondlevelcopy->veranstcount) && key_exists(
+                    "veranstids",
+                    $secondlevelcopy->veranstcount
+                ) && key_exists(
+                    "count",
+                    $secondlevelcopy->veranstcount
+                )
+            ) {
+                $array1 = $semstats[$secondlevelcopy->semester][$secondndlevel->txt]["veranstids"];
+                $arrayfilter = array_filter(array_merge($array1, $secondlevelcopy->veranstcount["veranstids"]));
+                $semstats[$secondlevelcopy->semester][$secondndlevel->txt]["veranstids"] = $arrayfilter;
+                $semstats[$secondlevelcopy->semester][$secondndlevel->txt]["existing"] += $secondlevelcopy->veranstcount["count"];
+                // Zaehle bestehende kurse.
+                foreach ($semstats[$secondlevelcopy->semester][$secondndlevel->txt]["veranstids"] as $veranstid) {
+                    $exists = $DB->record_exists("course", ["idnumber" => $veranstid]) ? 1 : 0;
+                    $semstats[$secondlevelcopy->semester][$secondndlevel->txt]["imported"] += $exists;
+                }
+            }
+            $transformedstats = transform_fbs($semstats);
         }
     }
 }
 
-// write CSV
+// Write CSV.
 echo "Semester;Kategorie;AnzahlGesamt;AnzahlImportiert\n";
 foreach ($transformedstats as $sem => $stats) {
     foreach ($stats as $cat => $catstats) {
@@ -182,63 +188,104 @@ foreach ($transformedstats as $sem => $stats) {
 
 echo "</pre></p>";
 
-$pgDB->dispose();
-echo "<p>Verbindung geschlossen: ".(($pgDB->connection==NULL)?"ja":"nein")."</p>";
+$pgdb->dispose();
+echo "<p>Verbindung geschlossen: " . (($pgdb->connection == null) ? "ja" : "nein") . "</p>";
 
-function transform_fbs($semesterstats){
+/**
+ * Maps the semester statistics to the university faculties.
+ * @param array $semesterstats
+ * @return array
+ */
+function transform_fbs(array $semesterstats) {
        $transformedstats = [];
-       foreach ($semesterstats as $sem => $stats) {
-           $transformedstats[$sem] = [];
-           foreach ($stats as $cat => $catstats) {
-               switch ($cat){
-                       case 'Evangelische Theologie': $transformedstats[$sem][FB1] = $catstats; break;
-                       case 'Katholische Theologie': $transformedstats[$sem][FB2] = $catstats; break;
-                       case "Rechtswissenschaften": $transformedstats[$sem][FB3] = $catstats; break;
-                       case "Wirtschaftswissenschaften": $transformedstats[$sem][FB4] = $catstats; break;
-                       case "Medizin": $transformedstats[$sem][FB5] = $catstats; break;
-                       case "Sonderpädagogische Fachrichtungen":
-                       case "Erziehungswissenschaft und Sozialwissenschaften":
-                           if(key_exists(FB6,$transformedstats[$sem])){
-                                $transformedstats[$sem][FB6] = merge_stats($transformedstats[$sem][FB6], $catstats);
-                            } else {
-                                $transformedstats[$sem][FB6] = $catstats;
-                            } break;
-                       case "Psychologie und Sportwissenschaft": $transformedstats[$sem][FB7] = $catstats; break;
-                       case "Geschichte/Philosophie": $transformedstats[$sem][FB8] = $catstats; break;
-                       case "Deutsch für Schülerinnen und Schüler mit Zuwanderungsgeschichte (DAZ)":
-                       case "Philologie":
-                           if(key_exists(FB9,$transformedstats[$sem])){
-                                $transformedstats[$sem][FB9] = merge_stats($transformedstats[$sem][FB9], $catstats);
-                            } else {
-                                $transformedstats[$sem][FB9] = $catstats;
-                            } break;
-                       case "Mathematik und Informatik": $transformedstats[$sem][FB10] = $catstats; break;
-                       case "Physik": $transformedstats[$sem][FB11] = $catstats; break;
-                       case "Chemie und Pharmazie": $transformedstats[$sem][FB12] = $catstats; break;
-                       case "Biologie": $transformedstats[$sem][FB13] = $catstats; break;
-                       case "Geowissenschaften": $transformedstats[$sem][FB14] = $catstats; break;
-                       case "Musikhochschule": $transformedstats[$sem][FB15] = $catstats; break;
-                       case "Lehrveranstaltungen":break;
-                       default:
-                           if(!empty($transformedstats[$sem]) && key_exists(FUV,$transformedstats[$sem])){
-                               $transformedstats[$sem][FUV] = merge_stats($transformedstats[$sem][FUV], $catstats);
-                           } else {
-                               $transformedstats[$sem][FUV] = $catstats;
-                           } break;
-                       }
-               }
-               ksort($transformedstats[$sem]);
-       }
+    foreach ($semesterstats as $sem => $stats) {
+        $transformedstats[$sem] = [];
+        foreach ($stats as $cat => $catstats) {
+            switch ($cat) {
+                case 'Evangelische Theologie':
+                    $transformedstats[$sem][FB1] = $catstats;
+                    break;
+                case 'Katholische Theologie':
+                    $transformedstats[$sem][FB2] = $catstats;
+                    break;
+                case "Rechtswissenschaften":
+                    $transformedstats[$sem][FB3] = $catstats;
+                    break;
+                case "Wirtschaftswissenschaften":
+                    $transformedstats[$sem][FB4] = $catstats;
+                    break;
+                case "Medizin":
+                    $transformedstats[$sem][FB5] = $catstats;
+                    break;
+                case "Sonderpädagogische Fachrichtungen":
+                case "Erziehungswissenschaft und Sozialwissenschaften":
+                    if (key_exists(FB6, $transformedstats[$sem])) {
+                             $transformedstats[$sem][FB6] = merge_stats($transformedstats[$sem][FB6], $catstats);
+                    } else {
+                         $transformedstats[$sem][FB6] = $catstats;
+                    }
+                    break;
+                case "Psychologie und Sportwissenschaft":
+                    $transformedstats[$sem][FB7] = $catstats;
+                    break;
+                case "Geschichte/Philosophie":
+                    $transformedstats[$sem][FB8] = $catstats;
+                    break;
+                case "Deutsch für Schülerinnen und Schüler mit Zuwanderungsgeschichte (DAZ)":
+                case "Philologie":
+                    if (key_exists(FB9, $transformedstats[$sem])) {
+                         $transformedstats[$sem][FB9] = merge_stats($transformedstats[$sem][FB9], $catstats);
+                    } else {
+                           $transformedstats[$sem][FB9] = $catstats;
+                    }
+                    break;
+                case "Mathematik und Informatik":
+                    $transformedstats[$sem][FB10] = $catstats;
+                    break;
+                case "Physik":
+                    $transformedstats[$sem][FB11] = $catstats;
+                    break;
+                case "Chemie und Pharmazie":
+                    $transformedstats[$sem][FB12] = $catstats;
+                    break;
+                case "Biologie":
+                    $transformedstats[$sem][FB13] = $catstats;
+                    break;
+                case "Geowissenschaften":
+                    $transformedstats[$sem][FB14] = $catstats;
+                    break;
+                case "Musikhochschule":
+                    $transformedstats[$sem][FB15] = $catstats;
+                    break;
+                case "Lehrveranstaltungen":
+                    break;
+                default:
+                    if (!empty($transformedstats[$sem]) && key_exists(FUV, $transformedstats[$sem])) {
+                          $transformedstats[$sem][FUV] = merge_stats($transformedstats[$sem][FUV], $catstats);
+                    } else {
+                        $transformedstats[$sem][FUV] = $catstats;
+                    }
+                    break;
+            }
+        }
+            ksort($transformedstats[$sem]);
+    }
        return $transformedstats;
 }
 
-function merge_stats($catstats, $catstats_add){
+/**
+ * Merges two statistic arrays.
+ * @param array $catstats
+ * @param array $catstatsadd
+ * @return array
+ */
+function merge_stats(array $catstats, array $catstatsadd) {
     $output = [];
-    foreach ($catstats as $key => $stats){
-        if(!is_array($stats)) {
-            $output[$key] = $catstats[$key] + $catstats_add[$key];
+    foreach ($catstats as $key => $stats) {
+        if (!is_array($stats)) {
+            $output[$key] = $catstats[$key] + $catstatsadd[$key];
         } else {
-            $output[$key] = array_merge($stats, $catstats_add[$key]);
+            $output[$key] = array_merge($stats, $catstatsadd[$key]);
         }
     }
     return $output;
