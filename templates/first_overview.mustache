@@ -37,65 +37,38 @@
 <div id="lsf_unification_courselist_root">
     <p>{{#str}} notice, local_lsf_unification {{/str}}</p>
     <form name="input" action="request.php" method="post">
-        <table>
-            <tr>
-                <td colspan="2">
-                    <b>{{#str}} question, local_lsf_unification {{/str}}</b>
-                </td>
-            </tr>
-            <tr>
-                <td style="vertical-align:top;">
-                    <input type="radio" name="answer" id="answer1" value="1">
-                </td>
-                <td>
-                    <label for="answer1">
-                        {{#str}} answer_course_found, local_lsf_unification {{/str}}
-                        <ul>
-                            {{#courselist}}
-                                <li>{{{title}}}</li>
-                            {{/courselist}}
-                        </ul>
-                    </label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="radio" name="answer" id="answer3" value="3">
-                </td>
-                <td>
-                    <label for="answer3">
-                        {{#str}} answer_course_in_lsf_and_visible, local_lsf_unification {{/str}}
-                    </label>
-                </td>
-            </tr>
-            {{#showremotecreation}}
-                <tr>
-                    <td>
-                        <input type="radio" name="answer" id="answer11" value="11">
-                    </td>
-                    <td>
-                        <label for="answer11">
-                            {{#str}} answer_proxy_creation, local_lsf_unification {{/str}}
-                        </label>
-                    </td>
-                </tr>
-            {{/showremotecreation}}
-            <tr>
-                <td>
-                    <input type="radio" name="answer" id="answer6" value="6">
-                </td>
-                <td>
-                    <label for="answer6">
-                        {{#str}} answer_goto_old_requestform, local_lsf_unification {{/str}}
-                    </label>
-                </td>
-            </tr>
-            <tr>
-                <td>&#160;</td>
-                <td>
-                    <input type="submit" value="{{#str}} select, local_lsf_unification {{/str}}">
-                </td>
-            </tr>
-        </table>
+        <p><b>{{#str}} question, local_lsf_unification {{/str}}</b></p>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" id="answer1" value="1">
+            <label class="form-check-label" for="answer1">
+                {{#str}} answer_course_found, local_lsf_unification {{/str}}
+            </label>
+            <ul>
+                {{#courselist}}
+                    <li>{{{title}}}</li>
+                {{/courselist}}
+            </ul>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" id="answer3" value="3">
+            <label class="form-check-label" for="answer3">
+                {{#str}} answer_course_in_lsf_and_visible, local_lsf_unification {{/str}}
+            </label>
+        </div>
+        {{#showremotecreation}}
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="answer" id="answer11" value="11">
+                <label class="form-check-label" for="answer11">
+                    {{#str}} answer_proxy_creation, local_lsf_unification {{/str}}
+                </label>
+            </div>
+        {{/showremotecreation}}
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="answer" id="answer6" value="6">
+            <label class="form-check-label" for="answer6">
+                {{#str}} answer_goto_old_requestform, local_lsf_unification {{/str}}
+            </label>
+        </div>
+        <button class="btn btn-primary" type="submit">{{#str}} select, local_lsf_unification {{/str}}</button>
     </form>
 </div>
