@@ -101,48 +101,28 @@ function print_first_overview(): void {
  * @throws coding_exception
  */
 function print_helptext(string $t, string|null $s = null): void {
-    $answerstr = get_string('answer_' . $t, 'local_lsf_unification');
-    $infostr = get_string('info_' . $t, 'local_lsf_unification', $s, true);
-    echo "<u>" . $answerstr . "</u><br>" . $infostr;
-    echo "<br><a href='request.php'>" . get_string('back', 'local_lsf_unification') . "</a>";
-}
-
-/**
- * Print the courses the user can see.
- * @return void
- * @throws coding_exception
- */
-function print_courseselection(): void {
-    global $USER, $answer;
-    echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='" . $answer . "'>";
-    print_coursetable($USER->username);
-    echo "<input type='submit' value='" . get_string('select', 'local_lsf_unification') . "'/></form>";
-    echo "<br><a href='request.php'>" . get_string('back', 'local_lsf_unification') . "</a>";
+    global $OUTPUT;
+    $mustachedata = [
+        'answerstr' => get_string('answer_' . $t, 'local_lsf_unification'),
+        'infostr' => get_string('info_' . $t, 'local_lsf_unification', $s),
+    ];
+    echo $OUTPUT->render_from_template('local_lsf_unification/courserequest/helptext', $mustachedata);
 }
 
 /**
  * Print the course table for a teacher.
  * @param string $teacher
- * @param string $appendix
  * @return void
  * @throws coding_exception
  */
-function print_coursetable(string $teacher, string $appendix = ""): void {
-    echo "<table><tr><td colspan='2'><b>" . get_string('choose_course', 'local_lsf_unification') . "</b></td></tr>";
-    foreach (get_teachers_course_list($teacher, true) as $course) {
-        if (!course_exists($course->veranstid)) {
-            $veranstid = $course->veranstid;
-            echo "<tr>
-                <td>
-                    <input type='radio' name='veranstid' id='veranstid_" . ($veranstid) . "' value='" . ($veranstid) . "'>
-                </td>
-                <td>
-                    <label for='veranstid_" . ($veranstid) . "'>" . ($course->info) . "</label>
-                </td>
-            </tr>";
-        }
-    }
-    echo $appendix . "</table>";
+function print_coursetable(string $teacher, array $options = []): void {
+    global $OUTPUT, $answer;
+    $mustachedata = [
+        'courses' => array_values(get_teachers_course_list($teacher, true)),
+        'answer' => $answer,
+    ];
+    $mustachedata = array_merge($mustachedata, $options);
+    echo $OUTPUT->render_from_template('local_lsf_unification/courserequest/coursetable', $mustachedata);
 }
 
 /**
@@ -152,20 +132,12 @@ function print_coursetable(string $teacher, string $appendix = ""): void {
  */
 function print_final() {
     global $OUTPUT, $CFG, $courseid;
-    $nextsteps = get_string('next_steps', 'local_lsf_unification');
-    $linktext = [
-        'users' => get_string('linktext_users', 'local_lsf_unification'),
-        'content' => get_string('linktext_content', 'local_lsf_unification'),
-        'course' => get_string('linktext_course', 'local_lsf_unification'),
+    $mustachedata = [
+        'userlink' => new moodle_url("/user/index.php", ['id' => $courseid]),
+        'backuplink' => new moodle_url("/backup/import.php", ['id' => $courseid]),
+        'courselink' => new moodle_url("/course/view.php", ['id' => $courseid]),
     ];
-    $href = [
-        0 => $CFG->wwwroot . "/user/index.php?id=" . ($courseid),
-        1 => $CFG->wwwroot . "/backup/import.php?id=" . ($courseid),
-        2 => $CFG->wwwroot . "/course/view.php?id=" . ($courseid),
-    ];
-    echo $OUTPUT->box("<b>" . $nextsteps . ":</b><br><a href='" . $href[0] . "'>" . $linktext['users'] . "</a><br>
-    <a href='" . $href[1] . "'>" . $linktext['content'] . "</a><br>
-    <a href='" . $href[2] . "'>" . $linktext['course'] . "</a><br>&nbsp;");
+    echo $OUTPUT->render_from_template('local_lsf_unification/courserequest/final', $mustachedata);
 }
 
 
@@ -176,32 +148,18 @@ function print_final() {
  * @throws dml_exception
  */
 function print_remote_creation() {
-    global $USER, $answer, $teachername, $veranstid;
+    global $teachername, $veranstid;
     if (!get_config('local_lsf_unification', 'remote_creation')) {
         return;
     }
     if (empty($veranstid)) {
-        echo "<form name='input' action='request.php' method='post'><input type='hidden' name='answer' value='" . $answer . "'>";
-        if (empty($teachername)) {
-            $chooseteacher = get_string('choose_teacher', 'local_lsf_unification');
-            echo "<b>" . $chooseteacher . "</b><input type='text' name='teachername' size='20' value='" . $teachername . "'>";
-        } else {
-            echo "<input type='hidden' name='teachername' value='" . $teachername . "'>";
-            $answercourselsf = get_string('answer_course_in_lsf_but_invisible', 'local_lsf_unification', $teachername);
-            $appendix = "
-                <tr>
-                    <td>
-                        <input type='radio' name='veranstid' id='veranstid_' value='" . (-1) . "'>
-                    </td>
-                    <td>
-                        <label for='veranstid_'>" . $answercourselsf . "</label>
-                    </td>
-                </tr>";
-            print_coursetable($teachername, $appendix);
-        }
-        $select = get_string('select', 'local_lsf_unification');
-        $back = get_string('back', 'local_lsf_unification');
-        echo "<input type='submit' value='" . $select . "'/></form><br><a href='request.php'>" . $back . "</a>";
+        $mustachedata = [
+            'emptyteacher' => empty($teachername),
+            'remote' => true,
+            'teachername' => $teachername,
+            'appendix' => true,
+        ];
+        print_coursetable($teachername, $mustachedata);
     } else {
         if ($veranstid < 0) {
             echo get_string('his_info', 'local_lsf_unification');
@@ -274,7 +232,7 @@ function print_coursecreation() {
         $warnings = get_string('warnings', 'local_lsf_unification');
         $out = "<p>" . $OUTPUT->box("<b>" . $warnings . "</b><br>" . "<pre>" . $result["warnings"] . "<pre>") . "</p>";
         echo (!empty($result["warnings"])) ? $out : "";
-        print_final($result["course"]->id);
+        print_final();
     } else {
         $editform->display();
     }
@@ -287,21 +245,18 @@ function print_coursecreation() {
  * @throws dml_exception
  */
 function print_request_handler() {
-    global $CFG, $DB, $answer, $request, $veranstid, $accept;
+    global $DB, $answer, $request, $veranstid, $accept, $OUTPUT;
     $course = get_course_by_veranstid($veranstid);
     $requester = $DB->get_record("user", ["id" => $request->requesterid]);
-    if (empty($accept)) {
-        echo get_string('remote_request_select_alternative', 'local_lsf_unification');
-        $params = new stdClass();
-        $params->a = $requester->firstname . " " . $requester->lastname;
-        $params->b = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1');
-        $href = $CFG->wwwroot . "/local/lsf_unification/request.php?answer=" . $answer . "&requestid=" . $request->id;
-        $remoteaccept = get_string('remote_request_accept', 'local_lsf_unification', $params);
-        $remotedeclined = get_string('remote_request_decline', 'local_lsf_unification', $params);
-        echo '<p>' .
-            "<a href='" . $href . "&accept=1'>" . $remoteaccept . "</a>" . "<br>";
-        echo "<a href='" . $href . "&accept=2'>" . $remotedeclined . "</a>" . "<br>";
-    } else {
+    $basepath = '/local/lsf_unification/request.php';
+    $mustachedata = [
+        'emptyaccept' => empty($accept),
+        'link1' => new moodle_url($basepath, ['answer' => $answer, 'requestid' => $request->id, 'accept' => 1]),
+        'link2' => new moodle_url($basepath, ['answer' => $answer, 'requestid' => $request->id, 'accept' => 2]),
+        'param_a' => $requester->firstname . " " . $requester->lastname,
+        'param_b' => mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1'),
+    ];
+    if (!empty($accept)) {
         if ($accept == 1) {
             set_course_accepted($veranstid);
             send_course_creation_mail($requester, $course);
@@ -309,19 +264,17 @@ function print_request_handler() {
             set_course_declined($veranstid);
             send_sorry_mail($requester, $course);
         }
-        echo get_string('answer_sent', 'local_lsf_unification');
     }
+    echo $OUTPUT->render_from_template('local_lsf_unification/courserequest/request_handler', $mustachedata);
 }
 
-
 // Handle Course-Request.
-
 if (establish_secondary_DB_connection() === true) {
     if (empty($answer)) {
         print_first_overview(); // Task Selection.
     } else if ($answer == 1) {
         if (empty($veranstid)) {
-            print_courseselection(); // Extern Course Selection.
+            print_coursetable($USER->username);
         } else {
             if (has_course_import_rights($veranstid, $USER)) { // Validate veranstid, user.
                 print_coursecreation(); // Request neccessary details and create course.

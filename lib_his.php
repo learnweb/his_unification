@@ -339,6 +339,7 @@ function find_origin_category(int $quellid): int {
  */
 function get_teachers_of_course(int $veranstid): array {
     global $pgdb;
+    establish_secondary_DB_connection();
     // Get sorted (by relevance) pids of teachers.
     $pidstring = "";
     $pids = [];
@@ -369,6 +370,7 @@ function get_teachers_of_course(int $veranstid): array {
     foreach ($pids as $pid) {
         $sortedresult[] = $result[$pid];
     }
+    close_secondary_DB_connection();
     return $sortedresult;
 }
 
@@ -421,6 +423,7 @@ function get_default_shortname(object $lsfcourse, bool $long = false): string {
  */
 function get_default_summary(object $lsfcourse): string {
     global $pgdb;
+    establish_secondary_DB_connection();
     $summary = '';
     $q = pg_query(
         $pgdb->connection,
@@ -434,6 +437,7 @@ function get_default_summary(object $lsfcourse): string {
     }
     $summary = mb_convert_encoding($summary, 'UTF-8', 'ISO-8859-1') . '<p><a href="' . $lsfcourse->urlveranst .
              '">Kurs im HIS-LSF</a></p>';
+    close_secondary_DB_connection();
     return $summary;
 }
 
@@ -655,6 +659,7 @@ function set_course_declined(int $veranstid): void {
  */
 function get_courses_categories(int $veranstid, bool $updatehelptablesifnecessary = true): array {
     global $pgdb, $DB, $CFG;
+    establish_secondary_DB_connection();
     $helpfuntion1 = function ($arrayel) {
         return $arrayel->origin;
     };
@@ -716,6 +721,7 @@ function get_courses_categories(int $veranstid, bool $updatehelptablesifnecessar
         insert_missing_helptable_entries(false);
         return get_courses_categories($veranstid, false);
     }
+    close_secondary_DB_connection();
     return $categories;
 }
 
