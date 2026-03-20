@@ -53,8 +53,7 @@ class pg_lite {
         $dberr = ob_get_contents();
         ob_end_clean();
         echo $dberr;
-        $failedconnection = (pg_connection_status($this->connection) == false)
-            || (pg_connection_status($this->connection) === PGSQL_CONNECTION_BAD);
+        $failedconnection = pg_connection_status($this->connection) === PGSQL_CONNECTION_BAD;
         return ($failedconnection) ? $dberr : true;
     }
 
