@@ -25,7 +25,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="moodle dumbness" NEXT="child"/>
         <FIELD NAME="child" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="parent"/>
         <FIELD NAME="parent" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="child" NEXT="distance"/>
-        <FIELD NAME="distance" TYPE="int" LENGTH="5" NOTNULL="true" SEQUENCE="false" COMMENT="ueid-&amp;gt;parentid = 1 ueid-&amp;gt;parentid-&amp;gt;parentid = 2 ..." PREVIOUS="parent"/>
+        <FIELD NAME="distance" TYPE="int" LENGTH="5" NOTNULL="true" SEQUENCE="false" COMMENT="Distance in the parent chain: direct parent = 1, grandparent = 2, etc." PREVIOUS="parent"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="realkey"/>
