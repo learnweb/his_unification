@@ -301,32 +301,27 @@ function is_course_of_teacher(int $veranstid, string $username): bool {
 }
 
 /**
- * Find_origin_category is NOT a required function for the lsf_unification plugin, it is used
- * internally only
+ * Finds the origin category of a given category by traversing the quellid chain in memory.
  *
- * @param int $quellid
- * @return int $origin
+ * Categories in HIS_UEBERSCHRIFT are duplicated each semester, each with a new ueid but
+ * referencing their original via quellid. This function walks the quellid chain until it
+ * reaches the root, i.e. the category where quellid == ueid.
+ *
+ * Example: ueid=71420 (SS 2012) → quellid=66656 (WS 2011) → quellid=66656 (root) → returns 66656
+ *
+ * @param int $ueid The ueid of the category to find the origin for.
+ * @param array $lsfcategories All categories indexed by ueid, as returned by pg_fetch_all + array_column.
+ * @return int The ueid of the origin (root) category.
  */
-function find_origin_category(int $quellid): int {
-    global $pgdb;
-    $origin = $quellid;
+function find_origin_category(int $ueid, array $lsfcategories): int {
+    $origin = $ueid;
     do {
-        $quellid = $origin;
-        $q = pg_query(
-            $pgdb->connection,
-            "SELECT quellid FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" . $quellid . "'"
-        );
-        if ($hislsftitle = pg_fetch_object($q)) {
-            $q2 = pg_query(
-                $pgdb->connection,
-                "SELECT quellid FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" .
-                ($hislsftitle->quellid) . "'"
-            );
-            if ($hislsftitle2 = pg_fetch_object($q2)) {
-                $origin = $hislsftitle->quellid;
-            }
+        $ueid = $origin;
+        $node = $lsfcategories[$ueid] ?? null;
+        if ($node && isset($lsfcategories[$node->quellid])) {
+            $origin = $node->quellid;
         }
-    } while (!empty($origin) && $quellid != $origin);
+    } while (!empty($origin) && $ueid !== $origin);
     return $origin;
 }
 
@@ -719,166 +714,131 @@ function get_courses_categories(int $veranstid, bool $updatehelptablesifnecessar
 }
 
 /**
- * updates the helptables
- * insert_missing_helptable_entries is a required function for the lsf_unification plugin
+ * Syncs missing categories and parenthood relations from HIS_UEBERSCHRIFT into lsf_unfication tables.
  *
- * @param bool $debugoutput
- * @param bool $tryeverything
+ * Loads all known categories and relations from the Moodle DB into memory, then fetches
+ * all categories from the lsf_view and inserts any missing entries:
+ *
+ * - local_lsf_unification_category: one entry per unknown ueid, including its origin
+ *   (root of the quellid chain) and direct parent.
+ * - local_lsf_unification_categoryparenthood: full closure table entries for each unknown
+ *   relation, storing the distance from a category to each of its ancestors.
+ * - txt2 on local_lsf_unification_category: the full path from root to category as a
+ *   slash-separated string (e.g. "Vorlesungen/Mathematik und Informatik").
+ *
+ * @param bool $debugoutput If true, logs a summary of inserted categories and relations via mtrace.
  * @return void
+ * @throws Exception If any DB operation fails, after rolling back the transaction.
  */
-function insert_missing_helptable_entries(bool $debugoutput = false, bool $tryeverything = false): void {
-    // LEARNWEB-TODO: Please refactor this horrible function.
+function insert_missing_helptable_entries(bool $debugoutput = false): void {
     global $pgdb, $DB, $CFG;
     require_once($CFG->dirroot . '/local/lsf_unification/class_pg_lite.php');
     require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
 
     // Build db connection.
     $pgdb = new pg_lite();
-    $connected = $pgdb->connect();
-    $recourceid = pg_connection_status($pgdb->connection);
-    if ($debugoutput) {
-        mtrace('! = unknown category found, ? = unknown linkage found;' . 'Verbindung: ' .
-            ($connected ? 'ja' : 'nein') . ' (' . $recourceid . ')');
-    }
+    $pgdb->connect();
 
-    $a = 1;
-    $list1 = "";
-    $list2 = "";
+    // Get current categories and relationships between categories (parent-child) as recordsets.
     $records1 = $DB->get_recordset('local_lsf_unification_category', null, '', 'ueid');
     $records2 = $DB->get_recordset('local_lsf_unification_categoryparenthood', null, '', 'child, parent');
-    $records1unique = [];
-    $records2unique = [];
+    $knowncat = [];
+    $knownrelation = [];
+
+    // Create lookup arrays.
     foreach ($records1 as $record1) {
-        $records1unique[$record1->ueid] = true;
+        // Save already known categories in lsf_unification.
+        $knowncat[$record1->ueid] = true;
     }
+    $records1->close();
     foreach ($records2 as $record2) {
-        $records2unique[$record2->child][$record2->parent] = ($tryeverything === false);
+        // Save already known child-parent relationships (by category ueid).
+        $knownrelation[$record2->child][$record2->parent] = true;
     }
-    $qmain = pg_query(
-        $pgdb->connection,
-        "SELECT ueid, uebergeord, uebergeord, quellid, txt, zeitstempel FROM " . HIS_UEBERSCHRIFT .
-                     " " .
-        ((!empty($tryeverything)) ? ("WHERE ueid >= '" . $tryeverything . "'") : "")
+    $records2->close();
+
+    // Get every category (parents and childs) from the lsf_view and iterate over it.
+    $sql = "SELECT ueid, uebergeord, quellid, txt, zeitstempel FROM " . HIS_UEBERSCHRIFT . ";";
+    $qmain = pg_query($pgdb->connection, $sql);
+
+    // Get all categories from the lsf_view in an array 'ueid' => (object) categoryrecord.
+    // LEARNWEB-TODO: The use of pg_fetch_all can potentially uses a lot of RAM on big datasets (~900MB on our staging system). This
+    // is for now acceptable as the web server has enough RAM. Please make sure that the Cronjob has a sufficient memory limit.
+    // Review in the future how the memory usage can be reduced.
+    $lsfcategories = array_column(
+        array_map(fn($item) => (object)$item, pg_fetch_all($qmain) ?: []),
+        null,
+        'ueid'
     );
-    while ($hislsftitle = pg_fetch_object($qmain)) {
-        if (
-            !isset($records1unique[$hislsftitle->ueid]) || (!isset(
-                $records2unique[$hislsftitle->ueid][$hislsftitle->uebergeord]
-            ) ||
-                 $records2unique[$hislsftitle->ueid][$hislsftitle->uebergeord] != true)
-        ) {
-            $a++;
-            if ($debugoutput) {
-                echo $hislsftitle->ueid . " ";
+    $addedcats = 0;
+    $addedrels = 0;
+    $transaction = $DB->start_delegated_transaction();
+    try {
+        foreach ($lsfcategories as $hislsftitle) {
+            $categoryunkown = !isset($knowncat[$hislsftitle->ueid]);
+            $relationunknown = !isset($knownrelation[$hislsftitle->ueid][$hislsftitle->uebergeord]);
+
+            if ($categoryunkown) {
+                // Create category if not existing.
+                $entry = (object) [
+                    'ueid' => (int) $hislsftitle->ueid,
+                    'parent' => empty($hislsftitle->uebergeord) ? (int) ($hislsftitle->ueid) : (int) ($hislsftitle->uebergeord),
+                    'origin' => find_origin_category((int) $hislsftitle->ueid, $lsfcategories),
+                    'mdlid' => 0,
+                    'timestamp' => isset($hislsftitle->zeitstempel) ? strtotime($hislsftitle->zeitstempel) : null,
+                    'txt' => mb_convert_encoding($hislsftitle->txt, 'UTF-8', 'ISO-8859-1'),
+                ];
+                $DB->insert_record("local_lsf_unification_category", $entry);
+                $knowncat[$hislsftitle->ueid] = true;
+                $addedcats++;
             }
-        }
-        if (!isset($records1unique[$hislsftitle->ueid])) {
-            // Create match-table-entry if not existing.
-            $entry = new stdClass();
-            $entry->ueid = $hislsftitle->ueid;
-            $entry->parent = empty($hislsftitle->uebergeord) ? ($hislsftitle->ueid) : ($hislsftitle->uebergeord);
-            $entry->origin = find_origin_category($hislsftitle->ueid);
-            $entry->mdlid = 0;
-            $entry->timestamp = isset($hislsftitle->zeitstempel) ? strtotime($hislsftitle->zeitstempel) : null;
-            $entry->txt = mb_convert_encoding($hislsftitle->txt, 'UTF-8', 'ISO-8859-1');
-            if ($debugoutput) {
-                echo "!";
-            }
-            try {
-                $DB->insert_record("local_lsf_unification_category", $entry, true);
-                $records1unique[$hislsftitle->ueid] = true;
-                if ($debugoutput) {
-                    echo "x";
-                }
-            } catch (Exception $e) {
-                try {
-                    $entry->txt = mb_convert_encoding(delete_bad_chars($hislsftitle->txt), 'UTF-8', 'ISO-8859-1');
-                    $DB->insert_record("local_lsf_unification_category", $entry, true);
-                    $records1unique[$hislsftitle->ueid] = true;
-                    if ($debugoutput) {
-                        echo "x";
-                    }
-                } catch (Exception $e) {
-                    if ($debugoutput) {
-                        print("<pre>FEHLER1 " . var_export($e, true) . "" . var_export($DB->get_last_error(), true));
-                    }
-                }
-            }
-        }
-        if (
-            !isset($records2unique[$hislsftitle->ueid][$hislsftitle->uebergeord]) ||
-                 $records2unique[$hislsftitle->ueid][$hislsftitle->uebergeord] != true
-        ) {
-            // Create parenthood-table-entry if not existing.
-            $child = $hislsftitle->ueid;
-            $ueid = $hislsftitle->ueid;
-            $parent = $hislsftitle->ueid;
-            $fullname = "";
-            $distance = 0;
-            do {
-                $ueid = $parent;
-                $distance++;
-                $q2 = pg_query(
-                    $pgdb->connection,
-                    "SELECT ueid, uebergeord, txt FROM " . HIS_UEBERSCHRIFT . " WHERE ueid = '" .
-                    $ueid . "'"
-                );
-                if (($hislsftitle2 = pg_fetch_object($q2)) && ($hislsftitle2->uebergeord != $ueid)) {
-                    $parent = $hislsftitle2->uebergeord;
-                    $fullname = ($hislsftitle2->txt) . (empty($fullname) ? "" : ("/" . $fullname));
-                    if (!empty($parent) && !isset($records2unique[$child][$parent])) {
-                        try {
-                            $entry = new stdClass();
-                            $entry->child = $child;
-                            $entry->parent = $parent;
-                            $entry->distance = $distance;
-                            $DB->insert_record("local_lsf_unification_categoryparenthood", $entry, true);
-                            if ($debugoutput) {
-                                echo "?";
-                            }
-                        } catch (Exception $e) {
-                            if ($debugoutput) {
-                                mtrace(
-                                    "<pre>FEHLER2 " . var_export($e, true) . "" .
-                                    var_export($DB->get_last_error(), true),
-                                    ''
-                                );
-                            }
+
+            if ($relationunknown) {
+                // Create relation if not existing.
+                $child = $hislsftitle->ueid;
+                $parent = $hislsftitle->ueid;
+                $fullname = "";
+                $distance = 0;
+                $entries = [];
+                // Save the distance from the current category to each of its parents.
+                do {
+                    $ueid = $parent;
+                    $distance++;
+                    $hislsftitle2 = $lsfcategories[$ueid] ?? null;
+                    if ($hislsftitle2 && ($hislsftitle2->uebergeord != $ueid)) {
+                        $parent = $hislsftitle2->uebergeord;
+                        $fullname = ($hislsftitle2->txt) . (empty($fullname) ? "" : ("/" . $fullname));
+                        if (!empty($parent) && !isset($knownrelation[$child][$parent])) {
+                            $entries[] = (object) ['child' => $child, 'parent' => $parent, 'distance' => $distance];
                         }
+                        $knownrelation[$child][$parent] = true;
                     }
-                    $records2unique[$child][$parent] = true;
-                }
-            } while (!empty($parent) && ($ueid != $parent));
-            $entry = $DB->get_record(
-                'local_lsf_unification_category',
-                ["ueid" => $hislsftitle->ueid,
-                ]
-            );
-            $entry->txt2 = mb_convert_encoding($fullname, 'UTF-8', 'ISO-8859-1');
-            try {
-                $DB->update_record('local_lsf_unification_category', $entry, true);
-            } catch (Exception $e) {
-                try {
-                    $entry->txt2 = delete_bad_chars($entry->txt2);
-                    $DB->update_record('local_lsf_unification_category', $entry, true);
-                } catch (Exception $e) {
-                    if ($debugoutput) {
-                        mtrace(
-                            "<pre>FEHLER2 " . var_export($e, true) . "" .
-                            var_export($DB->get_last_error(), true),
-                            ''
-                        );
-                    }
-                }
+                } while (!empty($parent) && ($ueid != $parent));
+                // Save all path distances at once.
+                $DB->insert_records("local_lsf_unification_categoryparenthood", $entries);
+                $addedrels += count($entries);
+
+                // Update the categories full path.
+                $DB->set_field(
+                    'local_lsf_unification_category',
+                    'txt2',
+                    mb_convert_encoding($fullname, 'UTF-8', 'ISO-8859-1'),
+                    ['ueid' => $hislsftitle->ueid]
+                );
             }
         }
-        if ($debugoutput && (($a % 101) == 0)) {
-            mtrace("<br>&nbsp;&nbsp;");
-            $a++;
-            flush();
+        $transaction->allow_commit();
+        if ($debugoutput) {
+            mtrace("Sync completed: {$addedcats} categories, {$addedrels} relations inserted.");
         }
+    } catch (Exception $e) {
+        if ($debugoutput) {
+            mtrace("Sync failed: " . $e->getMessage());
+        }
+        $transaction->rollback($e);
+    } finally {
+        $pgdb->dispose();
     }
-    $pgdb->dispose();
 }
 
 /**
