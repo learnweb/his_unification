@@ -730,7 +730,7 @@ function get_courses_categories(int $veranstid, bool $updatehelptablesifnecessar
  * insert_missing_helptable_entries is a required function for the lsf_unification plugin
  *
  * @param bool $debugoutput
- * @param bool $tryeverything
+ * @param bool $tryeverything If every parent-child combination should be reevaluated.
  * @return void
  */
 function insert_missing_helptable_entries(bool $debugoutput = false, bool $tryeverything = false): void {
@@ -741,84 +741,57 @@ function insert_missing_helptable_entries(bool $debugoutput = false, bool $tryev
 
     // Build db connection.
     $pgdb = new pg_lite();
-    $connected = $pgdb->connect();
-    $recourceid = pg_connection_status($pgdb->connection);
-    if ($debugoutput) {
-        mtrace('! = unknown category found, ? = unknown linkage found;' . 'Verbindung: ' .
-            ($connected ? 'ja' : 'nein') . ' (' . $recourceid . ')');
-    }
+    $pgdb->connect();
 
-    $a = 1;
-    $list1 = "";
-    $list2 = "";
+    // Get current categories and relationships between categories (parent-child) as recordsets.
     $records1 = $DB->get_recordset('local_lsf_unification_category', null, '', 'ueid');
     $records2 = $DB->get_recordset('local_lsf_unification_categoryparenthood', null, '', 'child, parent');
-    $records1unique = [];
-    $records2unique = [];
+    $knowncat = [];
+    $knownrelation = [];
+
+    // Create lookup arrays.
     foreach ($records1 as $record1) {
-        $records1unique[$record1->ueid] = true;
+        // Save already known categories in lsf_unification.
+        $knowncat[$record1->ueid] = true;
     }
+    $records1->close();
     foreach ($records2 as $record2) {
-        $records2unique[$record2->child][$record2->parent] = ($tryeverything === false);
+        // Save already known child-parent relationships (by category ueid).
+        $knownrelation[$record2->child][$record2->parent] = ($tryeverything === false);
     }
-    $qmain = pg_query(
-        $pgdb->connection,
-        "SELECT ueid, uebergeord, uebergeord, quellid, txt, zeitstempel FROM " . HIS_UEBERSCHRIFT .
-                     " " .
-        ((!empty($tryeverything)) ? ("WHERE ueid >= '" . $tryeverything . "'") : "")
-    );
-    while ($hislsftitle = pg_fetch_object($qmain)) {
-        if (
-            !isset($records1unique[$hislsftitle->ueid]) || (!isset(
-                $records2unique[$hislsftitle->ueid][$hislsftitle->uebergeord]
-            ) ||
-                 $records2unique[$hislsftitle->ueid][$hislsftitle->uebergeord] != true)
-        ) {
-            $a++;
-            if ($debugoutput) {
-                echo $hislsftitle->ueid . " ";
-            }
-        }
-        if (!isset($records1unique[$hislsftitle->ueid])) {
+    $records2->close();
+
+    // Get every category (parents and childs) from the lsf_view and iterate over it.
+    $sql = "SELECT ueid, uebergeord, uebergeord, quellid, txt, zeitstempel FROM " . HIS_UEBERSCHRIFT . ";";
+    $qmain = pg_query($pgdb->connection, $sql);
+    $lsfcategories = pg_fetch_all($qmain) ?: [];
+    foreach ($lsfcategories as $hislsftitle) {
+        $categoryunkown = !isset($knowncat[$hislsftitle->ueid]);
+        $relationunknown = !isset($knownrelation[$hislsftitle->ueid][$hislsftitle->uebergeord]);
+
+        if ($categoryunkown) {
             // Create match-table-entry if not existing.
-            $entry = new stdClass();
-            $entry->ueid = $hislsftitle->ueid;
-            $entry->parent = empty($hislsftitle->uebergeord) ? ($hislsftitle->ueid) : ($hislsftitle->uebergeord);
-            $entry->origin = find_origin_category($hislsftitle->ueid);
-            $entry->mdlid = 0;
-            $entry->timestamp = isset($hislsftitle->zeitstempel) ? strtotime($hislsftitle->zeitstempel) : null;
-            $entry->txt = mb_convert_encoding($hislsftitle->txt, 'UTF-8', 'ISO-8859-1');
-            if ($debugoutput) {
-                echo "!";
-            }
+            $entry = (object) [
+                'ueid' => $hislsftitle->ueid,
+                'parent' => empty($hislsftitle->uebergeord) ? ($hislsftitle->ueid) : ($hislsftitle->uebergeord),
+                'origin' => find_origin_category($hislsftitle->ueid),
+                'mdlid' => 0,
+                'timestamp' => isset($hislsftitle->zeitstempel) ? strtotime($hislsftitle->zeitstempel) : null,
+                'txt' => mb_convert_encoding($hislsftitle->txt, 'UTF-8', 'ISO-8859-1'),
+            ];
             try {
                 $DB->insert_record("local_lsf_unification_category", $entry, true);
-                $records1unique[$hislsftitle->ueid] = true;
-                if ($debugoutput) {
-                    echo "x";
-                }
+                $knowncat[$hislsftitle->ueid] = true;
             } catch (Exception $e) {
-                try {
-                    $entry->txt = mb_convert_encoding(delete_bad_chars($hislsftitle->txt), 'UTF-8', 'ISO-8859-1');
-                    $DB->insert_record("local_lsf_unification_category", $entry, true);
-                    $records1unique[$hislsftitle->ueid] = true;
-                    if ($debugoutput) {
-                        echo "x";
-                    }
-                } catch (Exception $e) {
-                    if ($debugoutput) {
-                        print("<pre>FEHLER1 " . var_export($e, true) . "" . var_export($DB->get_last_error(), true));
-                    }
+                if ($debugoutput) {
+                    mtrace("FEHLER1 " . var_export($e, true) . var_export($DB->get_last_error(), true));
                 }
             }
         }
-        if (
-            !isset($records2unique[$hislsftitle->ueid][$hislsftitle->uebergeord]) ||
-                 $records2unique[$hislsftitle->ueid][$hislsftitle->uebergeord] != true
-        ) {
+        // LEARNWEB-TODO: Bis hierhin wurde schon bearbeitet.
+        if ($relationunknown || $knownrelation[$hislsftitle->ueid][$hislsftitle->uebergeord] != true) {
             // Create parenthood-table-entry if not existing.
             $child = $hislsftitle->ueid;
-            $ueid = $hislsftitle->ueid;
             $parent = $hislsftitle->ueid;
             $fullname = "";
             $distance = 0;
@@ -833,34 +806,23 @@ function insert_missing_helptable_entries(bool $debugoutput = false, bool $tryev
                 if (($hislsftitle2 = pg_fetch_object($q2)) && ($hislsftitle2->uebergeord != $ueid)) {
                     $parent = $hislsftitle2->uebergeord;
                     $fullname = ($hislsftitle2->txt) . (empty($fullname) ? "" : ("/" . $fullname));
-                    if (!empty($parent) && !isset($records2unique[$child][$parent])) {
+                    if (!empty($parent) && !isset($knownrelation[$child][$parent])) {
                         try {
                             $entry = new stdClass();
                             $entry->child = $child;
                             $entry->parent = $parent;
                             $entry->distance = $distance;
                             $DB->insert_record("local_lsf_unification_categoryparenthood", $entry, true);
-                            if ($debugoutput) {
-                                echo "?";
-                            }
                         } catch (Exception $e) {
                             if ($debugoutput) {
-                                mtrace(
-                                    "<pre>FEHLER2 " . var_export($e, true) . "" .
-                                    var_export($DB->get_last_error(), true),
-                                    ''
-                                );
+                                mtrace("FEHLER2 " . var_export($e, true) . var_export($DB->get_last_error(), true), '');
                             }
                         }
                     }
-                    $records2unique[$child][$parent] = true;
+                    $knownrelation[$child][$parent] = true;
                 }
             } while (!empty($parent) && ($ueid != $parent));
-            $entry = $DB->get_record(
-                'local_lsf_unification_category',
-                ["ueid" => $hislsftitle->ueid,
-                ]
-            );
+            $entry = $DB->get_record('local_lsf_unification_category', ["ueid" => $hislsftitle->ueid]);
             $entry->txt2 = mb_convert_encoding($fullname, 'UTF-8', 'ISO-8859-1');
             try {
                 $DB->update_record('local_lsf_unification_category', $entry, true);
@@ -870,19 +832,10 @@ function insert_missing_helptable_entries(bool $debugoutput = false, bool $tryev
                     $DB->update_record('local_lsf_unification_category', $entry, true);
                 } catch (Exception $e) {
                     if ($debugoutput) {
-                        mtrace(
-                            "<pre>FEHLER2 " . var_export($e, true) . "" .
-                            var_export($DB->get_last_error(), true),
-                            ''
-                        );
+                        mtrace("FEHLER2 " . var_export($e, true) . var_export($DB->get_last_error(), true), '');
                     }
                 }
             }
-        }
-        if ($debugoutput && (($a % 101) == 0)) {
-            mtrace("<br>&nbsp;&nbsp;");
-            $a++;
-            flush();
         }
     }
     $pgdb->dispose();
