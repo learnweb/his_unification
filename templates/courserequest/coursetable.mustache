@@ -1,0 +1,66 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_lsf_unification/courserequest/coursetable
+
+    This template is part of the page to request a new course.
+
+    Example (json):
+    {
+
+    }
+}}
+<form name="input" action="request.php" method="post">
+    <input type="hidden" name="answer" value="{{answer}}">
+
+    {{#emptyteacher}}
+        <b>{{#str}} choose_teacher, local_lsf_unification {{/str}}</b>
+        <input type="text" name="teachername" size="20" value="{{teachername}}">
+    {{/emptyteacher}}
+    {{^emptyteacher}}
+        {{#remote}}
+            <input type="hidden" name="teachername" value="{{teachername}}">
+        {{/remote}}
+    {{! The courselist}}
+    <div class="card mt-3">
+        <div class="card-header">
+            <h5 class="mb-0">{{#str}} choose_course, local_lsf_unification {{/str}}</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                {{#courses}}
+                    <label class="list-group-item list-group-item-action d-flex align-items-start gap-2 py-2">
+                        <input class="form-check-input mt-1" type="radio" name="veranstid" id="veranstid_{{veranstid}}" value="{{veranstid}}">
+                        <span class="flex-grow-1">{{{info}}}</span>
+                    </label>
+                {{/courses}}
+                {{#appendix}}
+                    <label class="list-group-item list-group-item-action d-flex align-items-start gap-2 py-2">
+                        <input class="form-check-input mt-1" type="radio" name="veranstid" id="veranstid_" value="-1">
+                        <span class="flex-grow-1">{{#str}}answer_course_in_lsf_but_invisible, local_lsf_unification{{/str}}</span>
+                    </label>
+                {{/appendix}}
+            </div>
+        </div>
+    </div>
+    {{/emptyteacher}}
+
+    {{! Submit }}
+    <input type="submit" value="{{#str}} select, local_lsf_unification {{/str}}"/>
+</form>
+<br>
+<a href="request.php">{{#str}} back, local_lsf_unification {{/str}}</a>
