@@ -305,10 +305,10 @@ function print_request_handler() {
     } else {
         if ($accept == 1) {
             set_course_accepted($veranstid);
-            send_course_creation_mail($requester, $course);
+            send_request_accepted_mail($requester, $course);
         } else {
             set_course_declined($veranstid);
-            send_sorry_mail($requester, $course);
+            send_request_declined_mail($requester, $course);
         }
         echo get_string('answer_sent', 'local_lsf_unification');
     }

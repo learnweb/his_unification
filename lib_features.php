@@ -22,6 +22,13 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  **/
+
+use core\task\manager;
+use local_lsf_unification\task\emails\category_relocation;
+use local_lsf_unification\task\emails\course_creation_request;
+use local_lsf_unification\task\emails\request_accepted;
+use local_lsf_unification\task\emails\request_declined;
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot . '/local/lsf_unification/lib.php');
@@ -126,19 +133,15 @@ function create_lsf_course(
  */
 function send_support_mail(object $course, string $text): bool {
     global $USER;
-    $supportuser = get_or_create_support_user();
-    $params = new stdClass();
-    $params->a = $USER->firstname . " " . $USER->lastname;
-    $params->b = $USER->id;
-    $params->c = mb_convert_encoding($course->fullname, 'UTF-8', 'ISO-8859-1');
-    $params->d = $course->id;
-    $params->e = $text;
-
-    $adhocdata = ['supportuserid' => $supportuser->id, 'requesterfirstname' => $USER->firstname,
-        'requesterlastname' => $USER->lastname, 'params' => $params];
-    $sendemail = new \local_lsf_unification\task\send_mail_category_wish();
-    $sendemail->set_custom_data($adhocdata);
-    \core\task\manager::queue_adhoc_task($sendemail);
+    $data = [
+        'userid' => $USER->id,
+        'courseid' => $course->id,
+        'coursename' => mb_convert_encoding($course->fullname, 'UTF-8', 'ISO-8859-1'),
+        'message' => $text,
+    ];
+    $sendemail = new category_relocation();
+    $sendemail->set_custom_data($data);
+    manager::queue_adhoc_task($sendemail);
     return true;
 }
 
@@ -151,29 +154,15 @@ function send_support_mail(object $course, string $text): bool {
  */
 function send_course_request_mail(string $recipientusername, object $course, int $requestid): bool {
     global $USER;
-    $email = username_to_mail($recipientusername);
-    $user = get_or_create_user($recipientusername, $email);
-    $params = new stdClass();
-    $params->a = $USER->firstname . " " . $USER->lastname;
-    $params->c = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1');
-
-    $data = ['recipientid' => $user->id, 'requesterid' => $USER->id, 'requesterfirstname' => $USER->firstname,
-        'requesterlastname' => $USER->lastname, 'requestid' => $requestid, 'params' => $params];
-    $sendemail = new \local_lsf_unification\task\send_mail_request_teacher_to_create_course();
+    $data = [
+        'recipientid' => get_or_create_user($recipientusername, username_to_mail($recipientusername))->id,
+        'requesterid' => $USER->id,
+        'coursename' => mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1'),
+        'requestid' => $requestid,
+    ];
+    $sendemail = new course_creation_request();
     $sendemail->set_custom_data($data);
-    \core\task\manager::queue_adhoc_task($sendemail);
-    return true;
-}
-
-/**
- * Creates link to request.php with a set veranstid.
- * @param int $veranstid
- * @return string
- *
- */
-function get_remote_creation_continue_link(int $veranstid): string {
-    global $CFG;
-    return $CFG->wwwroot . '/local/lsf_unification/request.php?answer=1&veranstid=' . $veranstid;
+    return manager::queue_adhoc_task($sendemail);
 }
 
 /**
@@ -182,18 +171,17 @@ function get_remote_creation_continue_link(int $veranstid): string {
  * @param object $course
  * @return bool
  */
-function send_course_creation_mail(object $recipient, object $course): bool {
+function send_request_accepted_mail(object $recipient, object $course): bool {
     global $USER;
-    $params = new stdClass();
-    $params->a = $USER->firstname . " " . $USER->lastname;
-    $params->c = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1');
-
-    $data = ['recipientid' => $recipient->id, 'acceptorid' => $USER->id, 'acceptorfirstname' => $USER->firstname,
-        'acceptorlastname' => $USER->lastname, 'veranstid' => $course->veranstid, 'params' => $params];
-    $sendemail = new \local_lsf_unification\task\send_mail_course_creation_accepted();
+    $data = [
+        'teacherid' => $USER->id,
+        'requesterid' => $recipient->id,
+        'veranstid' => $course->veranstid,
+        'coursename' => mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1'),
+    ];
+    $sendemail = new request_accepted();
     $sendemail->set_custom_data($data);
-    \core\task\manager::queue_adhoc_task($sendemail);
-    return true;
+    return manager::queue_adhoc_task($sendemail);
 }
 
 /**
@@ -202,21 +190,17 @@ function send_course_creation_mail(object $recipient, object $course): bool {
  * @param object $course
  * @return bool
  */
-function send_sorry_mail(object $recipient, object $course): bool {
+function send_request_declined_mail(object $recipient, object $course): bool {
     global $USER;
-    $params = new stdClass();
-    $params->a = $USER->firstname . " " . $USER->lastname;
-    $params->c = mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1');
-
-    $data = ['recipientid' => $recipient->id, 'acceptorid' => $USER->id, 'acceptorfirstname' => $USER->firstname,
-        'acceptorlastname' => $USER->lastname, 'params' => $params];
-    $sendemail = new \local_lsf_unification\task\send_mail_course_creation_declined();
+    $data = [
+        'teacherid' => $USER->id,
+        'requesterid' => $recipient->id,
+        'coursename' => mb_convert_encoding($course->titel, 'UTF-8', 'ISO-8859-1'),
+    ];
+    $sendemail = new request_declined();
     $sendemail->set_custom_data($data);
-    \core\task\manager::queue_adhoc_task($sendemail);
-    return true;
+    return manager::queue_adhoc_task($sendemail);
 }
-
-
 
 /**
  * Return an array of course's ids where $USER is teacher

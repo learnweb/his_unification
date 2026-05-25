@@ -52,7 +52,7 @@ if (establish_secondary_DB_connection() === true) {
             $veranstid = $request->veranstid;
             $requester = $DB->get_record("user", ["id" => $request->requesterid]);
             set_course_accepted($veranstid);
-            $emailsent = send_course_creation_mail($requester, get_course_by_veranstid($veranstid));
+            $emailsent = send_request_accepted_mail($requester, get_course_by_veranstid($veranstid));
             echo $OUTPUT->box("<b>Anfrage (" . $rid . ") wurde zugelassen und es wurde versucht eine Email an (" .
                 $requester->firstname . " " . $requester->lastname . ") zu senden.<b>");
             if ($emailsent) {
@@ -64,10 +64,9 @@ if (establish_secondary_DB_connection() === true) {
                 echo $OUTPUT->box("<b>Email versenden <u>fehlgeschlagen</u></b>");
             }
         } else if ($action == 4) {
-            $request = get_course_request($rid);
-            $veranstid = $request->veranstid;
-            echo $OUTPUT->box("<b>Die folgende URL kann <u>nur vom Antragsteller</u> verwendet werden: <br>" .
-                get_remote_creation_continue_link($veranstid) . "</b>");
+            $veranstid = get_course_request($rid)->veranstid;
+            $url = (new moodle_url('local/lsf_unification/request.php', ['answer' => 1, 'veranstid' => $veranstid]))->out(false);
+            echo $OUTPUT->box("<b>Die folgende URL kann <u>nur vom Antragsteller</u> verwendet werden: <br>" . $url . "</b>");
         }
     }
 
