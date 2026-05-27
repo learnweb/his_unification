@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_lsf_unification\form;
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
@@ -33,7 +35,7 @@ require_once($CFG->dirroot . '/local/lsf_unification/lib_features.php');
  * @copyright 2025 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class lsf_course_request_form extends moodleform {
+class lsf_course_request_form extends \moodleform {
     /** @var int The course that want to be created. */
     protected $veranstid;
 
