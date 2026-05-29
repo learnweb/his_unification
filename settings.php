@@ -93,6 +93,43 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
             PARAM_RAW
         )
     );
+
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_lsf_unification/dbusessl',
+            get_string('dbusessl', 'local_lsf_unification'),
+            get_string('dbusessl_description', 'local_lsf_unification'),
+            0
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configfile(
+            'local_lsf_unification/dbsslcert',
+            get_string('dbsslcert', 'local_lsf_unification'),
+            get_string('dbsslcert_description', 'local_lsf_unification'),
+            ''
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configfile(
+            'local_lsf_unification/dbsslkey',
+            get_string('dbsslkey', 'local_lsf_unification'),
+            get_string('dbsslkey_description', 'local_lsf_unification'),
+            ''
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configfile(
+            'local_lsf_unification/dbsslrootcert',
+            get_string('dbsslrootcert', 'local_lsf_unification'),
+            get_string('dbsslrootcert_description', 'local_lsf_unification'),
+            ''
+        )
+    );
+
     $settings->add(
         new admin_setting_configtext(
             'local_lsf_unification/max_import_age',

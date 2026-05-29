@@ -23,6 +23,7 @@
 namespace local_lsf_unification;
 
 use PgSql\Connection;
+use stdClass;
 
 /**
  * Class that wraps a connection to psql.
@@ -40,21 +41,39 @@ class pg_lite {
      * @throws dml_exception
      */
     public function connect() {
-        // Build the configuration of the connection to the PostgreSQL database.
-        $host = get_config('local_lsf_unification', 'dbhost');
-        $port = get_config('local_lsf_unification', 'dbport');
-        $user = get_config('local_lsf_unification', 'dbuser');
-        $pass = get_config('local_lsf_unification', 'dbpass');
-        $name = get_config('local_lsf_unification', 'dbname');
-        $config = "host='" . $host . "' port ='" . $port . "' user='" . $user . "' password='" . $pass . "' dbname='" . $name . "'";
-
+        $connstring = $this->connection_string_from(get_config('local_lsf_unification'));
         ob_start();
-        $this->connection = pg_connect($config, PGSQL_CONNECT_FORCE_NEW);
+        $this->connection = pg_connect($connstring, PGSQL_CONNECT_FORCE_NEW);
         $dberr = ob_get_contents();
         ob_end_clean();
         echo $dberr;
         $failedconnection = pg_connection_status($this->connection) === PGSQL_CONNECTION_BAD;
         return ($failedconnection) ? $dberr : true;
+    }
+
+    private function connection_string_from(stdClass $config): string {
+        $options = [
+            'host' => $config->dbhost,
+            'port' => $config->dbport,
+            'user' => $config->dbuser,
+            'dbname' => $config->dbname,
+        ];
+
+        if ($config->dbusessl) {
+            $options['sslmode'] = 'verify-full';
+            $options['sslrootcert'] = $config->dbsslrootcert;
+            $options['sslcert'] = $config->dbsslcert;
+            $options['sslkey'] = $config->dbsslkey;
+        } else {
+            $options['password'] = $config->dbpass;
+        }
+
+        $parts = [];
+        foreach ($options as $key => $val) {
+            $escaped = addcslashes((string) $val, "\\'");
+            $parts[] = "$key='$escaped'";
+        }
+        return implode(' ', $parts);
     }
 
     /**
