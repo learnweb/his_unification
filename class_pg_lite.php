@@ -51,6 +51,11 @@ class pg_lite {
         return ($failedconnection) ? $dberr : true;
     }
 
+    /**
+     * Transform lsf_unification config into connection string for LSF database.
+     * @param stdClass $config configuration record for lsf_unification
+     * @return string
+     */
     private function connection_string_from(stdClass $config): string {
         $options = [
             'host' => $config->dbhost,
