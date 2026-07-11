@@ -41,42 +41,26 @@ class category_relocation extends \core\task\adhoc_task {
         $data = $this->get_custom_data();
         $user = $DB->get_record('user', ['id' => $data->userid], '*', MUST_EXIST);
         $courseurl = (new moodle_url('/course/view.php', ['id' => $data->courseid]))->out();
-        $coursename = $data->coursename;
         $messagetext = format_text_email($data->message, FORMAT_PLAIN);
-        $paramstext = ['coursename' => $coursename, 'message' => $messagetext, 'courseurl' => $courseurl];
+        $paramstext = ['coursename' => $data->coursename, 'message' => $messagetext, 'courseurl' => $courseurl];
 
         $maildata = [
             'subject' => get_string('mail_category_wish_subject', 'local_lsf_unification'),
             'username' => fullname($user, true),
             'userurl' => (new moodle_url('/user/view.php', ['id' => $user->id]))->out(),
-            'content_html' => get_string('mail_category_wish_content_html', 'local_lsf_unification', ['coursename' => $coursename]),
             'content_text' => get_string('mail_category_wish_content_text', 'local_lsf_unification', $paramstext),
-            'message' => format_text_email($data->message, FORMAT_HTML),
-            'coursename' => $coursename,
-            'courseurl' => $courseurl,
-            'button' => get_string('mail_category_wish_button', 'local_lsf_unification'),
-            'helptext' => get_string('mail_button_help', 'local_lsf_unification'),
         ];
         $mustachedata = array_merge($maildata, lsf_unification_basic_mail_data());
-        $textcontent = $OUTPUT->render_from_template('local_lsf_unification/emails/category_wish_text', $mustachedata);
-        $htmlcontent = $OUTPUT->render_from_template('local_lsf_unification/emails/category_wish', $mustachedata);
-
-        $supportuser = core_user::get_support_user();
-        $supportuser->mailformat = 1;
 
         $wassent = email_to_user(
-            $supportuser,
+            core_user::get_support_user(),
             core_user::get_noreply_user(),
             get_string('mail_category_wish_subject', 'local_lsf_unification'),
-            $textcontent
+            $OUTPUT->render_from_template('local_lsf_unification/emails/category_wish_text', $mustachedata)
         );
 
         if (!$wassent) {
-            throw new \moodle_exception(get_string(
-                'ad_hoc_task_failed',
-                'local_lsf_unification',
-                'send_mail_category_wish'
-            ));
+            throw new \moodle_exception(get_string('ad_hoc_task_failed', 'local_lsf_unification', 'send_mail_category_wish'));
         }
     }
 }

@@ -104,29 +104,17 @@ $string['info_goto_old_requestform'] = "Please use the standard form to apply fo
 $string['linktext_content'] = "... import content from already existing courses ...";
 $string['linktext_course'] = "... or go directly to your new couse.";
 $string['linktext_users'] = "Edit the assigned teachers and students, ...";
-$string['mail_button_help'] = "If the button does not work, copy this link into your browser:";
-$string['mail_category_wish_button'] = "Visit the course";
-$string['mail_category_wish_content_html'] = 'created the course <span style="font-weight: 700;">„{$a->coursename}"</span> and requests a category relocation.
-The user left the following message:';
 $string['mail_category_wish_content_text'] = 'created the course \'{$a->coursename}\' and requests a category relocation.
 The user left the following message:
   {$a->message}
 
 Visit the course: {$a->courseurl}.';
 $string['mail_category_wish_subject'] = "LSF Unification - Category change request for a new course";
-$string['mail_courserequest_button'] = "Review request";
-$string['mail_courserequest_content_html'] = 'wants to create the Learnweb course <span style="font-weight: 700;">{$a->name}</span>
-  on your behalf and asks your confirmation. <br>
-  You can review the request using the button below and either approve or reject it:';
 $string['mail_courserequest_content_text'] = 'wants to create the Learnweb course "{$a->name}" on your behalf and asks your confirmation. You can review the request using the link below and either approve or reject it:';
 $string['mail_courserequest_subject'] = "Learnweb - New course creation request";
 $string['mail_greeting'] = 'Dear {$a->name},';
-$string['mail_request_accepted_button'] = "Continue course creation";
-$string['mail_request_accepted_content_html'] = 'accepted your request to create the course <span style="font-weight: 700;">„{$a->name}"</span>.
-                  You can continue the course creation by using the button below:';
 $string['mail_request_accepted_content_text'] = 'accepted your request to create the course "{$a->name}". You can continue the course creation by using the link below:';
 $string['mail_request_accepted_subject'] = "Learnweb - Course creation request accepted";
-$string['mail_request_declined_content_html'] = 'declined your request to create the course <span style="font-weight: 700;">„{$a->name}"</span>.';
 $string['mail_request_declined_content_text'] = 'declined your request to create the course "{$a->name}".';
 $string['mail_request_declined_subject'] = "Learnweb - Course creation request declined";
 $string['main_category'] = 'Maincategory';
@@ -190,8 +178,6 @@ $string['subcategories'] = 'Unlock Subcategories';
 $string['subcategories_description'] = 'Enable choosing not mapped subcategories of mapped categories';
 $string['task_missing_helptable_entries'] = 'Update table of LSF categories.';
 $string['template_from_course'] = 'Alternative {$a}: Include contents from an existing course ...';
-$string['uni'] = ' © {$a->year} Universität Münster';
-$string['uniinfo'] = 'wissen.leben';
 $string['update_helptable'] = 'Update Helptable With HIS-LSF data';
 $string['update_helptable_already_queued'] = 'Task to update tables is already queued. Click <a href="{$a->link}">here</a> for more information.';
 $string['update_helptable_notification'] = 'The Tables will be updated at {$a->time}. Click <a href="{$a->link}">here</a> for more information.';
@@ -199,5 +185,4 @@ $string['warning_cannot_enrol_nologin'] = "person wasn't enrolled (no username f
 $string['warning_cannot_enrol_nouser'] = "person wasn't enrolled (no user found)";
 $string['warning_cannot_enrol_other'] = "person wasn't enrolled";
 $string['warnings'] = 'Warnings:';
-$string['zhlinfo_html'] = "Zentrum für Hochschullehre (ZHL) <br> Services für digitale Lehre";
 $string['zhlinfo_text'] = "Zentrum für Hochschullehre (ZHL)\nServices für digitale Lehre";

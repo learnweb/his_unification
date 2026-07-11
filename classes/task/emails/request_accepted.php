@@ -40,30 +40,22 @@ class request_accepted extends \core\task\adhoc_task {
 
         $teacher = $DB->get_record('user', ['id' => $data->teacherid], '*', MUST_EXIST);
         $requester = $DB->get_record('user', ['id' => $data->requesterid], '*', MUST_EXIST);
-        $continueurl = new moodle_url('/local/lsf_unification/request.php', ['answer' => 1, 'veranstid' => $data->veranstid]);
-        $contenthtml = get_string('mail_request_accepted_content_html', 'local_lsf_unification', ['name' => $data->coursename]);
         $contenttext = get_string('mail_request_accepted_content_text', 'local_lsf_unification', ['name' => $data->coursename]);
         $maildata = [
             'subject' => get_string('mail_request_accepted_subject', 'local_lsf_unification'),
             'greeting' => get_string('mail_greeting', 'local_lsf_unification', ['name' => fullname($requester, true)]),
             'teacherurl' => (new moodle_url('/user/view.php', ['id' => $teacher->id]))->out(),
             'teachername' => fullname($teacher, true),
-            'content_html' => $contenthtml,
             'content_text' => $contenttext,
-            'continueurl' => $continueurl,
-            'button' => get_string('mail_request_accepted_button', 'local_lsf_unification'),
-            'helptext' => get_string('mail_button_help', 'local_lsf_unification'),
+            'continueurl' => new moodle_url('/local/lsf_unification/request.php', ['answer' => 1, 'veranstid' => $data->veranstid]),
         ];
 
         $mustachedata = array_merge($maildata, lsf_unification_basic_mail_data());
-        $textcontent = $OUTPUT->render_from_template('local_lsf_unification/emails/request_accepted_text', $mustachedata);
-        $htmlcontent = $OUTPUT->render_from_template('local_lsf_unification/emails/request_accepted', $mustachedata);
-
         $wassent = email_to_user(
             $requester,
             core_user::get_noreply_user(),
             get_string('mail_request_accepted_subject', 'local_lsf_unification'),
-            $textcontent
+            $OUTPUT->render_from_template('local_lsf_unification/emails/request_accepted_text', $mustachedata)
         );
         if (!$wassent) {
             throw new \moodle_exception(get_string(

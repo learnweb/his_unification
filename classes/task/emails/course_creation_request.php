@@ -48,32 +48,20 @@ class course_creation_request extends adhoc_task {
             'subject' => get_string('mail_courserequest_subject', 'local_lsf_unification'),
             'requestername' => fullname($requester, true),
             'requesterurl' => (new moodle_url('/user/view.php', ['id' => $data->requesterid]))->out(),
-            'coursename' => $data->coursename,
             'requesturl' => $requesturl->out(),
             'greeting' => get_string('mail_greeting', 'local_lsf_unification', ['name' => fullname($recipient, true)]),
-            'content_html' => get_string('mail_courserequest_content_html', 'local_lsf_unification', ['name' => $data->coursename]),
             'content_text' => get_string('mail_courserequest_content_text', 'local_lsf_unification', ['name' => $data->coursename]),
-            'button' => get_string('mail_courserequest_button', 'local_lsf_unification'),
-            'helptext' => get_string('mail_button_help', 'local_lsf_unification'),
         ];
         $mustachedata = array_merge($maildata, lsf_unification_basic_mail_data());
-
-        $textcontent = $OUTPUT->render_from_template('local_lsf_unification/emails/course_request_text', $mustachedata);
-        $htmlcontent = $OUTPUT->render_from_template('local_lsf_unification/emails/course_request', $mustachedata);
-
         $wassent = email_to_user(
             $recipient,
             core_user::get_noreply_user(),
             get_string('mail_courserequest_subject', 'local_lsf_unification'),
-            $textcontent
+            $OUTPUT->render_from_template('local_lsf_unification/emails/course_request_text', $mustachedata)
         );
 
         if (!$wassent) {
-            throw new \moodle_exception(get_string(
-                'ad_hoc_task_failed',
-                'local_lsf_unification',
-                'course_creation_request'
-            ));
+            throw new \moodle_exception(get_string('ad_hoc_task_failed', 'local_lsf_unification', 'course_creation_request'));
         }
     }
 }

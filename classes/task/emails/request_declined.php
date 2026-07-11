@@ -40,26 +40,21 @@ class request_declined extends \core\task\adhoc_task {
 
         $teacher = $DB->get_record('user', ['id' => $data->teacherid], '*', MUST_EXIST);
         $requester = $DB->get_record('user', ['id' => $data->requesterid], '*', MUST_EXIST);
-        $contenthtml = get_string('mail_request_declined_content_html', 'local_lsf_unification', ['name' => $data->coursename]);
         $contenttext = get_string('mail_request_declined_content_text', 'local_lsf_unification', ['name' => $data->coursename]);
         $maildata = [
             'subject' => get_string('mail_request_declined_subject', 'local_lsf_unification'),
             'greeting' => get_string('mail_greeting', 'local_lsf_unification', ['name' => fullname($requester, true)]),
             'teacherurl' => (new moodle_url('/user/view.php', ['id' => $teacher->id]))->out(),
             'teachername' => fullname($teacher, true),
-            'content_html' => $contenthtml,
             'content_text' => $contenttext,
         ];
 
         $mustachedata = array_merge($maildata, lsf_unification_basic_mail_data());
-        $textcontent = $OUTPUT->render_from_template('local_lsf_unification/emails/request_declined_text', $mustachedata);
-        $htmlcontent = $OUTPUT->render_from_template('local_lsf_unification/emails/request_declined', $mustachedata);
-
         $wassent = email_to_user(
             $requester,
             core_user::get_noreply_user(),
             get_string('mail_request_declined_subject', 'local_lsf_unification'),
-            $textcontent
+            $OUTPUT->render_from_template('local_lsf_unification/emails/request_declined_text', $mustachedata)
         );
         if (!$wassent) {
             throw new \moodle_exception(get_string(

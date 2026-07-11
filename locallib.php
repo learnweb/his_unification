@@ -28,12 +28,7 @@
  */
 function lsf_unification_basic_mail_data(): array {
     return [
-        'unilogourl' => (new moodle_url('/local/lsf_unification/img/unims.png'))->out(),
-        'learnweblogourl' => (new moodle_url('/local/lsf_unification/img/learnweb_light.png'))->out(),
-        'zhlinfo_html' => get_string('zhlinfo_html', 'local_lsf_unification'),
         'zhlinfo_text' => get_string('zhlinfo_text', 'local_lsf_unification'),
-        'uniinfo' => get_string('uniinfo', 'local_lsf_unification'),
-        'uni' => get_string('uni', 'local_lsf_unification', ['year' => date('Y')]),
         'noreply' => get_string('noreply', 'local_lsf_unification'),
     ];
 }
