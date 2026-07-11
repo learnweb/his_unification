@@ -68,8 +68,7 @@ class category_relocation extends \core\task\adhoc_task {
             $supportuser,
             core_user::get_noreply_user(),
             get_string('mail_category_wish_subject', 'local_lsf_unification'),
-            $textcontent,
-            $htmlcontent
+            $textcontent
         );
 
         if (!$wassent) {

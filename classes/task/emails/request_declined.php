@@ -59,8 +59,7 @@ class request_declined extends \core\task\adhoc_task {
             $requester,
             core_user::get_noreply_user(),
             get_string('mail_request_declined_subject', 'local_lsf_unification'),
-            $textcontent,
-            $htmlcontent
+            $textcontent
         );
         if (!$wassent) {
             throw new \moodle_exception(get_string(

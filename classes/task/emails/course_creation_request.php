@@ -65,8 +65,7 @@ class course_creation_request extends adhoc_task {
             $recipient,
             core_user::get_noreply_user(),
             get_string('mail_courserequest_subject', 'local_lsf_unification'),
-            $textcontent,
-            $htmlcontent
+            $textcontent
         );
 
         if (!$wassent) {
