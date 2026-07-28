@@ -134,5 +134,15 @@ function xmldb_local_lsf_unification_upgrade(int $oldversion): bool {
         upgrade_plugin_savepoint(true, 2025123100, 'local', 'lsf_unification');
     }
 
+    if ($oldversion < 2025123105) {
+        // Rename course table to make space for new course entities.
+        $oldtable = new xmldb_table('local_lsf_unification_course');
+        if ($dbman->table_exists($oldtable)) {
+            $dbman->rename_table($oldtable, 'local_lsf_unification_course_matching');
+        }
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2025123105, 'local', 'lsf_unification');
+    }
+
     return true;
 }

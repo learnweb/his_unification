@@ -20,7 +20,7 @@
         <KEY NAME="realkey" TYPE="unique" FIELDS="ueid" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_lsf_unification_categoryparenthood" COMMENT="relations between his-categories" PREVIOUS="local_lsf_unification_category" NEXT="local_lsf_unification_course">
+    <TABLE NAME="local_lsf_unification_categoryparenthood" COMMENT="relations between his-categories" PREVIOUS="local_lsf_unification_category" NEXT="local_lsf_unification_course_matching">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="moodle dumbness" NEXT="child"/>
         <FIELD NAME="child" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="parent"/>
@@ -32,7 +32,7 @@
         <KEY NAME="realkey" TYPE="unique" FIELDS="child, parent" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_lsf_unification_course" COMMENT="course matching table" PREVIOUS="local_lsf_unification_categoryparenthood">
+    <TABLE NAME="local_lsf_unification_course_matching" COMMENT="course matching table (old structure, will be deprecated)" PREVIOUS="local_lsf_unification_categoryparenthood">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="veranstid"/>
         <FIELD NAME="veranstid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="mdlid"/>

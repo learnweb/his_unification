@@ -45,7 +45,7 @@ if (establish_secondary_DB_connection() === true) {
 
     if ($rid != -1 && $action != -1) {
         if ($action == 1) {
-            $DB->delete_records("local_lsf_unification_course", ["id" => $rid, "mdlid" => 0]);
+            $DB->delete_records("local_lsf_unification_course_matching", ["id" => $rid, "mdlid" => 0]);
             echo $OUTPUT->box("<b>Anfrage (" . $rid . ") geloescht</b>");
         } else if ($action == 2 || $action == 3) {
             $request = get_course_request($rid);
@@ -75,7 +75,7 @@ if (establish_secondary_DB_connection() === true) {
     $table->define_baseurl(new url('remoterequests.php'));
     $table->define_columns(['requestid', 'course', 'requester', 'actions']);
     $table->define_headers(['Antrag Nr.', 'Veranstaltung', 'Personen', 'Aktionen']);
-    $requests = $DB->get_records('local_lsf_unification_course', ['mdlid' => 0], 'id');
+    $requests = $DB->get_records('local_lsf_unification_course_matching', ['mdlid' => 0], 'id');
     $table->setup();
 
     $helpfuntion = function ($arrayel) {
