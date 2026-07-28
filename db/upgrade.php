@@ -144,5 +144,73 @@ function xmldb_local_lsf_unification_upgrade(int $oldversion): bool {
         upgrade_plugin_savepoint(true, 2025123105, 'local', 'lsf_unification');
     }
 
+    if ($oldversion < 2025123106) {
+        // Define table local_lsf_unification_courses to be created.
+        $table = new xmldb_table('local_lsf_unification_courses');
+
+        // Adding fields to table local_lsf_unification_courses.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('cms', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('instance', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('title', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('shorttitle', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('description', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('teacher', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('semester', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('created', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('url', XMLDB_TYPE_CHAR, '1333', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table local_lsf_unification_courses.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Adding indexes to table local_lsf_unification_courses.
+        $table->add_index('cms_instance', XMLDB_INDEX_UNIQUE, ['cms', 'instance']);
+
+        // Conditionally launch create table for local_lsf_unification_courses.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table local_lsf_unification_course_requests to be created.
+        $table = new xmldb_table('local_lsf_unification_course_requests');
+
+        // Adding fields to table local_lsf_unification_course_requests.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('requesterid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('state', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table local_lsf_unification_course_requests.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('courseid', XMLDB_KEY_FOREIGN, ['courseid'], 'local_lsf_unification_courses', ['id']);
+        $table->add_key('requesterid', XMLDB_KEY_FOREIGN, ['requesterid'], 'user', ['id']);
+
+        // Conditionally launch create table for local_lsf_unification_course_requests.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table local_lsf_unification_imported_courses to be created.
+        $table = new xmldb_table('local_lsf_unification_imported_courses');
+
+        // Adding fields to table local_lsf_unification_imported_courses.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('moodleid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table local_lsf_unification_imported_courses.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('courseid', XMLDB_KEY_FOREIGN_UNIQUE, ['courseid'], 'local_lsf_unification_courses', ['id']);
+        $table->add_key('moodleid', XMLDB_KEY_FOREIGN, ['moodleid'], 'course', ['id']);
+
+        // Conditionally launch create table for local_lsf_unification_imported_courses.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2025123106, 'local', 'lsf_unification');
+    }
+
     return true;
 }

@@ -47,5 +47,50 @@
         <KEY NAME="uni1" TYPE="unique" FIELDS="veranstid" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="local_lsf_unification_courses" COMMENT="Abstracted courses originating from a campus management system (cms).">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="cms" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Which cms the course originates from (e.g. lsf, sap)."/>
+        <FIELD NAME="instance" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the course in the cms."/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Title of the course."/>
+        <FIELD NAME="shorttitle" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Short title of the course."/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Description of the course. Empty string when there is none."/>
+        <FIELD NAME="teacher" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Username of the main responsible teacher."/>
+        <FIELD NAME="semester" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Semester the course belongs to."/>
+        <FIELD NAME="created" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Timestamp of when the course was created in the cms."/>
+        <FIELD NAME="url" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="Url to the course in the cms."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="cms_instance" UNIQUE="true" FIELDS="cms, instance" COMMENT="A cms course is uniquely identified by its cms and instance id."/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_lsf_unification_course_requests" COMMENT="Pending import requests opened when a non-teacher tries to import a cms course.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="requesterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Moodle user id of the user that requested the course."/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Abstract course id (local_lsf_unification_courses.id, not a moodle course id)."/>
+        <FIELD NAME="state" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Current state of the request: 1=pending, 2=accepted, 3=declined, 4=imported."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="local_lsf_unification_courses" REFFIELDS="id"/>
+        <KEY NAME="requesterid" TYPE="foreign" FIELDS="requesterid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_lsf_unification_imported_courses" COMMENT="Links an abstracted cms course to the moodle course it was imported into.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="moodleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Moodle course id (course.id)."/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Abstract course id (local_lsf_unification_courses.id)."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign-unique" FIELDS="courseid" REFTABLE="local_lsf_unification_courses" REFFIELDS="id"/>
+        <KEY NAME="moodleid" TYPE="foreign" FIELDS="moodleid" REFTABLE="course" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
   </TABLES>
 </XMLDB>
