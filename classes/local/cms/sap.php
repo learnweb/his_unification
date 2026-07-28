@@ -14,23 +14,40 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_lsf_unification;
+namespace local_lsf_unification\local\cms;
 
-use stdClass;
+use moodle_url;
 
 /**
- * Interface to campus management systems (CMS).
+ * Connection to the SAP database.
  *
  * @package   local_lsf_unification
- * @copyright 2026 Daniel Meißner <daniel.meissner@uni-muenster.de>
+ * @copyright 2026 Tamaro Walter <daniel.meissner@uni-muenster.de>
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-interface campus_management {
-    /**
-     * Query the CMS for a list of courses of a given teacher.
-     *
-     * @param stdClass $teacher The user record of the teacher
-     * @return array A list of course objects
-     */
-    public function courses_of_teacher(stdClass $teacher): array;
+class sap implements campus_management {
+    #[\Override]
+    public function get_courses_of_teacher(object $teacher): array {
+        return [];
+    }
+
+    #[\Override]
+    public function get_users_of_course(object $course): array {
+        return [];
+    }
+
+    #[\Override]
+    public function set_moodle_link(object $course, moodle_url $url): void {
+        return;
+    }
+
+    #[\Override]
+    public function get_course_dates(object $course): array {
+        return [];
+    }
+
+    #[\Override]
+    public function get_teachers(): array {
+        return [];
+    }
 }
