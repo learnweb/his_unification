@@ -29,6 +29,11 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/enrollib.php');
 require_once($CFG->dirroot . '/user/lib.php');
 
+// Global lsf_unfication constants.
+define('LSF_UNIFICATION_REQUEST_DECLINED', 0);
+define('LSF_UNIFICATION_REQUEST_OPEN', 1);
+define('LSF_UNIFICATION_REQUEST_ACCEPTED', 2);
+
 /**
  * get_course_by_idnumber returns the course's id, where idnumber fits $courseid
  *
