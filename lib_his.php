@@ -455,12 +455,12 @@ function get_default_startdate(object $lsfcourse): int {
 function course_exists(int $veranstid): bool {
     global $DB;
     if (
-        $DB->record_exists("local_lsf_unification_course", ["veranstid" => ($veranstid)]) &&
-             !($DB->record_exists("local_lsf_unification_course", ["veranstid" => ($veranstid), "mdlid" => 0]) ||
-            $DB->record_exists("local_lsf_unification_course", ["veranstid" => ($veranstid), "mdlid" => 1]))
+        $DB->record_exists("local_lsf_unification_course_matching", ["veranstid" => ($veranstid)]) &&
+             !($DB->record_exists("local_lsf_unification_course_matching", ["veranstid" => ($veranstid), "mdlid" => 0]) ||
+            $DB->record_exists("local_lsf_unification_course_matching", ["veranstid" => ($veranstid), "mdlid" => 1]))
     ) {
         if (!$DB->record_exists("course", ["idnumber" => ($veranstid)])) {
-            $DB->delete_records("local_lsf_unification_course", ["veranstid" => ($veranstid)]);
+            $DB->delete_records("local_lsf_unification_course_matching", ["veranstid" => ($veranstid)]);
         } else {
             return true;
         }
@@ -551,16 +551,16 @@ function enrole_teachers(int $veranstid, int $courseid): string {
  */
 function set_course_created(int $veranstid, int $courseid): void {
     global $DB;
-    if ($courseentry = $DB->get_record("local_lsf_unification_course", ["veranstid" => $veranstid])) {
+    if ($courseentry = $DB->get_record("local_lsf_unification_course_matching", ["veranstid" => $veranstid])) {
         $courseentry->mdlid = $courseid;
         $courseentry->timestamp = time();
-        $DB->update_record('local_lsf_unification_course', $courseentry);
+        $DB->update_record('local_lsf_unification_course_matching', $courseentry);
     } else {
         $courseentry = new stdClass();
         $courseentry->veranstid = $veranstid;
         $courseentry->mdlid = $courseid;
         $courseentry->timestamp = time();
-        $DB->insert_record("local_lsf_unification_course", $courseentry);
+        $DB->insert_record("local_lsf_unification_course_matching", $courseentry);
     }
 }
 
@@ -573,7 +573,7 @@ function set_course_created(int $veranstid, int $courseid): void {
  */
 function get_course_request(int $rid): false|stdClass {
     global $DB;
-    return $DB->get_record("local_lsf_unification_course", ["id" => $rid, "mdlid" => 0]);
+    return $DB->get_record("local_lsf_unification_course_matching", ["id" => $rid, "mdlid" => 0]);
 }
 
 /**
@@ -584,7 +584,7 @@ function get_course_request(int $rid): false|stdClass {
  */
 function get_course_requests(): array {
     global $DB;
-    return $DB->get_records("local_lsf_unification_course", ["mdlid" => 0], "id");
+    return $DB->get_records("local_lsf_unification_course_matching", ["mdlid" => 0], "id");
 }
 
 /**
@@ -595,7 +595,7 @@ function get_course_requests(): array {
  */
 function set_course_requested(int $veranstid): bool|int|null {
     global $DB, $USER;
-    if ($courseentry = $DB->get_record("local_lsf_unification_course", ["veranstid" => $veranstid])) {
+    if ($courseentry = $DB->get_record("local_lsf_unification_course_matching", ["veranstid" => $veranstid])) {
         return null;
     } else {
         $courseentry = new stdClass();
@@ -604,7 +604,7 @@ function set_course_requested(int $veranstid): bool|int|null {
         $courseentry->requeststate = 1;
         $courseentry->timestamp = time();
         $courseentry->requesterid = $USER->id;
-        return $DB->insert_record("local_lsf_unification_course", $courseentry);
+        return $DB->insert_record("local_lsf_unification_course_matching", $courseentry);
     }
 }
 
@@ -616,11 +616,11 @@ function set_course_requested(int $veranstid): bool|int|null {
  */
 function set_course_accepted(int $veranstid): int|null {
     global $DB, $USER;
-    if ($courseentry = $DB->get_record("local_lsf_unification_course", ["veranstid" => $veranstid])) {
+    if ($courseentry = $DB->get_record("local_lsf_unification_course_matching", ["veranstid" => $veranstid])) {
         $courseentry->requeststate = 2;
         $courseentry->timestamp = time();
         $courseentry->acceptorid = $USER->id;
-        $DB->update_record('local_lsf_unification_course', $courseentry);
+        $DB->update_record('local_lsf_unification_course_matching', $courseentry);
         return $courseentry->id;
     }
     return null;
@@ -634,8 +634,8 @@ function set_course_accepted(int $veranstid): int|null {
  */
 function set_course_declined(int $veranstid): void {
     global $DB, $USER;
-    if ($courseentry = $DB->get_record("local_lsf_unification_course", ["veranstid" => $veranstid])) {
-        $DB->delete_records("local_lsf_unification_course", ["veranstid" => ($veranstid)]);
+    if ($courseentry = $DB->get_record("local_lsf_unification_course_matching", ["veranstid" => $veranstid])) {
+        $DB->delete_records("local_lsf_unification_course_matching", ["veranstid" => ($veranstid)]);
     }
 }
 
