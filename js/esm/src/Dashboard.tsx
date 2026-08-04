@@ -24,6 +24,7 @@ import {useEffect, useState} from "react";
 import {Course, fetchDashboardCourses} from "./services/csm";
 import Wizard from "./wizard/Wizard";
 import {str} from "./lang";
+import RequestManager from "./request_manager/RequestManager";
 
 /** Request states, mirroring the constants of local\models\course_request. */
 const REQUEST_PENDING = 1;
@@ -58,13 +59,17 @@ const REQUEST_STATE_BADGES: Record<number, {css: string, icon: string, key: stri
 export default function Dashboard() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [wizardOpen, setWizardOpen] = useState(false);
+    const [requestManagerOpen, setRequestManagerOpen] = useState(false);
+    /** The accepted request the user pressed "import now" on, or null while no such import is running. */
+    const [importing, setImporting] = useState<Course | null>(null);
     const reloadCourses = () => fetchDashboardCourses().then(setCourses);
 
     useEffect(() => {
       reloadCourses();
     }, []);
 
-    const requested = courses.filter((c) => c.requeststate !== 0);
+    // A request whose course exists in Moodle by now is done with, so it is only listed as an imported course.
+    const requested = courses.filter((c) => c.requeststate !== 0 && c.moodleid === 0);
     const created = courses.filter((c) => c.moodleid !== 0);
 
     return (
@@ -74,9 +79,14 @@ export default function Dashboard() {
           <h3 className="mb-1">{str("dashboard_title")}</h3>
           <p className="text-muted mb-0">{str("dashboard_title_text")}</p>
         </div>
-        <button type="button" className="btn btn-primary btn-md text-white" onClick={() => setWizardOpen(true)}>
-          <i className="fa-solid fa-plus me-2"/>{str("dashboard_wizard_button")}
-        </button>
+        <div>
+          <button type="button" className="btn btn-primary btn-md text-white me-4" onClick={() => setRequestManagerOpen(true)}>
+            <i className="fa-solid fa-circle-exclamation me-2"/>{str("dashboard_request_manager_button")}
+          </button>
+          <button type="button" className="btn btn-primary btn-md text-white" onClick={() => setWizardOpen(true)}>
+            <i className="fa-solid fa-plus me-2"/>{str("dashboard_wizard_button")}
+          </button>
+        </div>
       </div>
       {/* Current courses. */}
       <div className="card mb-4 shadow-sm">
@@ -121,21 +131,41 @@ export default function Dashboard() {
                   <i className="fa-solid fa-user-tie me-1"/>{str("dashboard_request_teacher")} {course.teacher}
                 </div>
               </div>
-              {badge && (
-                <span className={`badge ${badge.css} rounded-pill text-white`}>
-                    <i className={`${badge.icon} me-1`}/>{str(badge.key)}
-                </span>
-              )}
+              <div className="d-flex align-items-center gap-2">
+                {badge && (
+                  <span className={`badge ${badge.css} rounded-pill text-white`}>
+                      <i className={`${badge.icon} me-1`}/>{str(badge.key)}
+                  </span>
+                )}
+                {course.requeststate === REQUEST_ACCEPTED && (
+                  <button type="button" className="btn btn-primary btn-sm text-white" onClick={() => setImporting(course)}>
+                    <i className="fa-solid fa-file-import me-1"/>{str("dashboard_import_now")}
+                  </button>
+                )}
+              </div>
             </div>
             );
           })}
         </div>
       </div>
+      {/* Request manager modal*/}
+      {requestManagerOpen && <RequestManager onClose={() => {
+        setRequestManagerOpen(false);
+        reloadCourses();
+      }}/>}
       {/* Import wizard modal*/}
       {wizardOpen && <Wizard onClose={() => {
         setWizardOpen(false);
         reloadCourses();
       }}/>}
+      {/* Import wizard modal for an accepted request: the course is known, so the wizard only asks for the details.
+          A dashboard course carries a running number as its id, so the abstract course id the import is keyed on
+          has to be put in its place before the course goes into the wizard cache. */}
+      {importing && <Wizard initial={{branch: "importRequested", course: {...importing, id: importing.courseid}}}
+                            onClose={() => {
+                              setImporting(null);
+                              reloadCourses();
+                            }}/>}
     </>
   );
 }

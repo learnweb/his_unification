@@ -85,7 +85,12 @@ class cms_service {
         // LEARNWEB-TODO: but if a techer accepts a requests all pending ones get declined. On decline only the one gets deleted.
 
         // 2. Step: Create a request entry. The requester is the current user.
-        $request = (object) ['requesterid' => $USER->id, 'courseid' => $course->id, 'state' => course_request::REQUEST_PENDING];
+        $request = (object) [
+            'requesterid' => $USER->id,
+            'courseid' => $course->id,
+            'state' => course_request::REQUEST_PENDING,
+            'created' => time(),
+        ];
         $result = (bool) $DB->insert_record(course_request::DB_TABLE_NAME, $request);
 
         // 3. Sent an email.

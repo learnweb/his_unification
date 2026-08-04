@@ -29,5 +29,6 @@
 function lsf_unification_cache_strings(): void {
     global $PAGE;
     $strings = get_string_manager()->load_component_strings('local_lsf_unification', current_language());
+    $PAGE->requires->strings_for_js(['approve', 'reject', 'cancel', 'loading', 'yes'], 'core');
     $PAGE->requires->strings_for_js(array_keys($strings), 'local_lsf_unification');
 }

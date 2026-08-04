@@ -32,7 +32,7 @@ import RequestTeacherStep, {validate as validateRequestTeacher} from "./request/
 import RequestCoursesStep, {validate as validateRequestCourses} from "./request/RequestCoursesStep";
 import RequestSummaryStep from "./request/RequestSummaryStep";
 
-export type Branch = "import" | "request";
+export type Branch = "import" | "request" | "importRequested";
 
 /** Every step the wizard can show. */
 export type StepId =
@@ -46,7 +46,7 @@ export type StepId =
 
 /**
  * Everything the wizard collects, filled in step by step. This is what gets submitted:
- * branch - if it's an import or request
+ * branch - if it's an import, a request, or the import of a course the user already got a request accepted for
  * course - which course gets imported/requested. Can get edited in the import flow.
  * teacher - only used in requests. The teacher that is being request on behalf to.
  * category - only used in imports. Saves the category the course gets assigned to.
@@ -88,15 +88,20 @@ export const STEPS: Record<StepId, Step> = {
     requestSummary: {component: RequestSummaryStep},
 };
 
-/** The ordered steps that follow the "choose" step, per branch. */
+/**
+ * The ordered steps of every branch. The two branches the user picks in the wizard start on the "choose" step.
+ * importRequested is entered from the dashboard with the course already known, so it skips both choosing an
+ * action and picking a course and starts right at the details.
+ */
 const SEQUENCES: Record<Branch, StepId[]> = {
-    "import": ["importCourses", "importDetails", "importSummary"],
-    request: ["requestTeacher", "requestCourses", "requestSummary"],
+    "import": ["choose", "importCourses", "importDetails", "importSummary"],
+    request: ["choose", "requestTeacher", "requestCourses", "requestSummary"],
+    importRequested: ["importDetails", "importSummary"],
 };
 
 /** Builds the full step sequence for the current branch. Before a branch is chosen the wizard only knows about the "choose" step.*/
 export function sequenceFor(branch: Branch | null): StepId[] {
-    return branch === null ? ["choose"] : ["choose", ...SEQUENCES[branch]];
+    return branch === null ? ["choose"] : SEQUENCES[branch];
 }
 
 /**

@@ -12,10 +12,12 @@ import { Fragment, jsxDEV } from "react/jsx-dev-runtime";
 import { useState, useEffect } from "react";
 import { STEPS, sequenceFor, canAdvance } from "./steps/config";
 import { str } from "../lang";
-function Wizard({ onClose }) {
+function Wizard({ onClose, initial }) {
   const [step, setStep] = useState(0);
   const [showErrors, setShowErrors] = useState(false);
-  const [cache, setCache] = useState({ branch: null, course: null, teacher: null, category: null, submitted: false });
+  const [cache, setCache] = useState(
+    { branch: null, course: null, teacher: null, category: null, submitted: false, ...initial }
+  );
   const patchCache = /* @__PURE__ */ __name((partial) => setCache((c) => ({ ...c, ...partial })), "patchCache");
   useEffect(() => {
     const onKey = /* @__PURE__ */ __name((e) => e.key === "Escape" && onClose(), "onKey");
@@ -27,7 +29,7 @@ function Wizard({ onClose }) {
   const { component: Step } = STEPS[currentStepId];
   const isFirst = step === 0;
   const isLast = step === sequence.length - 1;
-  const title = currentStepId === "choose" || cache.branch === null ? str("wizard_shell_title") : str(cache.branch === "import" ? "course_import" : "course_request");
+  const title = currentStepId === "choose" || cache.branch === null ? str("wizard_shell_title") : str(cache.branch === "request" ? "course_request" : "course_import");
   const back = /* @__PURE__ */ __name(() => {
     setShowErrors(false);
     setStep((s) => s - 1);
@@ -45,65 +47,65 @@ function Wizard({ onClose }) {
       /* @__PURE__ */ jsxDEV("div", { className: "modal-header", children: [
         /* @__PURE__ */ jsxDEV("h5", { className: "modal-title", children: title }, void 0, false, {
           fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-          lineNumber: 74,
+          lineNumber: 86,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("button", { type: "button", className: "btn-close", "aria-label": str("close"), onClick: onClose }, void 0, false, {
           fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-          lineNumber: 75,
+          lineNumber: 87,
           columnNumber: 15
         }, this)
       ] }, void 0, true, {
         fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-        lineNumber: 73,
+        lineNumber: 85,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "modal-body", children: /* @__PURE__ */ jsxDEV(Step, { cache, patch: patchCache, showErrors }, void 0, false, {
         fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-        lineNumber: 78,
+        lineNumber: 90,
         columnNumber: 15
       }, this) }, void 0, false, {
         fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-        lineNumber: 77,
+        lineNumber: 89,
         columnNumber: 13
       }, this),
       !cache.submitted && /* @__PURE__ */ jsxDEV("div", { className: "modal-footer justify-content-between", children: [
         /* @__PURE__ */ jsxDEV("button", { type: "button", className: "btn btn-outline-secondary", onClick: back, disabled: isFirst, children: str("wizard_shell_back") }, void 0, false, {
           fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-          lineNumber: 82,
+          lineNumber: 94,
           columnNumber: 17
         }, this),
         !isLast && /* @__PURE__ */ jsxDEV("button", { type: "button", className: "btn btn-primary text-white", onClick: next, children: str("wizard_shell_next") }, void 0, false, {
           fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-          lineNumber: 86,
+          lineNumber: 98,
           columnNumber: 19
         }, this)
       ] }, void 0, true, {
         fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-        lineNumber: 81,
+        lineNumber: 93,
         columnNumber: 15
       }, this)
     ] }, void 0, true, {
       fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-      lineNumber: 72,
+      lineNumber: 84,
       columnNumber: 11
     }, this) }, void 0, false, {
       fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-      lineNumber: 71,
+      lineNumber: 83,
       columnNumber: 9
     }, this) }, void 0, false, {
       fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-      lineNumber: 70,
+      lineNumber: 82,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("div", { className: "modal-backdrop fade show" }, void 0, false, {
       fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-      lineNumber: 95,
+      lineNumber: 107,
       columnNumber: 7
     }, this)
   ] }, void 0, true, {
     fileName: "public/local/lsf_unification/js/esm/src/wizard/Wizard.tsx",
-    lineNumber: 69,
+    lineNumber: 81,
     columnNumber: 5
   }, this);
 }

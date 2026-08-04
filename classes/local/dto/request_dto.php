@@ -36,7 +36,7 @@ class request_dto {
         /** @var string user fullname of the person who requested the course */
         public readonly string $requester,
         /** @var int request state*/
-        public readonly int $requestsstate,
+        public readonly int $requeststate,
         /** @var int created date*/
         public readonly int $created,
     ) {}
@@ -50,7 +50,7 @@ class request_dto {
             'id' => $this->id,
             'title' => $this->title,
             'requester' => $this->requester,
-            'requestsstate' => $this->requestsstate,
+            'requeststate' => $this->requeststate,
             'created' => $this->created,
         ];
     }

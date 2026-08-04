@@ -16,7 +16,13 @@
 
 namespace local_lsf_unification\local\service;
 
+use Exception;
+use coding_exception;
+use core\context\system;
+use core_user;
+use local_lsf_unification\local\models\course_request;
 use local_lsf_unification\local\dto\course_dto;
+use local_lsf_unification\local\dto\request_dto;
 use moodle_url;
 
 /**
@@ -35,9 +41,10 @@ class dashboard_service {
         global $DB, $USER;
         $mintime = time() - (get_config('local_lsf_unification', 'max_import_age') * DAYSECS);
         // Get Requested courses.
-        $sql = "SELECT request.id AS requestid, course.*, request.state AS state
+        $sql = "SELECT request.id AS requestid, course.*, request.state AS state, import.moodleid AS moodleid
                 FROM {local_lsf_unification_course_requests} request
                 JOIN {local_lsf_unification_courses} course ON course.id = request.courseid
+                LEFT JOIN {local_lsf_unification_imported_courses} import ON import.courseid = course.id
                 WHERE request.requesterid = :userid
                 AND course.created > :mintime
                 ORDER BY course.created DESC";
@@ -51,6 +58,7 @@ class dashboard_service {
                 AND course.created > :mintime
                 ORDER BY course.created DESC";
         $imported = $DB->get_records_sql($sql, ['username' => $USER->username, 'mintime' => $mintime]);
+
         $courses = array_merge($requests, $imported);
 
         // Return course dto and set the moodle id or state if its set.
@@ -62,7 +70,7 @@ class dashboard_service {
                 $course->url,
                 $course->title,
                 $course->shorttitle,
-                '',
+                $course->description,
                 $course->teacher,
                 $course->semester,
                 $course->created,
@@ -74,6 +82,72 @@ class dashboard_service {
             array_keys($courses),
             $courses,
         );
+    }
+
+    /**
+     * Returns the requests that users made for a course where the current user is the teacher of.
+     * @return array
+     */
+    public static function get_course_requests(): array {
+        global $DB, $USER;
+        $mintime = time() - (get_config('local_lsf_unification', 'max_import_age') * DAYSECS);
+        // Get courses that were requested on the users behalf.
+        $sql = "SELECT request.id AS requestid, request.state AS requeststate, request.created AS requestcreated, course.*,
+                u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename
+                FROM {local_lsf_unification_course_requests} request
+                JOIN {local_lsf_unification_courses} course ON course.id = request.courseid
+                JOIN {user} u ON u.id = request.requesterid
+                WHERE course.teacher = :username
+                AND course.created > :mintime
+                AND request.state = :pendingstate
+                ORDER BY course.created DESC";
+        $params = ['username' => $USER->username, 'mintime' => $mintime, 'pendingstate' => course_request::REQUEST_PENDING];
+        $records = $DB->get_records_sql($sql, $params);
+
+        return array_map(
+            fn(object $record) => new request_dto(
+              $record->requestid,
+              $record->title,
+              core_user::get_fullname(
+                  (object) [
+                    'firstname'         => $record->firstname,
+                    'lastname'          => $record->lastname,
+                    'firstnamephonetic' => $record->firstnamephonetic,
+                    'lastnamephonetic'  => $record->lastnamephonetic,
+                    'middlename'        => $record->middlename,
+                    'alternatename'     => $record->alternatename,
+                  ],
+                  system::instance()
+              ),
+              $record->requeststate,
+              $record->requestcreated,
+            ),
+            array_values($records),
+        );
+    }
+
+    public static function update_request(int $id, string $action): bool {
+        global $DB;
+
+        // 1. Step: Validations: Check that the request really exists. Nothing is updated if it does not.
+        if (empty($DB->get_record(course_request::DB_TABLE_NAME, ["id" => $id]))) {
+            return false;
+        }
+
+        try {
+            $transaction = $DB->start_delegated_transaction();
+            $param = ['id' => $id];
+            match ($action) {
+                'approve' => $DB->set_field(course_request::DB_TABLE_NAME, 'state', course_request::REQUEST_ACCEPTED, $param),
+                'reject' => $DB->set_field(course_request::DB_TABLE_NAME, 'state', course_request::REQUEST_DECLINED, $param),
+                default => throw new coding_exception('Wrong action parameter given from the frontend'),
+            };
+            $transaction->allow_commit();
+            return true;
+        } catch (Exception $e) {
+            $transaction->rollback($e);
+        }
+        return false;
     }
 
     /**

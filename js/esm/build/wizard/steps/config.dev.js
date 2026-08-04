@@ -25,11 +25,12 @@ const STEPS = {
   requestSummary: { component: RequestSummaryStep }
 };
 const SEQUENCES = {
-  "import": ["importCourses", "importDetails", "importSummary"],
-  request: ["requestTeacher", "requestCourses", "requestSummary"]
+  "import": ["choose", "importCourses", "importDetails", "importSummary"],
+  request: ["choose", "requestTeacher", "requestCourses", "requestSummary"],
+  importRequested: ["importDetails", "importSummary"]
 };
 function sequenceFor(branch) {
-  return branch === null ? ["choose"] : ["choose", ...SEQUENCES[branch]];
+  return branch === null ? ["choose"] : SEQUENCES[branch];
 }
 __name(sequenceFor, "sequenceFor");
 function canAdvance(stepId, cache) {

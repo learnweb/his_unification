@@ -27,10 +27,22 @@ import {STEPS, sequenceFor, canAdvance} from "./steps/config";
 import type {WizardCache} from "./steps/config";
 import {str} from "../lang";
 
-export default function Wizard({onClose}: {onClose: () => void}) {
+/**
+ * What the shell needs:
+ * onClose - closes the modal.
+ * initial - what the cache already holds when the wizard opens. The dashboard uses this to start the wizard on a branch
+ *           whose course is already known, so that branch can skip the steps that would only collect it again.
+ */
+type Props = {
+  onClose: () => void;
+  initial?: Partial<WizardCache>;
+};
+
+export default function Wizard({onClose, initial}: Props) {
   const [step, setStep] = useState(0);
   const [showErrors, setShowErrors] = useState(false);
-  const [cache, setCache] = useState<WizardCache>({branch: null, course: null, teacher: null, category: null, submitted: false});
+  const [cache, setCache] = useState<WizardCache>(
+    {branch: null, course: null, teacher: null, category: null, submitted: false, ...initial});
 
   const patchCache = (partial: Partial<WizardCache>) => setCache((c) => ({...c, ...partial}));
 
@@ -49,7 +61,7 @@ export default function Wizard({onClose}: {onClose: () => void}) {
 
   const title = currentStepId === "choose" || cache.branch === null
     ? str("wizard_shell_title")
-    : str(cache.branch === "import" ? "course_import" : "course_request");
+    : str(cache.branch === "request" ? "course_request" : "course_import");
 
   const back = () => {
     setShowErrors(false);
