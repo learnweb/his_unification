@@ -16,6 +16,7 @@
 
 namespace local_lsf_unification\route\schema;
 
+use core\exception\coding_exception;
 use core\param;
 use core\router\schema\objects\schema_object;
 use core\router\schema\objects\scalar_type;
@@ -36,7 +37,7 @@ class course_schema extends schema_object {
      *
      * @param bool $required Whether every field must be non-null. Only has an effect on
      *                       request bodies; responses are never validated against their schema.
-     * @throws \core\exception\coding_exception
+     * @throws coding_exception
      */
     public function __construct(bool $required = false) {
         parent::__construct(

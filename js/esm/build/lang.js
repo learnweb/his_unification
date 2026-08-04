@@ -10,4 +10,4 @@
  * @module     lsf_unification/lang
  * @copyright  2026 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */const n=(t,r)=>M.util.get_string(t,"local_lsf_unification",r);export{n as str};
+ */const i=(t,n,r)=>n?M.util.get_string(t,"core",r):M.util.get_string(t,"local_lsf_unification",r);export{i as str};

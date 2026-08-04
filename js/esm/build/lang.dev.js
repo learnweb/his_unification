@@ -13,7 +13,9 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
  * @copyright  2026 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-const str = /* @__PURE__ */ __name((key, param) => M.util.get_string(key, "local_lsf_unification", param), "str");
+const str = /* @__PURE__ */ __name((key, fromCore, param) => {
+  return fromCore ? M.util.get_string(key, "core", param) : M.util.get_string(key, "local_lsf_unification", param);
+}, "str");
 export {
   str
 };

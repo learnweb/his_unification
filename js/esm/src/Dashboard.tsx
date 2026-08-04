@@ -24,6 +24,7 @@ import {useEffect, useState} from "react";
 import {Course, fetchDashboardCourses} from "./services/csm";
 import Wizard from "./wizard/Wizard";
 import {str} from "./lang";
+import RequestManager from "./request_manager/RequestManager";
 
 /** Request states, mirroring the constants of local\models\course_request. */
 const REQUEST_PENDING = 1;
@@ -58,6 +59,7 @@ const REQUEST_STATE_BADGES: Record<number, {css: string, icon: string, key: stri
 export default function Dashboard() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [wizardOpen, setWizardOpen] = useState(false);
+    const [requestManagerOpen, setRequestManagerOpen] = useState(false);
     const reloadCourses = () => fetchDashboardCourses().then(setCourses);
 
     useEffect(() => {
@@ -74,9 +76,14 @@ export default function Dashboard() {
           <h3 className="mb-1">{str("dashboard_title")}</h3>
           <p className="text-muted mb-0">{str("dashboard_title_text")}</p>
         </div>
-        <button type="button" className="btn btn-primary btn-md text-white" onClick={() => setWizardOpen(true)}>
-          <i className="fa-solid fa-plus me-2"/>{str("dashboard_wizard_button")}
-        </button>
+        <div>
+          <button type="button" className="btn btn-primary btn-md text-white me-4" onClick={() => setRequestManagerOpen(true)}>
+            <i className="fa-solid fa-circle-exclamation me-2"/>{str("dashboard_request_manager_button")}
+          </button>
+          <button type="button" className="btn btn-primary btn-md text-white" onClick={() => setWizardOpen(true)}>
+            <i className="fa-solid fa-plus me-2"/>{str("dashboard_wizard_button")}
+          </button>
+        </div>
       </div>
       {/* Current courses. */}
       <div className="card mb-4 shadow-sm">
@@ -131,6 +138,11 @@ export default function Dashboard() {
           })}
         </div>
       </div>
+      {/* Request manager modal*/}
+      {requestManagerOpen && <RequestManager onClose={() => {
+        setRequestManagerOpen(false);
+        reloadCourses();
+      }}/>}
       {/* Import wizard modal*/}
       {wizardOpen && <Wizard onClose={() => {
         setWizardOpen(false);

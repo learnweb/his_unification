@@ -30,10 +30,13 @@ use core\router\route;
 use core\router\schema\response\payload_response;
 use core\router\schema\parameters\path_parameter;
 use local_lsf_unification\local\dto\course_dto;
+use local_lsf_unification\local\dto\request_dto;
 use local_lsf_unification\local\service\cms_service;
 use local_lsf_unification\local\service\dashboard_service;
+use local_lsf_unification\route\schema\requestbodies\requestaction_body;
 use local_lsf_unification\route\schema\requestbodies\submit_body;
 use local_lsf_unification\route\schema\responses\dashboard_categories_response;
+use local_lsf_unification\route\schema\responses\dashboard_courserequests_response;
 use local_lsf_unification\route\schema\responses\dashboard_courses_response;
 use local_lsf_unification\route\schema\responses\dashboard_teachers_response;
 use local_lsf_unification\route\schema\responses\submit_response;
@@ -62,6 +65,28 @@ class dashboard_controller {
         $payload = array_map(
             fn(course_dto $dto) => $dto->to_array(),
             dashboard_service::get_dashboard_courses()
+        );
+        return new payload_response($payload, $request, $response);
+    }
+
+    /**
+     * Return all requests for a teachers course that was made from other users. The teacher can manage then manage the requests.
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return payload_response
+     */
+    #[route(
+        title: 'Get Dashboard requests',
+        description: "Returns the course requests for the current users courses",
+        path: '/dashboard/dashboardrequests',
+        method: ['GET'],
+        responses: [new dashboard_courserequests_response()],
+    )]
+    public function get_requests(ServerRequestInterface $request, ResponseInterface $response): payload_response {
+        $payload = array_map(
+            fn(request_dto $dto) => $dto->to_array(),
+            dashboard_service::get_course_requests()
         );
         return new payload_response($payload, $request, $response);
     }
@@ -210,6 +235,28 @@ class dashboard_controller {
             }
         }
         $status = cms_service::import_course((object) $cache['course'], (object) $cache['category']);
+        return new payload_response(['status' => $status], $request, $response);
+    }
+
+    /**
+     * Saves a teachers action regarding a request to a teachers course.
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return payload_response
+     * @throws invalid_parameter_exception
+     */
+    #[route(
+        title: 'Save a course import',
+        description: 'Stores a course import that was built in the wizard.',
+        path: '/dashboard/requestaction',
+        method: ['POST'],
+        requestbody: new requestaction_body(),
+        responses: [new submit_response()],
+    )]
+    public function post_requestaction(ServerRequestInterface $request, ResponseInterface $response): payload_response {
+        $requestaction = $request->getParsedBody();
+        $status = dashboard_service::update_request($requestaction['id'], $requestaction['action']);
         return new payload_response(['status' => $status], $request, $response);
     }
 }

@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['action'] = 'Action';
 $string['ad_hoc_task_failed'] = 'The ad hoc task {$a} failed. It will be queued automatically and executed later again.';
 $string['add_features'] = 'Additional Features';
 $string['add_features_information'] = 'configure additional features here';
@@ -66,6 +67,8 @@ $string['config_selfenrolment_help'] = "One method for students to enrol for you
 $string['config_shortname'] = "Shortname";
 $string['config_summary'] = "Summary";
 $string['config_summary_desc'] = "(Will be displayed in course-search)";
+$string['confirm_approve'] = "Approve ?";
+$string['confirm_reject'] = "Reject ?";
 $string['continue'] = 'Continue';
 $string['continue_with_empty_course'] = 'Leave the course blank and continue';
 $string['course'] = 'Course';
@@ -80,6 +83,7 @@ $string['courseselect_validate'] = 'Please choose a course to continue.';
 $string['create_mappings'] = 'Create New Mappings';
 $string['created'] = 'Created';
 $string['dashboard_imported_courses'] = 'Imported courses';
+$string['dashboard_request_manager_button'] = 'Manage requests';
 $string['dashboard_request_state_accepted'] = "accepted";
 $string['dashboard_request_state_declined'] = "declined";
 $string['dashboard_request_state_imported'] = "imported";
@@ -184,6 +188,8 @@ $string['remote_creation_description'] = 'Allow everyone to request courses in t
 $string['remote_request_accept'] = 'Accept request by "{$a->a}" to create the course "{$a->b}"';
 $string['remote_request_decline'] = 'Decline request and send the regarding information to "{$a->a}"';
 $string['remote_request_select_alternative'] = 'Please select the action you want to perform:';
+$string['request_manager_title'] = 'Request Manager';
+$string['request_manager_text'] = 'Manage requests for one of your courses from other users';
 $string['request_sent'] = 'The request will be sent, please wait for an answer, that you will recieve via email.';
 $string['restore_old_courses'] = 'Duplicating Courses';
 $string['restore_old_courses_description'] = 'Allow a course creator to duplicate course contents by restoring from a course backup of his courses';
@@ -225,7 +231,7 @@ $string['task_missing_helptable_entries'] = 'Update table of LSF categories.';
 $string['teacher'] = 'Teacher';
 $string['teachernotfound'] = 'No teacher found';
 $string['teachersearch'] = 'Search for a teacher';
-$string['teachersearch_placeholer'] = 'Enter name or username ...';
+$string['teachersearch_placeholder'] = 'Enter name or username ...';
 $string['teachersearch_text'] = 'Search for the teacher whose course you want to request';
 $string['teacherselect'] = 'Please select a teacher';
 $string['template_from_course'] = 'Alternative {$a}: Include contents from an existing course ...';
@@ -234,6 +240,7 @@ $string['title_validate'] = "Please enter a valid title.";
 $string['update_helptable'] = 'Update Helptable With HIS-LSF data';
 $string['update_helptable_already_queued'] = 'Task to update tables is already queued. Click <a href="{$a->link}">here</a> for more information.';
 $string['update_helptable_notification'] = 'The Tables will be updated at {$a->time}. Click <a href="{$a->link}">here</a> for more information.';
+$string['user'] = "User";
 $string['username'] = "Username";
 $string['warning_cannot_enrol_nologin'] = "person wasn't enrolled (no username found)";
 $string['warning_cannot_enrol_nouser'] = "person wasn't enrolled (no user found)";
