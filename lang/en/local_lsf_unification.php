@@ -87,22 +87,7 @@ $string['delete'] = 'delete';
 $string['duplication_timeframe'] = 'Course Duplication Timeframe';
 $string['duplication_timeframe_description'] = 'The number of hours after course creation where restore-actions are allowed';
 $string['duplication_timeframe_error'] = 'Sorry but for safety reasons it is not allowed import course data from templates or backups more than {$a} hour(s) after course creation';
-$string['email'] = 'SENDER:
-{$a->a} ({$a->b})
-
-    COURSE:
-    {$a->c} ({$a->d})
-
-        MESSAGE:
-        {$a->e}';
-$string['email2'] = 'The user "{$a->a}" ({$a->userurl}) requested to create the Learnweb-course "{$a->c}" in your name. Please confirm or refuse the request on this website: {$a->requesturl}';
-$string['email2_title'] = "Course Creation Request";
-$string['email3'] = 'The user "{$a->a}" ({$a->userurl}) accepted your request to create the Learnweb-course "{$a->c}". Please continue the course-creation on this website: {$a->requesturl}';
-$string['email3_title'] = "Course Creation Request accepted";
-$string['email4'] = 'The user "{$a->a}" ({$a->userurl}) declined your request to create the Learnweb-course "{$a->c}".';
-$string['email4_title'] = "Course Creation Request declined";
 $string['email_error'] = 'The category wish wasn\'t sent. Please contact the support team manually.';
-$string['email_from'] = "HIS LSF Import";
 $string['email_success'] = 'Email regarding category wish will be sent.';
 $string['enable_enrol_ext_db'] = 'Enable external database enrolement';
 $string['enable_enrol_ext_db_description'] = 'Teacher can choose if he wants to use external database enrolement. External database enrolment must be enabled and it must be changed so that it can be enabled for particular courses only';
@@ -126,7 +111,20 @@ $string['info_goto_old_requestform'] = "Please use the standard form to apply fo
 $string['linktext_content'] = "... import content from already existing courses ...";
 $string['linktext_course'] = "... or go directly to your new couse.";
 $string['linktext_users'] = "Edit the assigned teachers and students, ...";
-$string['main_category'] = 'Maincateogry';
+$string['mail_category_wish_content_text'] = 'created the course \'{$a->coursename}\' and requests a category relocation.
+The user left the following message:
+  {$a->message}
+
+Visit the course: {$a->courseurl}.';
+$string['mail_category_wish_subject'] = "LSF Unification - Category change request for a new course";
+$string['mail_courserequest_content_text'] = 'wants to create the Learnweb course "{$a->name}" on your behalf and asks your confirmation. You can review the request using the link below and either approve or reject it:';
+$string['mail_courserequest_subject'] = "Learnweb - New course creation request";
+$string['mail_greeting'] = 'Dear {$a->name},';
+$string['mail_request_accepted_content_text'] = 'accepted your request to create the course "{$a->name}". You can continue the course creation by using the link below:';
+$string['mail_request_accepted_subject'] = "Learnweb - Course creation request accepted";
+$string['mail_request_declined_content_text'] = 'declined your request to create the course "{$a->name}".';
+$string['mail_request_declined_subject'] = "Learnweb - Course creation request declined";
+$string['main_category'] = 'Maincategory';
 $string['map'] = 'map';
 $string['map_done'] = 'mapping(s) saved';
 $string['map_list_empty'] = "No items selected";
@@ -141,6 +139,7 @@ $string['new_request'] = 'request another course';
 $string['next_steps'] = "Next Steps";
 $string['noConnection'] = "A connection to LSF-Database couldn't be established. Please use the regular <a href='../../course/request.php'>formular</a>.";
 $string['no_template'] = 'Alternative {$a}: Leave the course blank course and continue';
+$string['noreply'] = "This email was sent automatically. Please do not reply directly to this message.";
 $string['not_mapped'] = 'not mapped';
 $string['notice'] = 'Usually Learnweb copies course information from the HIS database and provides these information below. This requires that you are assigned to the course in HIS-LSF as a teacher or assistant. Furthermore your ZIV account has to be assigned to your HIS-LSF profile. If your course is not listed, please choose from the other provided options.';
 $string['overwrite'] = 'overwrite';
@@ -193,3 +192,4 @@ $string['warning_cannot_enrol_nologin'] = "person wasn't enrolled (no username f
 $string['warning_cannot_enrol_nouser'] = "person wasn't enrolled (no user found)";
 $string['warning_cannot_enrol_other'] = "person wasn't enrolled";
 $string['warnings'] = 'Warnings:';
+$string['zhlinfo_text'] = "Zentrum für Hochschullehre (ZHL)\nServices für digitale Lehre";

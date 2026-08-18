@@ -75,22 +75,7 @@ $string['defaultcategory'] = 'Standard Kategorie';
 $string['defaultcategory_description'] = 'Falls keine Kategorie eingetragen werden kann wird diese Kategorie angegeben';
 $string['delete'] = 'l&ouml;schen';
 $string['duplication_timeframe_error'] = 'Aus Sicherheitsgr&uuml;nden ist es nicht erlaubt Kursdaten aus Musterkursen oder Kursbackups wiederherzustellen, falls die Kurserstellung mehr als {$a} Stunden zur&uuml;ckliegt.';
-$string['email'] = 'ABSENDER:
-{$a->a} ({$a->b})
-
-    KURS:
-    {$a->c} ({$a->d})
-
-        NACHRICHT:
-        {$a->e}';
-$string['email2'] = 'Der Benutzer "{$a->a}" ({$a->userurl}) versucht den Kurs "{$a->c}" in Ihrem Namen zu erstellen. Bitte akzeptieren oder verweigern Sie die Anfrage auf dieser Webseite: {$a->requesturl}';
-$string['email2_title'] = "Anfrage zur Kurserstellung";
-$string['email3'] = 'Der Benutzer "{$a->a}" ({$a->userurl}) akzeptierte Ihre Kursanfrage "{$a->c}". Bitte fahren Sie mit der Erstellung hier fort: {$a->requesturl}';
-$string['email3_title'] = "Anfrage zur Kurserstellungs akzeptiert";
-$string['email4'] = 'Der Benutzer "{$a->a}" ({$a->userurl}) verweigerte Ihre Kursanfrage "{$a->c}".';
-$string['email4_title'] = "Anfrage zur Kurserstellung verweigert";
 $string['email_error'] = 'Der Kategorieumzugswunsch konnte leider nicht automatisch versendet werden. Kontaktieren Sie den Support manuell!';
-$string['email_from'] = "HIS LSF Import";
 $string['email_success'] = 'Eine Email bzgl. des Kategoriewechsels wird an den Support gesendet.';
 $string['eventcourse_duplicated'] = 'Kursinhalte dupliziert';
 $string['eventcourse_imported'] = 'Kurs importiert';
