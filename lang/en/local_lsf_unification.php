@@ -80,7 +80,6 @@ $string['duplication_timeframe'] = 'Course Duplication Timeframe';
 $string['duplication_timeframe_description'] = 'The number of hours after course creation where restore-actions are allowed';
 $string['duplication_timeframe_error'] = 'Sorry but for safety reasons it is not allowed import course data from templates or backups more than {$a} hour(s) after course creation';
 $string['email_error'] = 'The category wish wasn\'t sent. Please contact the support team manually.';
-$string['email_from'] = "HIS LSF Import";
 $string['email_success'] = 'Email regarding category wish will be sent.';
 $string['enable_enrol_ext_db'] = 'Enable external database enrolement';
 $string['enable_enrol_ext_db_description'] = 'Teacher can choose if he wants to use external database enrolement. External database enrolment must be enabled and it must be changed so that it can be enabled for particular courses only';
