@@ -73,6 +73,7 @@
         <FIELD NAME="requesterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Moodle user id of the user that requested the course."/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Abstract course id (local_lsf_unification_courses.id, not a moodle course id)."/>
         <FIELD NAME="state" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Current state of the request: 1=pending, 2=accepted, 3=declined, 4=imported."/>
+        <FIELD NAME="created" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Unix timestamp in seconds of the created date."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

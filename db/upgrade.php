@@ -179,6 +179,7 @@ function xmldb_local_lsf_unification_upgrade(int $oldversion): bool {
         $table->add_field('requesterid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('state', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('state', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
         // Adding keys to table local_lsf_unification_course_requests.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
