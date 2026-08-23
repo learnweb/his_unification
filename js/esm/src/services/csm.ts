@@ -18,6 +18,17 @@ export type Course = {
     moodleurl: string;
 };
 
+<<<<<<< HEAD
+=======
+export type Request = {
+    id: number;
+    title: string;
+    requester: string;
+    requeststate: number;
+    created: number;
+}
+
+>>>>>>> 72d5371 (frontend - request)
 export type Teacher = {
     username: string;
     firstname: string;
