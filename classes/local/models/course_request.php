@@ -56,14 +56,17 @@ class course_request {
         public readonly int $courseid,
         /** @var int current state of the request */
         private int $state,
+        /** @var int timestamp of the creation date  */
+        private int $created,
         ?int $id = null,
     ) {
         global $DB;
 
         $this->id = $id ?? $DB->insert_record(self::DB_TABLE_NAME, (object) [
             'requesterid' => $this->requesterid,
-            'courseid'    => $this->courseid,
-            'state'       => $this->state,
+            'courseid' => $this->courseid,
+            'state' => $this->state,
+            'created' => $this->created,
         ]);
     }
 
@@ -121,6 +124,7 @@ class course_request {
             'requesterid' => $this->requesterid,
             'courseid' => $this->courseid,
             'state' => $this->state,
+            'created' => $this->created,
         ];
     }
 }
