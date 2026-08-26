@@ -43,6 +43,16 @@ class course {
     /**
      * Course constructor. This either returns an existing course or create a new one when no ID is passed. If you already have the
      * course please use the static from_record() function to work with courses.
+     * @param string $cms which cms the course originates from
+     * @param int $instance id of the course in the cms
+     * @param string $title title of the course
+     * @param string $shorttitle short title of the course
+     * @param string $description description of the course
+     * @param string $teacher user name of the main responsible teacher of the course
+     * @param string $semester which semester the course belongs to
+     * @param int $created timestamp of when the course was created in the cms
+     * @param string $url url to the course in the cms
+     * @param int|null $id id of an existing course record, null to look up or create one
      * @throws dml_exception
      */
     public function __construct(
@@ -96,8 +106,8 @@ class course {
     }
 
     /**
-     * Returns a course from a course id.
-     * @param int $id
+     * Returns a course from a database record.
+     * @param object $record record from the local_lsf_unification_courses table
      * @return course
      */
     public static function construct_from_record(object $record): course {

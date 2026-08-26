@@ -46,7 +46,12 @@ class course_request {
     public readonly int $id;
 
     /**
-     * .Constructor
+     * Constructor.
+     * @param int $requesterid moodle id of the user that requested the course
+     * @param int $courseid abstract course id (not a moodle course id!)
+     * @param int $state current state of the request
+     * @param int $created timestamp of the creation date
+     * @param int|null $id id of an existing request, null to insert a new one
      * @throws dml_exception
      */
     public function __construct(

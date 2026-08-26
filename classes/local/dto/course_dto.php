@@ -29,6 +29,20 @@ use moodle_url;
 class course_dto {
     /**
      * Constructor.
+     * @param int $id unique id of the abstracted course
+     * @param string $cms cms the course originates from
+     * @param int $cmsinstance id of the course in the cms
+     * @param string $cmsurl url to the course in the cms
+     * @param string $title title of the course
+     * @param string $shorttitle short title of the course
+     * @param string $description description of the course
+     * @param string $teacher user name of the main responsible teacher
+     * @param string $semester semester the course belongs to
+     * @param int $created timestamp of when the course was created in the cms
+     * @param int $courseid abstract course id
+     * @param int $moodleid moodle course id, 0 when not yet created
+     * @param int $requeststate request state of the user, if there is no request then the state is 0
+     * @param string $moodleurl url to the course in moodle
      */
     public function __construct(
         /** @var int unique id of the abstracted course */
@@ -66,6 +80,8 @@ class course_dto {
      * Builds a course dto from a course entity.
      *
      * @param course $course
+     * @param int $moodleid moodle course id, 0 when not yet created
+     * @param int $requeststate request state of the user, 0 when there is no request
      * @return self
      */
     public static function from_course(course $course, int $moodleid = 0, int $requeststate = 0): self {
@@ -93,21 +109,6 @@ class course_dto {
      * @return array
      */
     public function to_array(): array {
-        return [
-            'id' => $this->id,
-            'cms' => $this->cms,
-            'cmsinstance' => $this->cmsinstance,
-            'cmsurl' => $this->cmsurl,
-            'title' => $this->title,
-            'shorttitle' => $this->shorttitle,
-            'description' => $this->description,
-            'teacher' => $this->teacher,
-            'semester' => $this->semester,
-            'created' => $this->created,
-            'courseid' => $this->courseid,
-            'moodleid' => $this->moodleid,
-            'requeststate' => $this->requeststate,
-            'moodleurl' => $this->moodleurl,
-        ];
+        return get_object_vars($this);
     }
 }

@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/**
- * REST API controller for the LSF unification dashboard.
- *
- * @package   local_lsf_unification
- * @copyright 2026 Tamaro Walter
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_lsf_unification\route\api;
 
 use core\exception\invalid_parameter_exception;
@@ -44,7 +36,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Endpoint: GET /api/rest/v2/local_lsf_unification/dashboard/courses
+ * REST API controller for the LSF unification dashboard.
+ *
+ * @package   local_lsf_unification
+ * @copyright 2026 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class dashboard_controller {
     /**
