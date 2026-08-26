@@ -38,7 +38,7 @@ class cms_service {
      * @param bool $isrequest If the call comes from a request on behalf of a teacher.
      * @return array
      */
-    public static function get_courses_from_teacher(object $teacher = null, bool $isrequest = false): array {
+    public static function get_courses_from_teacher(?object $teacher = null, bool $isrequest = false): array {
         global $USER, $DB;
         $teacher = $teacher ?? $USER;
         $lsf = new his_lsf(get_config('local_lsf_unification'));

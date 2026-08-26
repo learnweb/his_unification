@@ -105,26 +105,34 @@ class dashboard_service {
 
         return array_map(
             fn(object $record) => new request_dto(
-              $record->requestid,
-              $record->title,
-              core_user::get_fullname(
-                  (object) [
-                    'firstname'         => $record->firstname,
-                    'lastname'          => $record->lastname,
-                    'firstnamephonetic' => $record->firstnamephonetic,
-                    'lastnamephonetic'  => $record->lastnamephonetic,
-                    'middlename'        => $record->middlename,
-                    'alternatename'     => $record->alternatename,
-                  ],
-                  system::instance()
-              ),
-              $record->requeststate,
-              $record->requestcreated,
+                $record->requestid,
+                $record->title,
+                core_user::get_fullname(
+                    (object) [
+                        'firstname'         => $record->firstname,
+                        'lastname'          => $record->lastname,
+                        'firstnamephonetic' => $record->firstnamephonetic,
+                        'lastnamephonetic'  => $record->lastnamephonetic,
+                        'middlename'        => $record->middlename,
+                        'alternatename'     => $record->alternatename,
+                    ],
+                    system::instance()
+                ),
+                $record->requeststate,
+                $record->requestcreated,
             ),
             array_values($records),
         );
     }
 
+    /**
+     * Updates an existing request state.
+     * @param int $id
+     * @param string $action
+     * @return bool
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     */
     public static function update_request(int $id, string $action): bool {
         global $DB;
 

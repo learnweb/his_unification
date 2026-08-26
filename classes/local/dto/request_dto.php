@@ -24,7 +24,6 @@ namespace local_lsf_unification\local\dto;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class request_dto {
-
     /**
      * Constructor.
      */
@@ -39,7 +38,8 @@ class request_dto {
         public readonly int $requeststate,
         /** @var int created date*/
         public readonly int $created,
-    ) {}
+    ) {
+    }
 
     /**
      * Return the dto in JSON shape.
