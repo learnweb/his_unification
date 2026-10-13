@@ -61,10 +61,15 @@ class send_mail_request_teacher_to_create_course extends \core\task\adhoc_task {
         // D) requesturl-> the (moodle_url)link for managing the request.
         $content = get_string('email2', 'local_lsf_unification', $data->params);
 
+        // Since Moodle 5.3 email_to_user() requires a user object as sender, so use a copy of the noreply user.
+        $from = clone \core_user::get_noreply_user();
+        $from->firstname = get_string('email_from', 'local_lsf_unification') .
+            " (by " . $data->requesterfirstname . " " . $data->requesterlastname . ")";
+        $from->lastname = '';
+
         $wassent = email_to_user(
             $user,
-            get_string('email_from', 'local_lsf_unification') .
-            " (by " . $data->requesterfirstname . " " . $data->requesterlastname . ")",
+            $from,
             get_string('email2_title', 'local_lsf_unification'),
             $content
         );

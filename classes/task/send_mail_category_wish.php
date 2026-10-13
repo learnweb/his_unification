@@ -58,10 +58,15 @@ class send_mail_category_wish extends \core\task\adhoc_task {
         // E) e-> the text entered by the user regarding the category wish.
         $content = get_string('email', 'local_lsf_unification', $data->params);
 
+        // Since Moodle 5.3 email_to_user() requires a user object as sender, so use a copy of the noreply user.
+        $from = clone \core_user::get_noreply_user();
+        $from->firstname = get_string('email_from', 'local_lsf_unification') .
+            " (by " . $data->requesterfirstname . " " . $data->requesterlastname . ")";
+        $from->lastname = '';
+
         $wassent = email_to_user(
             $supportuser,
-            get_string('email_from', 'local_lsf_unification') .
-            " (by " . $data->requesterfirstname . " " . $data->requesterlastname . ")",
+            $from,
             get_string('config_category_wish', 'local_lsf_unification'),
             $content
         );
