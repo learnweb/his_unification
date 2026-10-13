@@ -29,6 +29,11 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/enrollib.php');
 require_once($CFG->dirroot . '/user/lib.php');
 
+// Global lsf_unfication constants.
+define('LSF_UNIFICATION_REQUEST_DECLINED', 0);
+define('LSF_UNIFICATION_REQUEST_OPEN', 1);
+define('LSF_UNIFICATION_REQUEST_ACCEPTED', 2);
+
 /**
  * get_course_by_idnumber returns the course's id, where idnumber fits $courseid
  *
@@ -91,7 +96,7 @@ function has_course_import_rights(int $veranstid, object $user): bool {
     if (!is_course_of_teacher($veranstid, $user->username)) {
         if (
             $courseentry = $DB->get_record(
-                "local_lsf_unification_course",
+                "local_lsf_unification_course_matching",
                 ["veranstid" => $veranstid, "requesterid" => $user->id,
                 ]
             )
@@ -125,7 +130,7 @@ function is_course_imported_by(int $mdlid, object $user): bool {
     global $DB;
     if (
         $courseentry = $DB->get_record(
-            "local_lsf_unification_course",
+            "local_lsf_unification_course_matching",
             ["mdlid" => $mdlid, "requesterid" => $user->id, "requeststate" => 2,
             ]
         )
@@ -146,7 +151,7 @@ function get_course_acceptor(int $mdlid): int|null {
 
     if (
         $courseentry = $DB->get_record(
-            "local_lsf_unification_course",
+            "local_lsf_unification_course_matching",
             ["mdlid" => $mdlid, "requeststate" => 2,
             ]
         )
